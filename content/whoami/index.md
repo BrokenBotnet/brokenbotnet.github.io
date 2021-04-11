@@ -34,6 +34,9 @@ I am an independent security researcher, Linux, open source and privacy enthusia
 
 > I did not revoke my old PGP key [`0xFF9CB6BB8A0BDB20`](https://keyserver.ubuntu.com/pks/lookup?search=0xFF9CB6BB8A0BDB20&fingerprint=on&op=index) 🔑 you can still contact me via that email `brokenbotnet@tuta.io` 📧 but, I prefer the key (`0xB3BD6196E1CFBFB4 🔑`) and the email(s) associated with it.
 
+
+```PLEASE HACK ME I'M SAD :(```
+
 **If you want to  by me a CryptoCoffee ☕ or CryptoPizza 🍕, yeah sure go ahead... You are awesome!** ❤️😃
 
 ```
