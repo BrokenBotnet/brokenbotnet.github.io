@@ -2,14 +2,18 @@ name: Build brokenbotnet
 
 on:
   push:
-    branches: [master]
+    branches:
+      - main
+pull_request:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - name: Git checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Get Theme
         run: git submodule update --init --recursive
@@ -21,12 +25,14 @@ jobs:
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: 'latest'
+          extended: true
 
       - name: Build
         run: hugo --buildDrafts --gc --verbose --minify
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.TOKEN }}
           publish_dir: ./public
