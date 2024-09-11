@@ -26,7 +26,7 @@ Although I’m not currently updating the blog, I’m still open to sharing know
     - [PGP Basics: Managing Keys & Encrypting Text](https://yewtu.be/playlist?list=PLOZKbRUo9H_pCTg8XdvkyGZ_lJbl1AA5X)
 
 
-Credit ❤️ [Aliester Crowley](https://www.youtube.com/AliesterCrowleyMV) @`Br🤖ken B🤖tnet© Logo`
+Credit ❤️ [Aliester Crowley](https://yewtu.be/channel/UCovs6OKnSeuiubVmq88Goow) @`Br🤖ken B🤖tnet© Logo`
 ![Br🤖ken B🤖tnet© Logo](/images/banner.png#center)
 
 ---
