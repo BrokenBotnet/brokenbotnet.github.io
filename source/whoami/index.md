@@ -19,7 +19,8 @@ Speaking of challenges, there was this one time when a minor vulnerability in a 
 
 Although I’m not currently updating the blog, I’m still open to sharing knowledge. If there’s a topic you’re curious about, feel free to reach out, and I might consider it for future content. If you’d like to get in touch or just have a conversation, you can contact me at r3bo0tbx1@brokenbotnet.com 📧 or connect with me on Keybase. Please remember to encrypt your messages with GnuPG/PGP key: [0xB3BD6196E1CFBFB4 🔑](https://keys.openpgp.org/vks/v1/by-fingerprint/33727F5377D296C320AF704AB3BD6196E1CFBFB4), as I won’t normally respond to unencrypted emails. If you’re unfamiliar with PGP, the links below can help you get started.
 
-- [Wikipedia-Pretty Good Privacy](https://en.wikipedia.org/wiki/Pretty_Good_Privacy)
+- [Pretty Good Privacy/PGP](https://en.wikipedia.org/wiki/Pretty_Good_Privacy)
+- [GNU Privacy Guard/GnuPG/GPG](https://en.wikipedia.org/wiki/GNU_Privacy_Guard)
 
 - [Invidious/Infosec Bytes](https://yewtu.be/channel/UCfET6btFpe1e0CRGTFOulNg)
     - [PGP Basics: Managing Keys & Encrypting Text](https://yewtu.be/playlist?list=PLOZKbRUo9H_pCTg8XdvkyGZ_lJbl1AA5X)
