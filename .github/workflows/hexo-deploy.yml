@@ -54,6 +54,15 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Create .well-known Directory and Add nostr.json
+        run: |
+          mkdir -p ./public/.well-known
+          echo '{
+            "names": {
+              "r3bo0tbx1": "1c6234b2c80549b609be27522cbe2b73400859b24a913855d48503d5d819060d"
+            }
+          }' > ./public/.well-known/nostr.json
+
       - name: Ensure .nojekyll and CNAME
         run: |
           echo "" > ./public/.nojekyll
