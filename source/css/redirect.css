@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap');
+
+body {
+    background: linear-gradient(135deg, #303030, #1f1f1f, #2b2b2b);
+    color: #eee;
+    font-family: "Ubuntu Mono", monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-size: calc(12px + 1vmin);
+}
+.terminal {
+    text-align: left;
+    max-width: 90%;
+    width: 600px;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    color: #00ff00;
+}
+.line {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+.line:not(.line1) {
+    display: none;
+}
+.static-text {
+    color: #00ff00;
+}
+.typing {
+    white-space: nowrap;
+    overflow: hidden;
+}
+.typing::after {
+    content: "";
+    border-right: 0.1em solid #eee;
+    animation: blink-caret 0.75s step-end infinite;
+}
+.typing.done::after {
+    border-right: none;
+}
+.typing-underline::after {
+    content: "";
+    border-bottom: 0.1em solid #eee;
+    animation: blink-caret-underline 0.75s step-end infinite;
+}
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: #eee; }
+}
+@keyframes blink-caret-underline {
+    from, to { border-color: transparent }
+    50% { border-color: #eee; }
+}
+.fade-in {
+    animation: fadeIn 1s ease-in forwards;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.ascii-art {
+    font-family: monospace;
+    white-space: pre;
+    display: block;
+    margin-top: 10px;
+}
