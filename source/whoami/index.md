@@ -21,12 +21,11 @@ Although I’m not currently updating the blog, I’m still open to sharing know
 
 - [Wikipedia-Pretty Good Privacy](https://en.wikipedia.org/wiki/Pretty_Good_Privacy)
 
-- [YouTube/Infosec Bytes](https://www.youtube.com/channel/UCfET6btFpe1e0CRGTFOulNg)
-    - [Intodution to PGP](https://youtube.com/playlist?list=PL23WTMUZePtgC-eXiu41xonV12-oVhm57)
-    - [Managing PGP Keys & Encrypting/Decrypting Text with PGP](https://youtube.com/playlist?list=PL23WTMUZePtgkt9J-knXlif6QuawcCSyY)
+- [Invidious/Infosec Bytes](https://yewtu.be/channel/UCfET6btFpe1e0CRGTFOulNg)
+    - [PGP Basics: Managing Keys & Encrypting Text](https://yewtu.be/playlist?list=PLOZKbRUo9H_pCTg8XdvkyGZ_lJbl1AA5X)
 
 
-Credit ❤️ [Aliester Crowley](https://www.youtube.com/AliesterCrowleyMV) Br🤖ken B🤖tnet© Logo
+Credit ❤️ [Aliester Crowley](https://www.youtube.com/AliesterCrowleyMV) @`Br🤖ken B🤖tnet© Logo`
 ![Br🤖ken B🤖tnet© Logo](/images/banner.png#center)
 
 ---
