@@ -25,6 +25,7 @@ jobs:
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git commit -am "Update theme to the latest version"
             git push
+          fi
         continue-on-error: true
 
       - name: Use Node.js latest
