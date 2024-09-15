@@ -96,15 +96,26 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
+
   notify:
-    needs: [build, deploy]
+    needs: build
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - name: Notify on Success
+      - name: Send Matrix Notification on Success
         if: success()
-        run: echo "Build and deployment succeeded"
+        run: |
+          curl -X POST -d '{
+            "msgtype": "m.text",
+            "body": "🚀 Deployment Succeeded! Your GitHub Pages site has been updated successfully."
+          }' \
+          "${{ secrets.MATRIX_SERVER_URL }}/_matrix/client/r0/rooms/${{ secrets.MATRIX_ROOM_ID }}/send/m.room.message?access_token=${{ secrets.MATRIX_ACCESS_TOKEN }}"
 
-      - name: Notify on Failure
+      - name: Send Matrix Notification on Failure
         if: failure()
-        run: echo "Build or deployment failed"
+        run: |
+          curl -X POST -d '{
+            "msgtype": "m.text",
+            "body": "❌ Deployment Failed! Please check the GitHub Actions logs for details."
+          }' \
+          "${{ secrets.MATRIX_SERVER_URL }}/_matrix/client/r0/rooms/${{ secrets.MATRIX_ROOM_ID }}/send/m.room.message?access_token=${{ secrets.MATRIX_ACCESS_TOKEN }}"
