@@ -20,7 +20,10 @@ jobs:
       - name: Check for Theme Updates
         run: |
           git submodule update --init --recursive
-          git submodule update --remote --merge || (echo "Warning: Merging unrelated histories" && git merge --allow-unrelated-histories)
+          cd themes/cactus
+          git fetch --all
+          git reset --hard origin/master  # Or the branch you're tracking
+          cd ../..
           if [ -n "$(git status -s)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
