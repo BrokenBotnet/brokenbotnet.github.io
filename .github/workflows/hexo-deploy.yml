@@ -22,7 +22,7 @@ jobs:
           git submodule update --init --recursive
           cd themes/cactus
           git fetch --all
-          git reset --hard origin/master  # Or the branch you're tracking
+          git reset --hard origin/master
           cd ../..
           if [ -n "$(git status -s)" ]; then
             git config user.name "github-actions[bot]"
@@ -49,14 +49,6 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Audit Dependencies
-        run: npm audit
-        continue-on-error: true
-
-      - name: Dependency Security Patch
-        run: npm audit fix
-        continue-on-error: true
-
       - name: Build
         run: npm run build
 
@@ -73,11 +65,12 @@ jobs:
         run: |
           echo "" > ./public/.nojekyll
           echo "brokenbotnet.com" > ./public/CNAME
-          
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./public
+          retention-days: 1
 
   deploy:
     needs: build
