@@ -47,6 +47,7 @@ jobs:
             ${{ runner.OS }}-npm-cache
 
       - name: Cache Hexo deploy files
+        if: runner.os != 'Linux' || (runner.os == 'Linux' && steps.build.outputs.hexo_deploy_exists == 'true')
         uses: actions/cache@v4
         with:
           path: .deploy_git
