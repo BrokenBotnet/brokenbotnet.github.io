@@ -72,6 +72,13 @@ jobs:
           path: ./public
           retention-days: 1
 
+      - name: Set Build Status
+        if: success()
+        run: echo "build_status=success" >> $GITHUB_ENV
+      - name: Set Build Failure Status
+        if: failure()
+        run: echo "build_status=failure" >> $GITHUB_ENV
+
   deploy:
     needs: build
     permissions:
@@ -88,25 +95,31 @@ jobs:
         with:
           path: ./public
 
+      - name: Set Deploy Status
+        if: success()
+        run: echo "deploy_status=success" >> $GITHUB_ENV
+      - name: Set Deploy Failure Status
+        if: failure()
+        run: echo "deploy_status=failure" >> $GITHUB_ENV
+
   notify:
-    needs: build
+    needs: [build, deploy]
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - name: Send Matrix Notification on Success
-        if: success()
+      - name: Send Matrix Notification
         run: |
+          if [[ "${{ env.build_status }}" == "success" && "${{ env.deploy_status }}" == "success" ]]; then
+            message="🚀 Build and Deployment Succeeded! Your GitHub Pages site has been updated successfully."
+          elif [[ "${{ env.build_status }}" == "success" && "${{ env.deploy_status }}" == "failure" ]]; then
+            message="⚠️ Build Succeeded but Deployment Failed. Please check the GitHub Actions logs for the deployment error."
+          elif [[ "${{ env.build_status }}" == "failure" && "${{ env.deploy_status }}" == "success" ]]; then
+            message="⚠️ Build Failed but Deployment Succeeded with previous build artifacts. Please check the GitHub Actions logs for the build error."
+          else
+            message="❌ Both Build and Deployment Failed. Please check the GitHub Actions logs for details."
+          fi
           curl -X POST -d '{
             "msgtype": "m.text",
-            "body": "🚀 Deployment Succeeded! Your GitHub Pages site has been updated successfully."
-          }' \
-          "${{ secrets.MATRIX_SERVER_URL }}/_matrix/client/r0/rooms/${{ secrets.MATRIX_ROOM_ID }}/send/m.room.message?access_token=${{ secrets.MATRIX_ACCESS_TOKEN }}"
-
-      - name: Send Matrix Notification on Failure
-        if: failure()
-        run: |
-          curl -X POST -d '{
-            "msgtype": "m.text",
-            "body": "❌ Deployment Failed! Please check the GitHub Actions logs for details."
+            "body": "'"$message"'"
           }' \
           "${{ secrets.MATRIX_SERVER_URL }}/_matrix/client/r0/rooms/${{ secrets.MATRIX_ROOM_ID }}/send/m.room.message?access_token=${{ secrets.MATRIX_ACCESS_TOKEN }}"
