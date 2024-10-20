@@ -46,23 +46,6 @@ jobs:
           restore-keys: |
             ${{ runner.OS }}-npm-cache
 
-      - name: Cache Hexo deploy files
-        if: runner.os != 'Linux' || (runner.os == 'Linux' && steps.build.outputs.hexo_deploy_exists == 'true')
-        uses: actions/cache@v4
-        with:
-          path: .deploy_git
-          key: ${{ runner.OS }}-hexo-deploy
-          restore-keys: |
-            ${{ runner.OS }}-hexo-deploy
-    
-      - name: Check if Hexo deploy directory exists
-        id: build
-        run: |
-          if [ -d ".deploy_git" ]; then
-            echo "::set-output name=hexo_deploy_exists::true"
-          else
-            echo "::set-output name=hexo_deploy_exists::false"
-
       - name: Install Dependencies
         run: npm install
 
@@ -71,7 +54,7 @@ jobs:
         continue-on-error: true
 
       - name: Dependency Security Patch
-        run:  npm audit fix
+        run: npm audit fix
         continue-on-error: true
 
       - name: Build
@@ -90,7 +73,7 @@ jobs:
         run: |
           echo "" > ./public/.nojekyll
           echo "brokenbotnet.com" > ./public/CNAME
-
+          
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -109,7 +92,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
+        with:
+          path: ./public
 
   notify:
     needs: build
