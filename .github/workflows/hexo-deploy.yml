@@ -89,24 +89,25 @@ jobs:
           path: ./public
 
   notify:
-    needs: [build, deploy]
+    needs: deploy
     runs-on: ubuntu-latest
+    if: always()
     steps:
       - name: Send Matrix Notification
         run: |
-          if [[ "${{ needs.build.result }}" == "success" && "${{ needs.deploy.result }}" == "success" ]]; then
+          if [[ "$BUILD_STATUS" == "success" && "$DEPLOY_STATUS" == "success" ]]; then
             curl -X POST -d '{
               "msgtype": "m.text",
               "body": "🚀 Both Build and Deployment Succeeded! Your GitHub Pages site has been updated successfully."
             }' \
             "${{ secrets.MATRIX_SERVER_URL }}/_matrix/client/r0/rooms/${{ secrets.MATRIX_ROOM_ID }}/send/m.room.message?access_token=${{ secrets.MATRIX_ACCESS_TOKEN }}"
-          elif [[ "${{ needs.build.result }}" == "success" && "${{ needs.deploy.result }}" == "failure" ]]; then
+          elif [[ "$BUILD_STATUS" == "success" && "$DEPLOY_STATUS" == "failure" ]]; then
             curl -X POST -d '{
               "msgtype": "m.text",
               "body": "⚠️ Build Succeeded, but Deployment Failed! Please check the logs for deployment errors."
             }' \
             "${{ secrets.MATRIX_SERVER_URL }}/_matrix/client/r0/rooms/${{ secrets.MATRIX_ROOM_ID }}/send/m.room.message?access_token=${{ secrets.MATRIX_ACCESS_TOKEN }}"
-          elif [[ "${{ needs.build.result }}" == "failure" && "${{ needs.deploy.result }}" == "success" ]]; then
+          elif [[ "$BUILD_STATUS" == "failure" && "$DEPLOY_STATUS" == "success" ]]; then
             curl -X POST -d '{
               "msgtype": "m.text",
               "body": "⚠️ Build Failed, but Deployment Succeeded! Please check the logs for build errors."
@@ -118,3 +119,4 @@ jobs:
               "body": "❌ Both Build and Deployment Failed! Please check the GitHub Actions logs for details."
             }' \
             "${{ secrets.MATRIX_SERVER_URL }}/_matrix/client/r0/rooms/${{ secrets.MATRIX_ROOM_ID }}/send/m.room.message?access_token=${{ secrets.MATRIX_ACCESS_TOKEN }}"
+          fi
