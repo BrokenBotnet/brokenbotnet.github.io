@@ -52,7 +52,7 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Create .well-known Directory and Add nostr.json and mta-sts.txt
+      - name: Add custom Nostr NIP-05 verification ✅ to nostr.json
         run: |
           mkdir -p ./public/.well-known
           echo '{
@@ -60,12 +60,6 @@ jobs:
               "r3bo0tbx1": "1c6234b2c80549b609be27522cbe2b73400859b24a913855d48503d5d819060d"
             }
           }' > ./public/.well-known/nostr.json
-          
-          echo 'version: STSv1
-          mode: enforce
-          mx: mx01.mail.icloud.com
-          mx: mx02.mail.icloud.com
-          max_age: 86400' > ./public/.well-known/mta-sts.txt
 
       - name: Ensure .nojekyll and CNAME
         run: |
