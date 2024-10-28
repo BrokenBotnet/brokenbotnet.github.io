@@ -21,8 +21,9 @@ jobs:
         run: |
           git submodule update --init --recursive
           cd themes/cactus
-          git fetch --all
-          git reset --hard origin/master
+          DEFAULT_BRANCH=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
+          git fetch origin $DEFAULT_BRANCH
+          git reset --hard origin/$DEFAULT_BRANCH
           cd ../..
           if [ -n "$(git status -s)" ]; then
             git config user.name "github-actions[bot]"
