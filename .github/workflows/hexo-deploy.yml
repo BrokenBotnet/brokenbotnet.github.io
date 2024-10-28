@@ -19,21 +19,20 @@ jobs:
 
       - name: Check for Theme Updates
         run: |
-            git submodule update --init --recursive
-            cd themes/cactus
-            DEFAULT_BRANCH=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
-            git fetch origin $DEFAULT_BRANCH
-            git reset --hard origin/$DEFAULT_BRANCH
-            cd ../..
-            if [ -n "$(git status -s)" ]; then
-              git config user.name "github-actions[bot]"
-              git config user.email "github-actions[bot]@users.noreply.github.com"
-              git add themes/cactus
-              git commit -am "Update theme to the latest version 🎨✨"
-              git push
-            fi
-          continue-on-error: true
-        
+          git submodule update --init --recursive
+          cd themes/cactus
+          git fetch --all
+          git reset --hard origin/master
+          cd ../..
+          if [ -n "$(git status -s)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add themes/cactus
+            git commit -am "Update theme to the latest version 🎨✨"
+            git push
+          fi
+        continue-on-error: true
+
       - name: Use Node.js latest
         uses: actions/setup-node@v4
         with:
