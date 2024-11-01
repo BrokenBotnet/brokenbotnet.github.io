@@ -18,11 +18,6 @@ jobs:
           token: ${{ secrets.FINE_GRAINED_PAT }}
           submodules: recursive
 
-      - name: Test Token Push Access 🎟️
-        run: |
-          git remote set-url origin https://x-access-token:${{ secrets.FINE_GRAINED_PAT }}@github.com/BrokenBotnet/brokenbotnet.github.io.git
-          git push --dry-run
-        
       - name: Check for Theme Updates
         run: |
           git submodule update --init --recursive
