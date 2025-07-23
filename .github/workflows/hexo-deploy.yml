@@ -91,6 +91,7 @@ jobs:
 
   notify:
     needs: build
+    permissions: {}
     runs-on: ubuntu-latest
     if: always()
     steps:
