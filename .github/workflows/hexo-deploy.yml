@@ -1,4 +1,4 @@
-name: 🌸✨ Hexo to gh-pages UwU ✨🌸 🍀🖱️
+name: 🌸✨ Hexo to gh-pages UwU ✨🌸
 
 on:
   push:
@@ -10,9 +10,10 @@ on:
 
 jobs:
   build:
+    name: 🏗️ Build UwU
     permissions:
       contents: read
-    runs-on: ubuntu-latest 🐧💖
+    runs-on: ubuntu-latest # 🐧💖
     steps:
       - name: 📦💌 Checkout Code OwO
         uses: actions/checkout@v4
@@ -32,7 +33,16 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add themes/cactus
-            git commit -am "🌸✨ Updated theme to latest nya~ (≧ω≦)💖"
+            # ✨ Random kawaii commit messages ✨
+            MESSAGES=(
+              "🌸✨ Updated theme to latest nya~ (≧ω≦)💖"
+              "🎀 UwU Theme update desu! ✨ nyaaa~ (✿◠‿◠)💕"
+              "🐾🍡 Theme go brrr~ updated to freshy fresh ✨ owo (｡>﹏<｡)💞"
+              "🌈✨ Theme update complete UwU ~nya nya (≧◡≦)✧"
+              "💖🌸 Senpai~ I updated the theme for you (✿♥‿♥) ✨"
+            )
+            RANDOM_MSG=${MESSAGES[$RANDOM % ${#MESSAGES[@]}]}
+            git commit -am "$RANDOM_MSG"
             git remote set-url origin https://${{ secrets.FINE_GRAINED_PAT }}@github.com/BrokenBotnet/brokenbotnet.github.io.git
             git push
           fi
@@ -51,8 +61,22 @@ jobs:
           restore-keys: |
             ${{ runner.OS }}-npm-cache
 
+      - name: 💾 Cache Hexo build files ✨
+        uses: actions/cache@v4
+        with:
+          path: |
+            .deploy_git
+            .hexo
+          key: ${{ runner.os }}-hexo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-hexo-
+
       - name: 📥🍬 Install Dependencies uwuwu
         run: npm install
+
+      - name: ✨🔍 Run ESLint OwO
+        run: |
+          npx eslint . || echo "(｡•́︿•̀｡) linty errors... but I won’t stop you senpai~"
 
       - name: 🏗️🌈 Build Site nya~
         run: npm run build
@@ -71,6 +95,12 @@ jobs:
           echo "" > ./public/.nojekyll
           echo "brokenbotnet.com" > ./public/CNAME
 
+      - name: 📸 Upload preview artifact uwu
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-preview
+          path: ./public
+
       - name: 📤💝 Upload Pages artifact OwO
         uses: actions/upload-pages-artifact@v3
         with:
@@ -78,6 +108,7 @@ jobs:
           retention-days: 1
 
   deploy:
+    name: 🚀 Deploy to Pages ✨
     needs: build
     permissions:
       pages: write
@@ -85,16 +116,17 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest 🐧✨
+    runs-on: ubuntu-latest # 🐧✨
     steps:
       - name: 🚀🌸 Deploy to GitHub Pages uwu
         id: deployment
         uses: actions/deploy-pages@v4
 
   notify:
+    name: 💌 Send Notifs nya~
     needs: build
     permissions: {}
-    runs-on: ubuntu-latest 🐧🎀
+    runs-on: ubuntu-latest # 🐧🎀
     if: always()
     steps:
       - name: ✅💖 Send Matrix Notification on Success nya~ ✨
@@ -102,7 +134,7 @@ jobs:
         run: |
           curl -X POST -d '{
             "msgtype": "m.text",
-            "body": "🌸🚀 Yaaay~ Deployment Succeeded! (✿◠‿◠) 🎉✨ Your GitHub Pages site has been updated successfully uwu 💕"
+            "body": "🌸🚀 Yaaay~ Deployment Succeeded! (✿◠‿◠) 🎉✨\n\nYour GitHub Pages site is fresh & shiny now uwu 💕"
           }' \
           "${{ secrets.MATRIX_SERVER_URL }}/_matrix/client/r0/rooms/${{ secrets.MATRIX_ROOM_ID }}/send/m.room.message?access_token=${{ secrets.MATRIX_ACCESS_TOKEN }}"
 
@@ -111,6 +143,6 @@ jobs:
         run: |
           curl -X POST -d '{
             "msgtype": "m.text",
-            "body": "❌💥 Oopsies~ Deployment Failed! (｡•́︿•̀｡) ⚠️ Please check the GitHub Actions logs for details nya~ 🥺"
+            "body": "❌💥 Oopsies~ Deployment Failed! (｡•́︿•̀｡)\n\n⚠️ Please check the GitHub Actions logs for details nya~ 🥺"
           }' \
           "${{ secrets.MATRIX_SERVER_URL }}/_matrix/client/r0/rooms/${{ secrets.MATRIX_ROOM_ID }}/send/m.room.message?access_token=${{ secrets.MATRIX_ACCESS_TOKEN }}"
