@@ -1,14 +1,22 @@
 root = true
 
-# Default rules
+# Keep text formatting consistent across editors and operating systems.
 [*]
-end_of_line = lf
 charset = utf-8
+end_of_line = lf
 indent_style = space
 indent_size = 2
-trim_trailing_whitespace = true
 insert_final_newline = true
+trim_trailing_whitespace = true
 
-# Override rules for specific file types
+# Preserve intentional Markdown hard line breaks.
 [*.md]
 trim_trailing_whitespace = false
+
+# Match the CRLF exceptions in .gitattributes.
+[*.{bat,cmd}]
+end_of_line = crlf
+
+# Recipes require tabs.
+[Makefile]
+indent_style = tab
