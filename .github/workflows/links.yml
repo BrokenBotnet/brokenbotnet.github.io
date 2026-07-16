@@ -47,6 +47,8 @@ jobs:
             --exclude '^mailto:'
             --exclude '^http://.*\.onion(?:/|$)'
             --exclude '^https://brokenbotnet\.com(?:/|$)'
+            --exclude '^https://check\.spamhaus\.org/results\?query=157\.10\.253\.140$'
+            --exclude '^https://www\.reddit\.com/user/r3bo0tbx1/?$'
             --exclude '^https://supreme\.justia\.com/cases/federal/us/514/334/$'
             --exclude '^https://www\.chronicle\.com/article/why-privacy-matters-even-if-you-have-nothing-to-hide/$'
             './README.md'

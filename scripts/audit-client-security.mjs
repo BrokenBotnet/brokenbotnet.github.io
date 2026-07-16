@@ -55,14 +55,20 @@ for (const file of (await walk(path.join(root, "public"))).filter((file) => file
 
   for (const tag of tags) {
     for (const attribute of tag.attributes) {
+      const normalizedUrl = normalizeAttributeUrl(attribute.value);
+      const hasUnsafeScheme =
+        normalizedUrl.startsWith("javascript:") ||
+        normalizedUrl.startsWith("data:") ||
+        normalizedUrl.startsWith("vbscript:");
+
       if (attribute.name.startsWith("on") && attribute.name.length > 2) {
         report(file, `inline event handler in ${tag.raw.slice(0, 120)}`);
       }
       if (
         ["href", "src", "action", "formaction", "xlink:href"].includes(attribute.name) &&
-        normalizeAttributeUrl(attribute.value).startsWith("javascript:")
+        hasUnsafeScheme
       ) {
-        report(file, `javascript URL in ${tag.raw.slice(0, 120)}`);
+        report(file, `unsafe URL scheme in ${tag.raw.slice(0, 120)}`);
       }
       if (attribute.name === "srcdoc") report(file, `srcdoc attribute in ${tag.raw.slice(0, 120)}`);
     }
