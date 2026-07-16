@@ -15,7 +15,7 @@
       {{ $thumbnail := .Fill (printf "112x112 %s webp q82" $anchor) }}
       {{ $thumbnail2x := .Fill (printf "224x224 %s webp q82" $anchor) }}
       <span class="post-list__thumbnail" aria-hidden="true">
-        <img src="{{ $thumbnail.RelPermalink }}" srcset="{{ $thumbnail.RelPermalink }} 1x, {{ $thumbnail2x.RelPermalink }} 2x" sizes="(max-width: 38rem) 96px, 112px" alt="" width="112" height="112" loading="lazy" decoding="async">
+        <img src="{{ $thumbnail.RelPermalink }}" srcset="{{ $thumbnail.RelPermalink }} 1x, {{ $thumbnail2x.RelPermalink }} 2x" alt="" width="112" height="112" loading="lazy" decoding="async">
       </span>
     {{ end }}
   {{ end }}

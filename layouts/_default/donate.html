@@ -26,7 +26,7 @@
         <p class="donation-card__description">{{ .description }}</p>
 
         <div class="donation-card__qr">
-          <img src="{{ .qr | relURL }}" alt="{{ .name }} donation QR code" width="100" height="100" loading="lazy" decoding="async" fetchpriority="low">
+          <img src="{{ .qr | relURL }}" alt="{{ .name }} donation QR code" width="100" height="100" loading="lazy" decoding="async">
         </div>
 
         <div class="donation-card__address">
@@ -66,7 +66,7 @@
           {{ $processedBadge := $badge.Resize "320x webp q82" }}
           <a class="supporter-card supporter-card--{{ .id }}" href="{{ .url }}" target="_blank" rel="noopener noreferrer" aria-label="Donate directly to {{ .name }} (opens in a new tab)">
             <span class="supporter-card__badge">
-              <img src="{{ $compactBadge.RelPermalink }}" srcset="{{ $compactBadge.RelPermalink }} 160w, {{ $mediumBadge.RelPermalink }} 240w, {{ $processedBadge.RelPermalink }} 320w" sizes="(max-width: 38rem) 42vw, (max-width: 70rem) 18vw, 10rem" alt="Supporter badge for {{ .name }}" width="{{ $compactBadge.Width }}" height="{{ $compactBadge.Height }}" loading="lazy" decoding="async" fetchpriority="low">
+              <img src="{{ $compactBadge.RelPermalink }}" srcset="{{ $compactBadge.RelPermalink }} 160w, {{ $mediumBadge.RelPermalink }} 240w, {{ $processedBadge.RelPermalink }} 320w" sizes="(max-width: 38rem) 42vw, (max-width: 70rem) 18vw, 10rem" alt="Supporter badge for {{ .name }}" width="{{ $compactBadge.Width }}" height="{{ $compactBadge.Height }}" loading="lazy" decoding="async">
             </span>
             <strong>{{ .name }}</strong>
             <span class="supporter-card__description">{{ .description }}</span>
