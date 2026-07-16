@@ -1,0 +1,36 @@
+{{ with .Site.Params.about }}
+  <div class="aside__identity">
+    {{ with .logo_image }}<img class="about__logo" src="{{ . | relURL }}" width="68" height="68" alt="{{ $.Site.Params.about.logo_alt | default "rE-Bo0t.bx1 profile artwork" }}">{{ end }}
+    <div>
+      <h2 class="about__title">{{ .title }}</h2>
+      {{ with .description }}<p class="about__description">{{ . | markdownify }}</p>{{ end }}
+    </div>
+  </div>
+{{ end }}
+
+<ul class="aside__social-links aside__social-links--primary" aria-label="Primary profiles and contact links">
+  {{ range where .Site.Params.socialLinks "primary" true }}
+    {{- $isMail := strings.HasPrefix .url "mailto:" -}}
+    <li>
+      <a href="{{ .url }}" aria-label="{{ .title }}" title="{{ .title }}"{{ if not $isMail }} target="_blank" rel="me noopener noreferrer"{{ end }}>
+        <span class="social-icon social-icon--{{ .icon }}" aria-hidden="true"></span>
+      </a>
+    </li>
+  {{ end }}
+</ul>
+
+{{ $secondaryProfiles := where .Site.Params.socialLinks "primary" false }}
+{{ with $secondaryProfiles }}
+<details class="aside__more-profiles">
+  <summary><span>More Profiles</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+  <ul class="aside__social-links aside__social-links--secondary" aria-label="More social profiles">
+    {{ range . }}
+      <li>
+        <a href="{{ .url }}" aria-label="{{ .title }}" title="{{ .title }}" target="_blank" rel="me noopener noreferrer">
+          <span class="social-icon social-icon--{{ .icon }}" aria-hidden="true"></span>
+        </a>
+      </li>
+    {{ end }}
+  </ul>
+</details>
+{{ end }}

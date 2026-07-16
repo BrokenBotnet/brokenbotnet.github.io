@@ -1,0 +1,18 @@
+{
+  "verified_at": "2026-07-16T16:27:10.068Z",
+  "tor_guard_relay": {
+    "release": "v2.0.0",
+    "docker_pulls": 15198,
+    "docker_pulls_formatted": "15,198"
+  },
+  "shinobi_relays": {
+    "nodes": 24,
+    "public_relays": 16,
+    "bridges": 8,
+    "exits": 1,
+    "countries": 15,
+    "autonomous_systems": 11,
+    "platforms": 6,
+    "ipv6_enabled": 24
+  }
+}

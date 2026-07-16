@@ -1,0 +1,2 @@
+{{- $label := printf "%v" . -}}
+{{- if eq (lower $label) "bsd" -}}BSD{{- else if eq (lower $label) "sunos" -}}SunOS{{- else -}}{{ $label }}{{- end -}}

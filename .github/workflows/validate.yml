@@ -1,0 +1,246 @@
+name: ✅
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "37 18 * * *"
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  TZ: Asia/Tokyo
+
+jobs:
+  build:
+    name: Build and inspect
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository and theme
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Install Hugo Extended
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: latest
+          extended: true
+
+      - name: Validate configuration
+        run: hugo config > /dev/null
+
+      - name: Refresh project statistics
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/fetch-project-stats.mjs
+
+      - name: Build production site
+        run: hugo --gc --minify --panicOnWarning
+
+      - name: Audit client-side injection surfaces
+        run: node scripts/audit-client-security.mjs
+
+      - name: Verify required output
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f public/index.html
+          test -f public/whoami/index.html
+          test -f public/2025/11/01/tor-relays-project/index.html
+          test -f public/2025/12/15/running-tor-exit/index.html
+          test -f public/2026/01/31/health-checks/index.html
+          test -f public/2026/03/02/happy-families/index.html
+          test -f public/2026/04/07/linux-bsd-sunos/index.html
+          test -f public/2026/05/22/diversity-first/index.html
+          if [[ "$(date +%F)" > "2026-07-14" ]]; then
+            test -f public/2026/07/17/non-eu-relays/index.html
+          fi
+          test -f public/1984/11/05/cd-whoami/index.html
+          test -f public/images/social/whoami.jpg
+          test -f public/images/social/writing.jpg
+          test -f public/images/social/donate.jpg
+          test -f public/.well-known/nostr.json
+          test -f public/.well-known/security.txt
+          test "$(cat public/CNAME)" = "brokenbotnet.com"
+          jq -e '.names.r3bo0tbx1 == "1c6234b2c80549b609be27522cbe2b73400859b24a913855d48503d5d819060d"' public/.well-known/nostr.json
+          grep -Fx 'Contact: mailto:r3bo0tbx1@brokenbotnet.com' public/.well-known/security.txt
+          grep -Fx 'Encryption: openpgp4fpr:33727F5377D296C320AF704AB3BD6196E1CFBFB4' public/.well-known/security.txt
+          grep -Fx 'Preferred-Languages: en' public/.well-known/security.txt
+          grep -Fx 'Canonical: https://brokenbotnet.com/.well-known/security.txt' public/.well-known/security.txt
+          node <<'NODE'
+          const fs = require('fs');
+          const file = fs.readFileSync('public/.well-known/security.txt', 'utf8');
+          const match = file.match(/^Expires:\s*(\S+)$/m);
+          if (!match) throw new Error('security.txt is missing Expires');
+          const expires = Date.parse(match[1]);
+          if (!Number.isFinite(expires) || expires <= Date.now()) {
+            throw new Error('security.txt is expired or has an invalid Expires value');
+          }
+          NODE
+          if grep -R -n -E 'https?://(localhost|127\.0\.0\.1)' public; then
+            echo "Local development URL found in production output"
+            exit 1
+          fi
+
+      - name: Validate generated HTML
+        shell: bash
+        run: |
+          python3 -m pip install --disable-pip-version-check html5validator==0.4.2
+          html5validator --root public --ignore-re 'CSS:.*color-scheme.*Property.*doesn.t exist'
+
+      - name: Audit external-link security
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const files = [];
+          const walk = directory => {
+            for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
+              const full = path.join(directory, entry.name);
+              if (entry.isDirectory()) walk(full);
+              else if (entry.name.endsWith('.html')) files.push(full);
+            }
+          };
+
+          walk('public');
+          const failures = [];
+          for (const file of files) {
+            const html = fs.readFileSync(file, 'utf8');
+            for (const match of html.matchAll(/<a\b[^>]*target=["']?_blank["']?[^>]*>/gi)) {
+              if (!/rel=["'][^"']*noopener[^"']*["']/i.test(match[0])) {
+                failures.push(`${file}: ${match[0]}`);
+              }
+            }
+          }
+
+          if (failures.length) {
+            console.error(failures.join('\n'));
+            process.exit(1);
+          }
+          NODE
+
+      - name: Audit SEO metadata
+        shell: bash
+        run: |
+          node <<'NODE'
+          const assert = require('assert');
+          const fs = require('fs');
+
+          const read = file => fs.readFileSync(file, 'utf8');
+          const structuredTypes = html => {
+            const documents = [...html.matchAll(/<script\s+type=["']?application\/ld\+json["']?>(.*?)<\/script>/gis)]
+              .map(match => JSON.parse(match[1]));
+            return documents.flatMap(document =>
+              (document['@graph'] || [document]).map(item => item['@type'])
+            );
+          };
+
+          const home = read('public/index.html');
+          const profile = read('public/whoami/index.html');
+          const article = read('public/2025/11/01/tor-relays-project/index.html');
+          const writing = read('public/posts/index.html');
+          const donate = read('public/donate/index.html');
+          const tag = read('public/tags/tor/index.html');
+          const sitemap = read('public/sitemap.xml');
+
+          assert(structuredTypes(home).includes('WebSite'));
+          assert(!structuredTypes(home).includes('ProfilePage'));
+          assert(structuredTypes(profile).includes('ProfilePage'));
+          assert(structuredTypes(article).includes('BlogPosting'));
+          assert(structuredTypes(article).includes('BreadcrumbList'));
+          assert.match(article, /<title>Why I Built Tor Guard Relay \| Br🤖ken B🤖tnet<\/title>/);
+          assert.match(article, /property=["']?og:image:alt["']?/i);
+          assert.match(article, /name=["']?twitter:image:alt["']?/i);
+          assert.match(profile, /property=["']?og:image["']?\s+content=["']?https:\/\/brokenbotnet\.com\/images\/social\/whoami\.jpg["']?/);
+          assert.match(writing, /property=["']?og:image["']?\s+content=["']?https:\/\/brokenbotnet\.com\/images\/social\/writing\.jpg["']?/);
+          assert.match(donate, /property=["']?og:image["']?\s+content=["']?https:\/\/brokenbotnet\.com\/images\/social\/donate\.jpg["']?/);
+          assert.match(home, /\/css\/site\.min\.[a-f0-9]+\.css/);
+          assert.match(home, /\/js\/site\.min\.[a-f0-9]+\.js/);
+          assert.match(home, /integrity=["']?sha384-/);
+          assert.match(home, /Project statistics last verified/);
+          assert.match(article, /class=["']?heading-anchor["']?/);
+          assert.match(article, /class=["']?footnotes["']?\s+role=["']?doc-endnotes["']?/);
+          assert.match(article, /role=["']?doc-backlink["']?/);
+          assert(!home.includes('cloud.umami.is'));
+          assert.match(tag, /name=["']?robots["']?\s+content=["']noindex, follow["']/i);
+          assert(!sitemap.includes('/tags/'));
+
+          for (const file of [home, profile, article, tag]) {
+            assert(!/<meta\s+name=["']?keywords["']?/i.test(file));
+          }
+          NODE
+
+      - name: Run Lighthouse quality budgets
+        shell: bash
+        env:
+          LHCI_BUILD_CONTEXT__CURRENT_HASH: ${{ github.sha }}
+        run: |
+          npx --yes @lhci/cli@0.15.1 collect --config=.lighthouserc.json
+          npx --yes @lhci/cli@0.15.1 assert --config=.lighthouserc.json
+
+      - name: Confirm generated output is not tracked
+        shell: bash
+        run: test -z "$(git ls-files public)"
+
+      - name: Write build summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Hugo validation"
+            echo
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Hugo: \`$(hugo version | head -1)\`"
+            echo "- Theme: \`$(git -C themes/risotto describe --tags --always)\`"
+            echo "- Checked: \`$(date +'%Y-%m-%d %H:%M')\`"
+            echo "- Result: \`${{ job.status }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  config:
+    name: Repository configuration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Verify theme submodule registration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mapfile -t configured_themes < <(
+            git config -f .gitmodules --get-regexp '^submodule\..*\.path$' | awk '{ print $2 }'
+          )
+          mapfile -t tracked_themes < <(
+            git ls-files --stage themes | awk '$1 == "160000" { print $4 }'
+          )
+
+          test "${#configured_themes[@]}" -eq 1
+          test "${configured_themes[0]}" = "themes/risotto"
+          test "${#tracked_themes[@]}" -eq 1
+          test "${tracked_themes[0]}" = "themes/risotto"
+          test "$(git config -f .gitmodules --get submodule.themes/risotto.url)" = "https://github.com/joeroe/risotto.git"
+
+      - name: Validate JSON files
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq empty .lighthouserc.json
+          jq empty .github/renovate.json
+          jq empty data/project_stats.json
+          jq empty static/.well-known/nostr.json
+          jq empty static/site.webmanifest
+
+      - name: Check workflow syntax
+        uses: raven-actions/actionlint@v2

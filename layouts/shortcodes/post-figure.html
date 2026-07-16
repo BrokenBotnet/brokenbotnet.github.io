@@ -1,0 +1,20 @@
+{{- $src := .Get "src" -}}
+{{- $alt := .Get "alt" | default "" -}}
+{{- $modifier := .Get "class" | default "" -}}
+{{- $image := resources.Get $src -}}
+{{- if not $image -}}
+  {{- errorf "post-figure could not find %q in assets" $src -}}
+{{- end -}}
+{{- $small := $image.Resize "640x webp q82" -}}
+{{- $medium := $image.Resize "960x webp q82" -}}
+{{- $large := $image.Process "webp q84" -}}
+{{- if gt $image.Width 1440 -}}
+  {{- $large = $image.Resize "1440x webp q84" -}}
+{{- end -}}
+<figure class="post-figure{{ with $modifier }} {{ . }}{{ end }}">
+  <picture>
+    <source type="image/webp" srcset="{{ $small.RelPermalink }} 640w, {{ $medium.RelPermalink }} 960w, {{ $large.RelPermalink }} {{ $large.Width }}w" sizes="(max-width: 48rem) calc(100vw - 2rem), 54rem">
+    <img src="{{ $medium.RelPermalink }}" alt="{{ $alt }}" width="{{ $image.Width }}" height="{{ $image.Height }}" loading="lazy" decoding="async" data-lightbox-src="{{ $image.RelPermalink }}">
+  </picture>
+  {{ with .Inner | strings.TrimSpace }}<figcaption>{{ . | markdownify }}</figcaption>{{ end }}
+</figure>

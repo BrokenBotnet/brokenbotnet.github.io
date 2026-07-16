@@ -1,0 +1,94 @@
+{{- $sameAs := slice -}}
+{{- range .Site.Params.socialLinks -}}
+  {{- if strings.HasPrefix .url "http" -}}
+    {{- $sameAs = $sameAs | append .url -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $profileURL := "whoami/" | absURL -}}
+{{- $personID := printf "%s#person" $profileURL -}}
+{{- $websiteID := printf "%s#website" .Site.BaseURL -}}
+{{- $person := dict
+  "@type" "Person"
+  "@id" $personID
+  "name" .Site.Params.author
+  "url" $profileURL
+  "image" ("images/logo.png" | absURL)
+  "sameAs" $sameAs
+-}}
+{{- $website := dict
+  "@type" "WebSite"
+  "@id" $websiteID
+  "name" .Site.Title
+  "alternateName" (slice "Broken Botnet" "brokenbotnet.com")
+  "description" .Site.Params.description
+  "url" .Site.BaseURL
+  "inLanguage" .Site.Language.Lang
+  "author" (dict "@id" $personID)
+-}}
+
+{{- if .IsHome -}}
+  {{- $schema := dict
+    "@context" "https://schema.org"
+    "@graph" (slice $website $person)
+  -}}
+  <script type="application/ld+json">{{ $schema | jsonify | safeJS }}</script>
+{{- else if eq .RelPermalink "/whoami/" -}}
+  {{- $profile := dict
+    "@type" "ProfilePage"
+    "@id" (printf "%s#profile" .Permalink)
+    "name" .Title
+    "description" (.Description | default .Site.Params.description)
+    "url" .Permalink
+    "dateModified" (.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+    "inLanguage" .Site.Language.Lang
+    "isPartOf" (dict "@id" $websiteID)
+    "mainEntity" (dict "@id" $personID)
+  -}}
+  {{- $schema := dict
+    "@context" "https://schema.org"
+    "@graph" (slice $profile $person $website)
+  -}}
+  <script type="application/ld+json">{{ $schema | jsonify | safeJS }}</script>
+{{- else if and .IsPage (eq .Section "posts") -}}
+  {{- $social := partial "social-image.html" . -}}
+  {{- $image := dict
+    "@type" "ImageObject"
+    "url" $social.url
+    "width" $social.width
+    "height" $social.height
+    "caption" $social.alt
+  -}}
+  {{- $article := dict
+    "@type" "BlogPosting"
+    "@id" (printf "%s#article" .Permalink)
+    "headline" .Title
+    "description" (.Description | default .Site.Params.description)
+    "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00")
+    "dateModified" (.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+    "inLanguage" .Site.Language.Lang
+    "mainEntityOfPage" (dict "@type" "WebPage" "@id" .Permalink)
+    "url" .Permalink
+    "image" $image
+    "author" (dict "@id" $personID)
+    "publisher" (dict "@id" $personID)
+    "isPartOf" (dict "@id" $websiteID)
+    "articleSection" "Writing"
+    "keywords" (.Params.tags | default (slice))
+    "wordCount" .WordCount
+  -}}
+  {{- $breadcrumbs := dict
+    "@type" "BreadcrumbList"
+    "@id" (printf "%s#breadcrumb" .Permalink)
+    "itemListElement" (slice
+      (dict "@type" "ListItem" "position" 1 "name" "Home" "item" .Site.BaseURL)
+      (dict "@type" "ListItem" "position" 2 "name" "Writing" "item" ("posts/" | absURL))
+      (dict "@type" "ListItem" "position" 3 "name" .Title "item" .Permalink)
+    )
+  -}}
+  {{- $schema := dict
+    "@context" "https://schema.org"
+    "@graph" (slice $article $breadcrumbs $person $website)
+  -}}
+  <script type="application/ld+json">{{ $schema | jsonify | safeJS }}</script>
+{{- end -}}

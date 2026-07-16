@@ -1,0 +1,7 @@
+Contact: mailto:r3bo0tbx1@brokenbotnet.com
+Expires: 2027-06-30T23:59:59Z
+Encryption: openpgp4fpr:33727F5377D296C320AF704AB3BD6196E1CFBFB4
+Encryption: https://keys.openpgp.org/vks/v1/by-fingerprint/33727F5377D296C320AF704AB3BD6196E1CFBFB4
+Preferred-Languages: en
+Canonical: https://brokenbotnet.com/.well-known/security.txt
+Policy: https://github.com/BrokenBotnet/brokenbotnet.github.io/security/policy

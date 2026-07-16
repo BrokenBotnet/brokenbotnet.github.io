@@ -1,0 +1,69 @@
+{{ define "main" }}
+  <article class="post h-entry">
+    <header class="content__header post__header">
+      <p class="eyebrow">{{ if eq .Section "posts" }}Field Note{{ else }}Identity File{{ end }}</p>
+      <h1 class="p-name">{{ .Title }}</h1>
+      {{ if eq .Section "posts" }}
+      <p class="post__meta">
+        <time class="dt-published" datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">{{ .Date.Format "2 January 2006" }}</time>
+        {{ if .Lastmod.After .Date }}
+        <span aria-hidden="true">·</span>
+        <span>Updated <time class="dt-updated" datetime="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}">{{ .Lastmod.Format "2 January 2006" }}</time></span>
+        {{ end }}
+        <span aria-hidden="true">·</span>
+        <span>{{ .ReadingTime }} Min Read</span>
+      </p>
+      {{ end }}
+    </header>
+    <div class="content__body e-content">{{ .Content }}</div>
+    {{ with .GetTerms "tags" }}
+    <footer class="post__tags" aria-label="Tags">
+      <span>Tags:</span>
+      {{ range . }}<a href="{{ .RelPermalink }}">#{{ partial "tag-label.html" .LinkTitle }}</a>{{ end }}
+    </footer>
+    {{ end }}
+
+    {{ if eq .Section "posts" }}
+      {{ $previous := .PrevInSection }}
+      {{ $next := .NextInSection }}
+      {{ if or $previous $next }}
+      <nav class="post-nav" aria-label="More writing">
+        {{ with $previous }}
+        <a class="post-nav__item post-nav__item--previous" href="{{ .RelPermalink }}">
+          <span class="post-nav__label"><span class="post-nav__arrow" aria-hidden="true">&larr;</span> Previous Article</span>
+          <strong>{{ .Title }}</strong>
+        </a>
+        {{ end }}
+        {{ with $next }}
+        <a class="post-nav__item post-nav__item--next" href="{{ .RelPermalink }}">
+          <span class="post-nav__label">Next Article <span class="post-nav__arrow" aria-hidden="true">&rarr;</span></span>
+          <strong>{{ .Title }}</strong>
+        </a>
+        {{ end }}
+      </nav>
+      {{ end }}
+
+      {{ $related := where (.Site.RegularPages.Related .) "Section" "posts" | first 3 }}
+      {{ with $related }}
+      <section class="related-posts" aria-labelledby="related-posts-title">
+        <h2 id="related-posts-title">Related Writing</h2>
+        <ul>
+          {{ range . }}
+          <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+          {{ end }}
+        </ul>
+      </section>
+      {{ end }}
+    {{ end }}
+  </article>
+{{ end }}
+
+{{ define "aside" }}
+  {{ with .Description }}<p>{{ . }}</p>{{ end }}
+  {{ if and .Params.toc .TableOfContents }}
+  <div class="toc">
+    <p class="toc__title">On This Page</p>
+    {{ .TableOfContents }}
+  </div>
+  {{ end }}
+{{ end }}

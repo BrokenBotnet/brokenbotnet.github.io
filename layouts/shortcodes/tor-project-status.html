@@ -1,0 +1,43 @@
+{{- $project := index (where hugo.Data.projects.projects "id" "tor-guard-relay") 0 -}}
+{{- $stats := hugo.Data.project_stats -}}
+{{- $registry := index (where $project.metrics "label" "Registry") 0 -}}
+{{- $platforms := index (where $project.metrics "label" "Platforms") 0 -}}
+{{- $version := $stats.tor_guard_relay.release -}}
+{{- $pulls := printf "%s pulls" $stats.tor_guard_relay.docker_pulls_formatted -}}
+{{- $variant := .Get "variant" | default "native" -}}
+
+{{- if eq $variant "badges" }}
+<div class="project-badges" role="group" aria-label="Tor Guard Relay build, release, platform, and registry badges">
+  <a class="project-badge project-badge--build" href="{{ $project.build_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open the Tor Guard Relay build workflow in a new tab">
+    <img src="https://img.shields.io/github/actions/workflow/status/r3bo0tbx1/tor-guard-relay/release.yml?branch=main&amp;style=flat-square&amp;logo=githubactions&amp;logoColor=62d6b5&amp;label=build&amp;labelColor=11161d&amp;color=62d6b5" height="20" alt="Tor Guard Relay build status" loading="lazy" decoding="async">
+  </a>
+  <a class="project-badge project-badge--release" href="{{ $project.release_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open the latest Tor Guard Relay release in a new tab">
+    <img src="https://img.shields.io/github/v/release/r3bo0tbx1/tor-guard-relay?style=flat-square&amp;logo=github&amp;logoColor=7aa2f7&amp;label=version&amp;labelColor=11161d&amp;color=7aa2f7" height="20" alt="Latest Tor Guard Relay release" loading="lazy" decoding="async">
+  </a>
+  <a class="project-badge project-badge--platforms" href="{{ $project.registry_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open the Tor Guard Relay container image in a new tab">
+    <img src="https://img.shields.io/badge/platforms-amd64%20%7C%20arm64-c099ff?style=flat-square&amp;logo=docker&amp;logoColor=c099ff&amp;labelColor=11161d" height="20" alt="Tor Guard Relay platforms: AMD64 and ARM64" loading="lazy" decoding="async">
+  </a>
+  <a class="project-badge project-badge--registry" href="{{ $project.registry_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open Tor Guard Relay on Docker Hub in a new tab">
+    <img src="https://img.shields.io/docker/pulls/r3bo0tbx1/onion-relay?style=flat-square&amp;logo=docker&amp;logoColor=7dcfff&amp;label=Docker%20Hub&amp;labelColor=11161d&amp;color=7dcfff" height="20" alt="Tor Guard Relay Docker Hub pulls" loading="lazy" decoding="async">
+  </a>
+</div>
+{{- else }}
+<nav class="project-status" aria-label="Tor Guard Relay project status and links">
+  <a class="project-status__item" href="{{ $project.build_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open the Tor Guard Relay build workflow in a new tab">
+    <i data-lucide="rocket" aria-hidden="true"></i>
+    <span><small>Build</small><strong>Workflow</strong></span>
+  </a>
+  <a class="project-status__item" href="{{ $project.release_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open the latest Tor Guard Relay release in a new tab">
+    <i data-lucide="tag" aria-hidden="true"></i>
+    <span><small>Release</small><strong>{{ $version }}</strong></span>
+  </a>
+  <a class="project-status__item" href="{{ $project.registry_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open the Tor Guard Relay container image in a new tab">
+    <i data-lucide="cpu" aria-hidden="true"></i>
+    <span><small>Platforms</small><strong>{{ $platforms.value }}</strong></span>
+  </a>
+  <a class="project-status__item" href="{{ $project.registry_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open Tor Guard Relay on Docker Hub in a new tab">
+    <i data-lucide="container" aria-hidden="true"></i>
+    <span><small>Docker Hub</small><strong>{{ $pulls }}</strong></span>
+  </a>
+</nav>
+{{- end }}

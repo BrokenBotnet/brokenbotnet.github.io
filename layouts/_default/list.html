@@ -1,0 +1,39 @@
+{{ define "main" }}
+  {{ $pages := where .Pages.ByDate.Reverse "Params.unlisted" "ne" true }}
+  <header class="content__header">
+    <p class="eyebrow">Index</p>
+    <h1>{{ partial "tag-label.html" .Title }}</h1>
+    {{ .Content }}
+  </header>
+
+  {{ if and (eq .Section "posts") (gt (len $pages) 2) }}
+  <form class="archive-filter" data-archive-filter role="search">
+    <label class="archive-filter__search">
+      <span class="archive-filter__label"><i data-lucide="search" aria-hidden="true"></i>Search Writing</span>
+      <input type="search" name="query" placeholder="Title, summary, or tag" autocomplete="off" maxlength="120" spellcheck="false">
+    </label>
+    <label class="archive-filter__tag">
+      <span class="archive-filter__label"><i data-lucide="tag" aria-hidden="true"></i>Filter by Tag</span>
+      <select name="tag">
+        <option value="">All Tags</option>
+        {{ range .Site.Taxonomies.tags.Alphabetical }}
+        <option value="{{ .Page.Title | lower }}">{{ partial "tag-label.html" .Page.Title }}</option>
+        {{ end }}
+      </select>
+    </label>
+    <p class="archive-filter__status" aria-live="polite"></p>
+  </form>
+  {{ end }}
+
+  <ol class="post-list post-list--archive" data-post-list>
+    {{ range $pages }}
+      <li data-post-item data-search="{{ printf "%s %s %s" .Title .Description (delimit (.Params.tags | default (slice)) " ") | lower }}" data-tags="{{ delimit (.Params.tags | default (slice)) "," | lower }}">
+        {{ partial "post-list-card.html" (dict "page" . "showTags" true) }}
+      </li>
+    {{ end }}
+  </ol>
+{{ end }}
+
+{{ define "aside" }}
+  {{ with .Description }}<p>{{ . }}</p>{{ end }}
+{{ end }}

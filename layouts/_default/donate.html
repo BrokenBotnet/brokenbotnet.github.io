@@ -1,0 +1,87 @@
+{{ define "main" }}
+  <article class="donate-page">
+    <header class="content__header donate-page__header">
+      <div class="donate-page__currency-marks" aria-hidden="true">
+        {{ range hugo.Data.donations.methods }}<img src="{{ .icon | relURL }}" alt="" width="96" height="96">{{ end }}
+      </div>
+      <p class="eyebrow">Support the Network</p>
+      <h1>{{ .Title }}</h1>
+      <div class="content__body donate-page__intro">{{ .Content }}</div>
+    </header>
+
+    <section class="donation-grid" aria-label="Donation methods">
+      {{ range hugo.Data.donations.methods }}
+      <article class="donation-card donation-card--{{ .id }}">
+        <header class="donation-card__header">
+          <div class="donation-card__identity">
+            <span class="donation-card__icon" aria-hidden="true"><img src="{{ .icon | relURL }}" alt="" width="32" height="32"></span>
+            <div>
+              <p class="donation-card__network">{{ .network }} Network</p>
+              <h2>{{ .name }}</h2>
+            </div>
+          </div>
+          <span class="donation-card__ticker">{{ .ticker }}</span>
+        </header>
+
+        <p class="donation-card__description">{{ .description }}</p>
+
+        <div class="donation-card__qr">
+          <img src="{{ .qr | relURL }}" alt="{{ .name }} donation QR code" width="100" height="100" loading="lazy" decoding="async">
+        </div>
+
+        <div class="donation-card__address">
+          <span id="donation-address-{{ .id }}">{{ .name }} Address</span>
+          <code aria-labelledby="donation-address-{{ .id }}">{{ .address }}</code>
+        </div>
+
+        <div class="donation-card__actions">
+          <button type="button" data-copy-address data-address="{{ .address }}" aria-label="Copy {{ .name }} address">
+            <i data-lucide="copy" aria-hidden="true"></i>
+            <span aria-live="polite">Copy Address</span>
+          </button>
+          <a href="{{ .uri | safeURL }}">Open Wallet <i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+        </div>
+      </article>
+      {{ end }}
+    </section>
+
+    <aside class="donation-notice" aria-label="Donation safety note">
+      <strong>Check before sending!</strong>
+      <p>Cryptocurrency transactions cannot be reversed. Confirm the network and compare the full address with the QR payload before sending funds.</p>
+    </aside>
+
+    <section class="supporter-section" aria-labelledby="supporter-section-title">
+      <header class="supporter-section__header">
+        <p class="eyebrow">Supporting the Wider Ecosystem</p>
+        <h2 id="supporter-section-title">Organizations I Support</h2>
+        <p>These organizations help protect privacy, digital rights, secure communication, press freedom, anonymity, and access to trustworthy open-source tools. You can support them directly through their official donation pages.</p>
+      </header>
+
+      <div class="supporter-grid">
+        {{ range hugo.Data.donations.supporters }}
+          {{ $badge := resources.Get .badge }}
+          {{ if not $badge }}{{ errorf "Donation supporter badge not found: %s" .badge }}{{ end }}
+          {{ $processedBadge := $badge.Resize "320x webp q82" }}
+          <a class="supporter-card supporter-card--{{ .id }}" href="{{ .url }}" target="_blank" rel="noopener noreferrer" aria-label="Donate directly to {{ .name }} (opens in a new tab)">
+            <span class="supporter-card__badge">
+              <img src="{{ $processedBadge.RelPermalink }}" alt="Supporter badge for {{ .name }}" width="{{ $processedBadge.Width }}" height="{{ $processedBadge.Height }}" loading="lazy" decoding="async">
+            </span>
+            <strong>{{ .name }}</strong>
+            <span class="supporter-card__description">{{ .description }}</span>
+            <span class="supporter-card__action">Donate Directly <i data-lucide="arrow-up-right" aria-hidden="true"></i></span>
+          </a>
+        {{ end }}
+      </div>
+    </section>
+  </article>
+{{ end }}
+
+{{ define "aside" }}
+  <p>Contributions help with recurring infrastructure and development costs.</p>
+  <ul class="donate-aside__list">
+    <li>Public Tor relays and bridges</li>
+    <li>Server and bandwidth costs</li>
+    <li>Monitoring and maintenance</li>
+    <li>Open-source development</li>
+  </ul>
+{{ end }}

@@ -1,0 +1,57 @@
+name: 🔗
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 18 * * 0"
+
+env:
+  TZ: Asia/Tokyo
+
+concurrency:
+  group: link-check
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    name: Scan published links
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Install Hugo Extended
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: latest
+          extended: true
+
+      - name: Build production site
+        run: hugo --gc --minify --panicOnWarning
+
+      - name: Check source and generated links
+        uses: lycheeverse/lychee-action@v2.9.0
+        with:
+          args: >-
+            --verbose
+            --no-progress
+            --max-retries 3
+            --timeout 20
+            --root-dir './public'
+            --exclude '^mailto:'
+            --exclude '^http://.*\.onion(?:/|$)'
+            --exclude '^https://brokenbotnet\.com(?:/|$)'
+            --exclude '^https://supreme\.justia\.com/cases/federal/us/514/334/$'
+            --exclude '^https://www\.chronicle\.com/article/why-privacy-matters-even-if-you-have-nothing-to-hide/$'
+            './README.md'
+            './content/**/*.md'
+            './hugo.toml'
+            './public/**/*.html'
+          fail: true
+          jobSummary: true

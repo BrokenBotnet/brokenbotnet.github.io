@@ -1,0 +1,59 @@
+{{ define "main" }}
+  <article class="error-page" aria-labelledby="error-title">
+    <header class="error-console__bar">
+      <span class="error-console__lights" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span>route-trace.log</span>
+      <span class="error-console__state"><i data-lucide="x" aria-hidden="true"></i> HTTP 404</span>
+    </header>
+
+    <div class="error-console__body">
+      <section class="error-console__message">
+        <p class="error-kicker"><span class="error-status-dot" aria-hidden="true"></span> Route Not Found</p>
+        <p class="error-code" aria-hidden="true">404</p>
+        <h1 id="error-title">This path leads nowhere.</h1>
+        <p class="error-summary">The requested page may have moved, been retired, or never existed. The site and relay network are still operational.</p>
+
+        <div class="error-actions" aria-label="Recovery options">
+          <a class="button-link" href="{{ .Site.Home.RelPermalink }}"><i data-lucide="terminal" aria-hidden="true"></i> Return Home</a>
+          <a class="button-link button-link--secondary" href="{{ "posts/" | relURL }}"><i data-lucide="code-2" aria-hidden="true"></i> Browse Writing</a>
+          <a class="button-link button-link--secondary external-link" href="https://relays.brokenbotnet.com/" target="_blank" rel="noopener noreferrer"><i data-lucide="network" aria-hidden="true"></i> View Relays</a>
+        </div>
+      </section>
+
+      <section class="error-trace" aria-labelledby="error-trace-title">
+        <div class="error-trace__heading">
+          <h2 id="error-trace-title">Site Route Trace</h2>
+          <span>3 checks</span>
+        </div>
+
+        <ol class="error-route" aria-label="The site responded, but the requested page was not found">
+          <li class="error-route__node error-route__node--ok">
+            <span class="error-route__icon"><i data-lucide="server" aria-hidden="true"></i></span>
+            <span><strong>Origin</strong><small>brokenbotnet.com</small></span>
+          </li>
+          <li class="error-route__node error-route__node--ok">
+            <span class="error-route__icon"><i data-lucide="network" aria-hidden="true"></i></span>
+            <span><strong>Site Router</strong><small>request received</small></span>
+          </li>
+          <li class="error-route__node error-route__node--failed">
+            <span class="error-route__icon"><i data-lucide="x" aria-hidden="true"></i></span>
+            <span><strong>Destination</strong><small>page not found</small></span>
+          </li>
+        </ol>
+
+        <div class="error-log" aria-label="Route diagnostics">
+          <p><span>[OK]</span> origin responded</p>
+          <p><span>[OK]</span> site navigation available</p>
+          <p class="error-log__warn"><span>[WARN]</span> requested path unresolved</p>
+          <p class="error-log__fail"><span>[404]</span> destination page missing</p>
+          <p><span>[NEXT]</span> choose a known route<span class="error-log__cursor" aria-hidden="true">_</span></p>
+        </div>
+      </section>
+    </div>
+
+    <footer class="error-console__footer">
+      <i data-lucide="terminal" aria-hidden="true"></i>
+      <p>Followed an old link? Try the writing archive, or return home and start from a known path.</p>
+    </footer>
+  </article>
+{{ end }}

@@ -1,0 +1,17 @@
+# Keep repository text deterministic across Windows, macOS, and Linux.
+* text=auto eol=lf
+
+# Windows command scripts require native Windows line endings.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Never attempt line-ending conversion on binary assets.
+*.gif binary
+*.ico binary
+*.jpeg binary
+*.jpg binary
+*.png binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.zip binary

@@ -1,0 +1,13 @@
+{{- $path := .Params.image | default .Site.Params.socialImage -}}
+{{- $url := $path | absURL -}}
+{{- $alt := .Params.image_alt | default .Site.Params.socialImageAlt -}}
+{{- $width := .Params.image_width | default 1200 -}}
+{{- $height := .Params.image_height | default 630 -}}
+{{- with resources.Get (strings.TrimPrefix "/" $path) -}}
+  {{- $anchor := $.Params.social_anchor | default "Center" -}}
+  {{- $socialImage := .Fill (printf "1200x630 %s jpg q86" $anchor) -}}
+  {{- $url = $socialImage.RelPermalink | absURL -}}
+  {{- $width = $socialImage.Width -}}
+  {{- $height = $socialImage.Height -}}
+{{- end -}}
+{{- return (dict "url" $url "alt" $alt "width" $width "height" $height) -}}

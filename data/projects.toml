@@ -1,0 +1,50 @@
+[[projects]]
+id = "tor-guard-relay"
+sidebar_weight = 20
+sidebar_link = "Repository"
+build_url = "https://github.com/r3bo0tbx1/tor-guard-relay/actions/workflows/release.yml"
+release_url = "https://github.com/r3bo0tbx1/tor-guard-relay/releases/latest"
+registry_url = "https://hub.docker.com/r/r3bo0tbx1/onion-relay"
+kind = "Open-Source Container"
+name = "Tor Guard Relay"
+icon = "container"
+status = "Stable · v2.0.0"
+description = "A hardened multi-mode Tor container for guards, middle relays, exits, and obfs4 bridges, with operator diagnostics and automated releases."
+
+  [[projects.metrics]]
+  label = "Registry"
+  value = "15K+ pulls"
+
+  [[projects.metrics]]
+  label = "Platforms"
+  value = "AMD64 · ARM64"
+
+  [[projects.links]]
+  label = "Repository"
+  url = "https://github.com/r3bo0tbx1/tor-guard-relay"
+
+[[projects]]
+id = "shinobi-relays"
+sidebar_weight = 10
+sidebar_link = "Source"
+kind = "Privacy Infrastructure"
+name = "Shinobi Relays"
+icon = "network"
+status = "Live · Onionoo-Backed"
+description = "A public transparency dashboard for the Tor bridges and relays I operate, with live consensus state kept separate from configured roles."
+
+  [[projects.metrics]]
+  label = "Network"
+  value = "24 nodes"
+
+  [[projects.metrics]]
+  label = "Diversity"
+  value = "15 countries"
+
+  [[projects.links]]
+  label = "Live Dashboard"
+  url = "https://relays.brokenbotnet.com/"
+
+  [[projects.links]]
+  label = "Source"
+  url = "https://github.com/r3bo0tbx1/shinobi-relays"

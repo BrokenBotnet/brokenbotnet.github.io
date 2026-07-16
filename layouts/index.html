@@ -1,0 +1,109 @@
+{{ define "main" }}
+  {{ $stats := hugo.Data.project_stats }}
+  <article class="hero hero--status-sequence">
+    <div class="content__body">{{ .Content }}</div>
+  </article>
+
+  <section class="featured-projects home-section-reveal home-section-reveal--projects" aria-labelledby="featured-projects-title">
+    <div class="section-heading">
+      <h2 id="featured-projects-title">Active Projects</h2>
+      <span class="section-heading__meta">Built and Operated in Public</span>
+    </div>
+    <div class="project-grid">
+      {{ range hugo.Data.projects.projects }}
+      {{ $project := . }}
+      {{ $status := .status }}
+      {{ if eq .id "tor-guard-relay" }}{{ $status = printf "Stable · %s" $stats.tor_guard_relay.release }}{{ end }}
+      <article class="project-card project-card--{{ .id }}" aria-labelledby="project-{{ .id }}">
+        <header class="project-card__header">
+          <span class="project-card__icon" aria-hidden="true"><i data-lucide="{{ .icon }}"></i></span>
+          <div>
+            <p class="project-card__kind">{{ .kind }}</p>
+            <h3 id="project-{{ .id }}">{{ .name }}</h3>
+          </div>
+          <span class="project-card__status">{{ $status }}</span>
+        </header>
+        <p class="project-card__description">{{ .description }}</p>
+        <dl class="project-card__metrics">
+          {{ range .metrics }}
+          {{ $value := .value }}
+          {{ if and (eq $project.id "tor-guard-relay") (eq .label "Registry") }}{{ $value = printf "%s pulls" $stats.tor_guard_relay.docker_pulls_formatted }}{{ end }}
+          {{ if and (eq $project.id "shinobi-relays") (eq .label "Network") }}{{ $value = printf "%d nodes" (int $stats.shinobi_relays.nodes) }}{{ end }}
+          {{ if and (eq $project.id "shinobi-relays") (eq .label "Diversity") }}{{ $value = printf "%d countries" (int $stats.shinobi_relays.countries) }}{{ end }}
+          <div><dt>{{ .label }}</dt><dd>{{ $value }}</dd></div>
+          {{ end }}
+        </dl>
+        <footer class="project-card__links">
+          {{ range .links }}
+          <a class="external-link" href="{{ .url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ .label }} for {{ $project.name }} (opens in a new tab)">{{ .label }}</a>
+          {{ end }}
+        </footer>
+      </article>
+      {{ end }}
+    </div>
+    <p class="project-stats-verified">Project statistics last verified <time datetime="{{ $stats.verified_at }}">{{ time.Format "2 January 2006" (time.In "Asia/Tokyo" (time.AsTime $stats.verified_at)) }}</time>.</p>
+  </section>
+
+  <section class="recent-writing home-section-reveal home-section-reveal--writing" aria-labelledby="recent-writing-title">
+    <div class="section-heading">
+      <h2 id="recent-writing-title">Recent Writing</h2>
+      <a class="inline-action" href="{{ "posts/" | relURL }}">View Archive <i data-lucide="arrow-right"></i></a>
+    </div>
+    <ol class="post-list post-list--recent">
+      {{ $posts := where .Site.RegularPages.ByDate.Reverse "Section" "posts" }}
+      {{ $visiblePosts := where $posts "Params.unlisted" "ne" true }}
+      {{ $pinnedPosts := first 1 (where $visiblePosts "Params.pinned" true) }}
+      {{ $recentPosts := first 4 (where $visiblePosts "Params.pinned" "ne" true) }}
+      {{ range $pinnedPosts }}
+        <li class="post-list__item--pinned">
+          {{ partial "post-list-card.html" (dict "page" . "showTags" false "showPinned" true) }}
+        </li>
+      {{ end }}
+      {{ range $recentPosts }}
+        <li>
+          {{ partial "post-list-card.html" (dict "page" . "showTags" false "showPinned" false) }}
+        </li>
+      {{ end }}
+    </ol>
+  </section>
+{{ end }}
+
+{{ define "aside" }}
+  {{ $stats := hugo.Data.project_stats }}
+  {{ $projects := sort hugo.Data.projects.projects "sidebar_weight" }}
+  {{ $shinobi := index (where $projects "id" "shinobi-relays") 0 }}
+  {{ $dashboard := index (where $shinobi.links "label" "Live Dashboard") 0 }}
+
+  <a class="aside__relay-link external-link" href="{{ $dashboard.url }}" target="_blank" rel="noopener noreferrer" aria-label="View Shinobi Relays (opens in a new tab)">
+    <i data-lucide="network" aria-hidden="true"></i>
+    <span>View Shinobi Relays</span>
+  </a>
+
+  <section class="aside__projects" aria-labelledby="aside-projects-title">
+    <h3 id="aside-projects-title">Current Work</h3>
+    <ul>
+      {{ range $projects }}
+        {{ $project := . }}
+        {{ $link := index (where .links "label" .sidebar_link) 0 }}
+        {{ $metrics := slice }}
+        {{ range .metrics }}
+          {{ $value := .value }}
+          {{ if and (eq $project.id "tor-guard-relay") (eq .label "Registry") }}{{ $value = printf "%s pulls" $stats.tor_guard_relay.docker_pulls_formatted }}{{ end }}
+          {{ if and (eq $project.id "shinobi-relays") (eq .label "Network") }}{{ $value = printf "%d nodes" (int $stats.shinobi_relays.nodes) }}{{ end }}
+          {{ if and (eq $project.id "shinobi-relays") (eq .label "Diversity") }}{{ $value = printf "%d countries" (int $stats.shinobi_relays.countries) }}{{ end }}
+          {{ $metrics = $metrics | append $value }}
+        {{ end }}
+        <li>
+          <a class="aside-project aside-project--{{ .id }}" href="{{ $link.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ .name }} (opens in a new tab)">
+            <span class="aside-project__icon" aria-hidden="true"><i data-lucide="{{ .icon }}"></i></span>
+            <span class="aside-project__body">
+              <strong>{{ .name }}</strong>
+              <span>{{ delimit $metrics " · " }}</span>
+            </span>
+            <i class="aside-project__arrow" data-lucide="arrow-up-right" aria-hidden="true"></i>
+          </a>
+        </li>
+      {{ end }}
+    </ul>
+  </section>
+{{ end }}

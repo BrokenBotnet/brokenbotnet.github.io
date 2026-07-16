@@ -1,0 +1,91 @@
+[[methods]]
+id = "bitcoin"
+name = "Bitcoin"
+ticker = "BTC"
+network = "Bitcoin"
+address = "bc1q25xa47uknfeekm8xze06kfv7tjz4crcqqfpcuu"
+uri = "bitcoin:bc1q25xa47uknfeekm8xze06kfv7tjz4crcqqfpcuu"
+qr = "images/donate/bitcoin.svg"
+icon = "icons/donations/bitcoin.svg"
+description = "Support the relay fleet and ongoing open-source work with Bitcoin."
+
+[[methods]]
+id = "monero"
+name = "Monero"
+ticker = "XMR"
+network = "Monero"
+address = "49eiKhJd3uFdRerHk87wx3YCzb3yWQ8kSKTuMc7QjJphY4dG89HAFd8CcKswWn8oUhBJLu4kbjywSX46DwvtGNUV9qLCrVW"
+uri = "monero:49eiKhJd3uFdRerHk87wx3YCzb3yWQ8kSKTuMc7QjJphY4dG89HAFd8CcKswWn8oUhBJLu4kbjywSX46DwvtGNUV9qLCrVW"
+qr = "images/donate/monero.svg"
+icon = "icons/donations/monero.svg"
+description = "Support the relay fleet and ongoing open-source work with Monero."
+
+[[supporters]]
+id = "tor"
+name = "The Tor Project"
+url = "https://donate.torproject.org/"
+badge = "images/donate/supporters/tor-project-donor.png"
+description = "Privacy and resistance to censorship."
+
+[[supporters]]
+id = "tails"
+name = "Tails"
+url = "https://tails.net/donate/"
+badge = "images/donate/supporters/tails-project-supporter.png"
+description = "Portable privacy and anonymity tools."
+
+[[supporters]]
+id = "whonix"
+name = "Whonix"
+url = "https://www.whonix.org/wiki/Donate"
+badge = "images/donate/supporters/whonix-project-supporter.png"
+description = "Privacy, security, and anonymity."
+
+[[supporters]]
+id = "qubes"
+name = "Qubes OS"
+url = "https://www.qubes-os.org/donate/"
+badge = "images/donate/supporters/qubes-os-supporter.png"
+description = "Security through compartmentalization."
+
+[[supporters]]
+id = "grapheneos"
+name = "Graphene OS"
+url = "https://grapheneos.org/donate"
+badge = "images/donate/supporters/grapheneos-supporter.png"
+description = "A private and secure mobile operating system."
+
+[[supporters]]
+id = "signal"
+name = "Signal Foundation"
+url = "https://signal.org/donate/"
+badge = "images/donate/supporters/signal-foundation-donor.png"
+description = "Private and secure communication."
+
+[[supporters]]
+id = "eff"
+name = "Electronic Frontier Foundation"
+url = "https://supporters.eff.org/donate/donate"
+badge = "images/donate/supporters/eff-donor.png"
+description = "Civil liberties in the digital world."
+
+[[supporters]]
+id = "fpf"
+name = "Freedom of the Press Foundation"
+url = "https://freedom.press/donate/"
+badge = "images/donate/supporters/freedom-of-the-press-foundation-supporter.png"
+description = "Press freedom, journalists, and confidential sources."
+
+[[supporters]]
+id = "riseup"
+name = "Riseup"
+url = "https://riseup.net/donate"
+badge = "images/donate/supporters/riseup-supporter.png"
+description = "Autonomous communication for people working toward social change."
+
+[[supporters]]
+id = "privacy-guides"
+name = "Privacy Guides"
+url = "https://www.privacyguides.org/en/about/donate/"
+badge = "images/donate/supporters/privacy-guides-supporter.png"
+description = "Independent privacy education and guidance."

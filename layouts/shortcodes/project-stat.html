@@ -1,0 +1,27 @@
+{{- $stats := hugo.Data.project_stats -}}
+{{- $key := .Get "key" -}}
+{{- if eq $key "release" -}}
+  <code>{{ $stats.tor_guard_relay.release }}</code>
+{{- else if eq $key "docker-pulls" -}}
+  {{- $stats.tor_guard_relay.docker_pulls_formatted -}}
+{{- else if eq $key "nodes" -}}
+  {{- $stats.shinobi_relays.nodes -}}
+{{- else if eq $key "public-relays" -}}
+  {{- $stats.shinobi_relays.public_relays -}}
+{{- else if eq $key "bridges" -}}
+  {{- $stats.shinobi_relays.bridges -}}
+{{- else if eq $key "exits" -}}
+  {{- $stats.shinobi_relays.exits -}}
+{{- else if eq $key "countries" -}}
+  {{- $stats.shinobi_relays.countries -}}
+{{- else if eq $key "autonomous-systems" -}}
+  {{- $stats.shinobi_relays.autonomous_systems -}}
+{{- else if eq $key "platforms" -}}
+  {{- $stats.shinobi_relays.platforms -}}
+{{- else if eq $key "ipv6-enabled" -}}
+  {{- $stats.shinobi_relays.ipv6_enabled -}}
+{{- else if eq $key "verified-date" -}}
+  {{- time.Format "2 January 2006" (time.In "Asia/Tokyo" (time.AsTime $stats.verified_at)) -}}
+{{- else -}}
+  {{- errorf "Unknown project-stat key: %s" $key -}}
+{{- end -}}

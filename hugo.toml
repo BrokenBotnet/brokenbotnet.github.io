@@ -1,0 +1,159 @@
+baseURL = "https://brokenbotnet.com/"
+title = "Br🤖ken B🤖tnet"
+locale = "en-us"
+defaultContentLanguage = "en"
+theme = "risotto"
+enableRobotsTXT = true
+enableGitInfo = true
+timeZone = "Asia/Tokyo"
+
+[pagination]
+  pagerSize = 10
+
+[permalinks]
+  posts = "/:year/:month/:day/:slug/"
+
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML", "RSS"]
+
+[params]
+  author = "rE-Bo0t.bx1"
+  description = "Independent security research, privacy infrastructure, and open-source operations by rE-Bo0t.bx1."
+  socialImage = "og.jpg"
+  socialImageAlt = "Br🤖ken B🤖tnet: security research, open-source infrastructure, and Tor"
+  noindex = false
+
+  [params.theme]
+    palette = "brokenbotnet"
+
+  [params.about]
+    title = "rE-Bo0t.bx1"
+    description = "Independent security researcher, Linux enthusiast, privacy advocate, and operator of Shinobi Relays and public Tor infrastructure."
+    logo_image = "images/rE-Bo0t.bx1.png"
+    logo_alt = "rE-Bo0t.bx1 profile artwork"
+
+  [[params.socialLinks]]
+    icon = "github"
+    title = "GitHub"
+    url = "https://github.com/r3bo0tbx1"
+    primary = true
+
+  [[params.socialLinks]]
+    icon = "bluesky"
+    title = "Bluesky"
+    url = "https://bsky.app/profile/whoami.brokenbotnet.com"
+    primary = false
+
+  [[params.socialLinks]]
+    icon = "x"
+    title = "X"
+    url = "https://x.com/r3bo0tbx1"
+    primary = false
+
+  [[params.socialLinks]]
+    icon = "matrix"
+    title = "Matrix"
+    url = "https://go.kde.org/matrix/#/@r3bo0tbx1:nitro.chat"
+    primary = false
+
+  [[params.socialLinks]]
+    icon = "mastodon"
+    title = "Mastodon"
+    url = "https://infosec.exchange/@r3bo0tbx1"
+    primary = true
+
+  [[params.socialLinks]]
+    icon = "reddit"
+    title = "Reddit"
+    url = "https://www.reddit.com/user/r3bo0tbx1"
+    primary = false
+
+  [[params.socialLinks]]
+    icon = "keybase"
+    title = "Keybase"
+    url = "https://keybase.io/brokenbotnet"
+    primary = true
+
+  [[params.socialLinks]]
+    icon = "nostr"
+    title = "Nostr"
+    url = "https://njump.me/r3bo0tbx1@brokenbotnet.com"
+    primary = true
+
+  [[params.socialLinks]]
+    icon = "openpgp"
+    title = "OpenPGP public key"
+    url = "https://keys.openpgp.org/vks/v1/by-fingerprint/33727F5377D296C320AF704AB3BD6196E1CFBFB4"
+    primary = true
+
+  [[params.socialLinks]]
+    icon = "mail"
+    title = "Email"
+    url = "mailto:r3bo0tbx1@brokenbotnet.com"
+    primary = true
+
+[menu]
+  [[menu.main]]
+    identifier = "home"
+    name = "Home"
+    pageRef = "/"
+    weight = 10
+
+  [[menu.main]]
+    identifier = "whoami"
+    name = "Whoami"
+    pageRef = "/whoami"
+    weight = 20
+
+  [[menu.main]]
+    identifier = "writing"
+    name = "Writing"
+    pageRef = "/posts"
+    weight = 30
+
+  [[menu.main]]
+    identifier = "relays"
+    name = "Relays"
+    url = "https://relays.brokenbotnet.com/"
+    weight = 50
+
+  [[menu.main]]
+    identifier = "donate"
+    name = "Donate"
+    pageRef = "/donate"
+    weight = 40
+
+[taxonomies]
+  tag = "tags"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.parser]
+      [markup.goldmark.parser.attribute]
+        block = true
+    [markup.goldmark.renderer]
+      unsafe = true
+
+  [markup.highlight]
+    noClasses = false
+    lineNos = false
+
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 3
+    ordered = true
+
+[privacy]
+  [privacy.x]
+    disable = false
+    enableDNT = true
+    simple = true
+
+  [privacy.youtube]
+    disable = false
+    privacyEnhanced = true
+
+[sitemap]
+  changeFreq = "monthly"
+  priority = 0.5

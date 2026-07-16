@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="{{ site.Language.Lang }}">
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  <body>
+    <canvas class="relay-network" data-relay-network aria-hidden="true"></canvas>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="page{{ if eq .Kind "404" }} page--404{{ end }}">
+      <header class="page__header">
+        {{ partial "header.html" . }}
+      </header>
+
+      <main id="main-content" class="page__body" tabindex="-1">
+        {{ block "main" . }}{{ end }}
+      </main>
+
+      {{ if ne .Kind "404" }}
+        <aside class="page__aside" aria-label="About and page navigation">
+          <div class="aside__panel">
+            <div class="aside__about">
+              {{ partial "about.html" . }}
+            </div>
+            <hr class="aside__divider">
+            <div class="aside__content">
+              {{ block "aside" . }}{{ end }}
+            </div>
+          </div>
+        </aside>
+      {{ end }}
+
+      <footer class="page__footer">
+        {{ partial "footer.html" . }}
+      </footer>
+    </div>
+
+    <button class="back-to-top" type="button" data-back-to-top hidden title="Back to top" aria-label="Back to top">
+      <i data-lucide="arrow-up" aria-hidden="true"></i>
+    </button>
+  </body>
+</html>

@@ -1,8 +1,18 @@
+# Hugo output and caches
+/public/
+/resources/_gen/
+/.hugo-check/
+/.hugo_build.lock
+
+# Lighthouse CI reports
+/.lighthouseci/
+
+# Local operating-system files
 .DS_Store
 Thumbs.db
-db.json
+
+# Local logs and environment files
 *.log
-node_modules/
-public/
-.deploy*/
-_multiconfig.yml
+.env
+.env.*
+!.env.example

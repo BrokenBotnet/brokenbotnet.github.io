@@ -1,0 +1,107 @@
+name: 🚀
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["✅"]
+    branches: [main]
+    types: [completed]
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  TZ: Asia/Tokyo
+
+jobs:
+  build:
+    name: Build Pages artifact
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository and theme
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          submodules: recursive
+
+      - name: Install Hugo Extended
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: latest
+          extended: true
+
+      - name: Configure GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v6
+
+      - name: Refresh project statistics
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/fetch-project-stats.mjs
+
+      - name: Build production site
+        run: hugo --gc --minify --panicOnWarning
+
+      - name: Audit client-side injection surfaces
+        run: node scripts/audit-client-security.mjs
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: public
+          retention-days: 1
+
+  deploy:
+    name: Publish site
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+  notify:
+    name: Send Matrix notification
+    needs: [build, deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions: {}
+    env:
+      MATRIX_SERVER_URL: ${{ secrets.MATRIX_SERVER_URL }}
+      MATRIX_ROOM_ID: ${{ secrets.MATRIX_ROOM_ID }}
+      MATRIX_ACCESS_TOKEN: ${{ secrets.MATRIX_ACCESS_TOKEN }}
+    steps:
+      - name: Report deployment result
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${MATRIX_SERVER_URL}" || -z "${MATRIX_ROOM_ID}" || -z "${MATRIX_ACCESS_TOKEN}" ]]; then
+            echo "Matrix secrets are not configured; skipping notification."
+            exit 0
+          fi
+
+          if [[ "${{ needs.deploy.result }}" == "success" ]]; then
+            body="✅ Br🤖ken B🤖tnet deployed successfully at $(date +'%Y-%m-%d %H:%M'): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          else
+            body="❌ Br🤖ken B🤖tnet deployment failed at $(date +'%Y-%m-%d %H:%M'): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          fi
+
+          payload=$(jq -n --arg body "$body" '{msgtype: "m.text", body: $body}')
+          curl --fail-with-body --retry 3 \
+            --request PUT \
+            --header "Authorization: Bearer ${MATRIX_ACCESS_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data "$payload" \
+            "${MATRIX_SERVER_URL%/}/_matrix/client/v3/rooms/${MATRIX_ROOM_ID}/send/m.room.message/${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"

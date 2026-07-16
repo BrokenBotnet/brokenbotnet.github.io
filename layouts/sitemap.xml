@@ -1,0 +1,14 @@
+{{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {{- range site.Pages }}
+    {{- $isTaxonomy := or (eq .Kind "taxonomy") (eq .Kind "term") -}}
+    {{- if and (not $isTaxonomy) (ne .Kind "404") (ne .Params.unlisted true) }}
+  <url>
+    <loc>{{ .Permalink }}</loc>
+    {{- with .Lastmod }}
+    <lastmod>{{ .Format "2006-01-02T15:04:05Z07:00" }}</lastmod>
+    {{- end }}
+  </url>
+    {{- end }}
+  {{- end }}
+</urlset>

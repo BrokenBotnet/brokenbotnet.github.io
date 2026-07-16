@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {{- $destination := .Params.redirectTo | absURL -}}
+  <meta http-equiv="refresh" content="2; url={{ $destination }}">
+  <meta name="robots" content="noindex">
+  <link rel="canonical" href="{{ $destination }}">
+  <title>Redirecting to whoami | {{ .Site.Title }}</title>
+  <style>
+    :root { color-scheme: dark; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    body { min-height: 100vh; margin: 0; display: grid; place-items: center; background: #181b20; color: #d8dee9; }
+    main { width: min(34rem, calc(100% - 3rem)); padding: 2rem; border: 1px solid #343b46; background: #1f232a; box-shadow: 0 1.5rem 4rem #0008; }
+    p { margin: 0 0 1rem; line-height: 1.6; }
+    .prompt { color: #62d6b5; }
+    a { color: #7aa2f7; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="prompt">[ r3bo0tbx1@br🤖kenb🤖tnet:~$ ] cd ~/whoami/</p>
+    <p>This route moved. Redirecting to <a href="{{ $destination }}">{{ $destination }}</a>…</p>
+  </main>
+</body>
+</html>

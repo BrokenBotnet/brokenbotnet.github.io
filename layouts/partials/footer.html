@@ -1,0 +1,18 @@
+<div class="footer__meta">
+  <p class="copyright">© 2020–{{ now.Year }} rE-Bo0t.bx1</p>
+  <p class="footer__build"><i data-lucide="terminal"></i>Built with <a class="external-link" href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" aria-label="Hugo (opens in a new tab)">Hugo</a> + <a class="external-link" href="https://github.com/joeroe/risotto" target="_blank" rel="noopener noreferrer" aria-label="risotto (opens in a new tab)">risotto</a>.</p>
+</div>
+<nav class="footer__links" aria-label="Footer navigation">
+  <a href="{{ "index.xml" | relURL }}"><i data-lucide="rss"></i>RSS</a>
+  <a href="https://github.com/BrokenBotnet/brokenbotnet.github.io" target="_blank" rel="noopener noreferrer"><i data-lucide="code-2"></i>Source</a>
+</nav>
+<details class="relay-legend">
+  <summary>Relay Colors <i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+  <div class="relay-legend__items">
+    <span><i class="relay-legend__node relay-legend__node--bridge" aria-hidden="true"></i>Bridge</span>
+    <span><i class="relay-legend__node relay-legend__node--middle" aria-hidden="true"></i>Middle</span>
+    <span><i class="relay-legend__node relay-legend__node--guard" aria-hidden="true"></i>Guard</span>
+    <span><i class="relay-legend__node relay-legend__node--exit" aria-hidden="true"></i>Exit</span>
+  </div>
+  <p class="relay-legend__hint">Illustrative circuit colors. Hover or tap near a node to trace its route.<br>Illustrative routes only. Node positions, distances, and activity do not represent the live Tor network.<br>Web circuit: Guard or Bridge → Middle → Exit. Onion services remain inside the Tor network and do not use Exits.</p>
+</details>

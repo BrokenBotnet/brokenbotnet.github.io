@@ -1,0 +1,106 @@
+{{- $description := .Description | default .Site.Params.description -}}
+{{- $seoPageTitle := .Params.seo_title | default .Title -}}
+{{- if eq .Kind "term" -}}
+  {{- $seoPageTitle = partial "tag-label.html" .Title -}}
+{{- end -}}
+{{- $title := .Site.Title -}}
+{{- $socialTitle := .Site.Title -}}
+{{- if not .IsHome -}}
+  {{- $title = printf "%s | %s" $seoPageTitle .Site.Title -}}
+  {{- $socialTitle = .Title -}}
+{{- end -}}
+{{- $social := partial "social-image.html" . -}}
+{{- $socialImage := $social.url -}}
+{{- $socialImageAlt := $social.alt -}}
+{{- $socialImageWidth := $social.width -}}
+{{- $socialImageHeight := $social.height -}}
+{{- $isTaxonomy := or (eq .Kind "taxonomy") (eq .Kind "term") -}}
+{{- $isArticle := and .IsPage (eq .Section "posts") -}}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#181b20">
+<meta name="description" content="{{ $description }}">
+<meta name="author" content="{{ .Site.Params.author }}">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+{{ if hugo.IsProduction }}
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https://img.shields.io; font-src 'self'; connect-src 'self'; frame-src 'none'; form-action 'self'">
+{{ end }}
+{{ if .Site.Params.noindex }}
+<meta name="robots" content="noindex, nofollow">
+{{ else if $isTaxonomy }}
+<meta name="robots" content="noindex, follow">
+{{ end }}
+
+<title>{{ $title }}</title>
+<link rel="canonical" href="{{ .Permalink }}">
+
+{{- $styleFiles := slice
+  (printf "static/css/palettes/%s.css" (.Site.Params.theme.palette | default "base16-dark"))
+  "themes/risotto/static/css/colours.css"
+  "themes/risotto/static/css/typography.css"
+  "themes/risotto/static/css/layout.css"
+  "themes/risotto/static/css/header.css"
+  "themes/risotto/static/css/logo.css"
+  "themes/risotto/static/css/about.css"
+  "themes/risotto/static/css/footer.css"
+  "static/css/custom.css"
+-}}
+{{- $styleSource := "body{background-color:var(--bg);color:var(--fg)}" -}}
+{{- range $styleFiles -}}
+  {{- $styleSource = printf "%s\n%s" $styleSource (os.ReadFile .) -}}
+{{- end -}}
+{{- $style := resources.FromString "css/site.css" $styleSource | minify | fingerprint "sha384" -}}
+<link rel="stylesheet" href="{{ $style.RelPermalink }}" integrity="{{ $style.Data.Integrity }}">
+
+<link rel="preload" href="{{ "fonts/ibm-plex/IBMPlexSans-Latin-Regular.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{{ "fonts/ibm-plex/IBMPlexMono-Latin-Regular.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
+
+<link rel="icon" href="{{ "images/favicon.ico" | relURL }}" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="{{ "images/favicon-192x192.png" | relURL }}">
+<link rel="apple-touch-icon" href="{{ "images/apple-touch-icon.png" | relURL }}">
+<link rel="manifest" href="{{ "site.webmanifest" | relURL }}">
+
+{{ with .OutputFormats.Get "rss" }}
+<link rel="alternate" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ $.Site.Title }}">
+{{ end }}
+
+<meta property="og:type" content="{{ if $isArticle }}article{{ else }}website{{ end }}">
+<meta property="og:title" content="{{ $socialTitle }}">
+<meta property="og:description" content="{{ $description }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:site_name" content="{{ .Site.Title }}">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="{{ $socialImage }}">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="{{ $socialImageWidth }}">
+<meta property="og:image:height" content="{{ $socialImageHeight }}">
+<meta property="og:image:alt" content="{{ $socialImageAlt }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@r3bo0tbx1">
+<meta name="twitter:title" content="{{ $socialTitle }}">
+<meta name="twitter:description" content="{{ $description }}">
+<meta name="twitter:image" content="{{ $socialImage }}">
+<meta name="twitter:image:alt" content="{{ $socialImageAlt }}">
+
+{{ if $isArticle }}
+  {{ with .Date }}<meta property="article:published_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}">{{ end }}
+  {{ with .Lastmod }}<meta property="article:modified_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}">{{ end }}
+  <meta property="article:author" content="{{ "whoami/" | absURL }}">
+  <meta property="article:section" content="Writing">
+  {{ range .Params.tags }}<meta property="article:tag" content="{{ . }}">{{ end }}
+{{ end }}
+
+{{ partial "structured-data.html" . }}
+
+{{- $scriptFiles := slice
+  "static/js/lucide-subset.js"
+  "static/js/site.js"
+  "static/js/node-background.js"
+-}}
+{{- $scriptSource := "" -}}
+{{- range $scriptFiles -}}
+  {{- $scriptSource = printf "%s\n;%s" $scriptSource (os.ReadFile .) -}}
+{{- end -}}
+{{- $script := resources.FromString "js/site.js" $scriptSource | minify | fingerprint "sha384" -}}
+<script defer src="{{ $script.RelPermalink }}" integrity="{{ $script.Data.Integrity }}"></script>
