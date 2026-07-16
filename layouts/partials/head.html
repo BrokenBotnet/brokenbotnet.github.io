@@ -17,7 +17,7 @@
 {{- $isTaxonomy := or (eq .Kind "taxonomy") (eq .Kind "term") -}}
 {{- $isArticle := and .IsPage (eq .Section "posts") -}}
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#181b20">
 <meta name="description" content="{{ $description }}">
@@ -52,6 +52,18 @@
 {{- end -}}
 {{- $style := resources.FromString "css/site.css" $styleSource | minify | fingerprint "sha384" -}}
 <link rel="stylesheet" href="{{ $style.RelPermalink }}" integrity="{{ $style.Data.Integrity }}">
+
+{{- $pageStyleFiles := slice -}}
+{{- if eq .Layout "donate" -}}
+  {{- $pageStyleFiles = $pageStyleFiles | append "static/css/pages/donate.css" -}}
+{{- end -}}
+{{- if eq .Kind "404" -}}
+  {{- $pageStyleFiles = $pageStyleFiles | append "static/css/pages/404.css" -}}
+{{- end -}}
+{{- range $pageStyleFiles -}}
+  {{- $pageStyle := resources.FromString (printf "css/%s" (path.Base .)) (os.ReadFile .) | minify | fingerprint "sha384" -}}
+  <link rel="stylesheet" href="{{ $pageStyle.RelPermalink }}" integrity="{{ $pageStyle.Data.Integrity }}">
+{{- end -}}
 
 <link rel="preload" href="{{ "fonts/ibm-plex/IBMPlexSans-Latin-Regular.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="{{ "fonts/ibm-plex/IBMPlexMono-Latin-Regular.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
@@ -93,14 +105,33 @@
 
 {{ partial "structured-data.html" . }}
 
-{{- $scriptFiles := slice
+{{- $coreScriptFiles := slice
   "static/js/lucide-subset.js"
   "static/js/site.js"
-  "static/js/node-background.js"
 -}}
-{{- $scriptSource := "" -}}
-{{- range $scriptFiles -}}
-  {{- $scriptSource = printf "%s\n;%s" $scriptSource (os.ReadFile .) -}}
+{{- $coreScriptSource := "" -}}
+{{- range $coreScriptFiles -}}
+  {{- $coreScriptSource = printf "%s\n;%s" $coreScriptSource (os.ReadFile .) -}}
 {{- end -}}
-{{- $script := resources.FromString "js/site.js" $scriptSource | minify | fingerprint "sha384" -}}
-<script defer src="{{ $script.RelPermalink }}" integrity="{{ $script.Data.Integrity }}"></script>
+{{- $coreScript := resources.FromString "js/site.js" $coreScriptSource | minify | fingerprint "sha384" -}}
+<script defer src="{{ $coreScript.RelPermalink }}" integrity="{{ $coreScript.Data.Integrity }}"></script>
+
+{{- $pageScriptFiles := slice -}}
+{{- if eq .Layout "donate" -}}
+  {{- $pageScriptFiles = $pageScriptFiles | append "static/js/donate.js" -}}
+{{- end -}}
+{{- if and (eq .Section "posts") (not .IsPage) -}}
+  {{- $pageScriptFiles = $pageScriptFiles | append "static/js/archive.js" -}}
+{{- end -}}
+{{- if or $isArticle (eq .RelPermalink ("whoami/" | relURL)) -}}
+  {{- $pageScriptFiles = $pageScriptFiles | append "static/js/content.js" -}}
+{{- end -}}
+{{- range $pageScriptFiles -}}
+  {{- $pageScript := resources.FromString (printf "js/%s" (path.Base .)) (os.ReadFile .) | minify | fingerprint "sha384" -}}
+  <script defer src="{{ $pageScript.RelPermalink }}" integrity="{{ $pageScript.Data.Integrity }}"></script>
+{{- end -}}
+
+{{- $nodeScript := resources.FromString "js/node-background.js" (os.ReadFile "static/js/node-background.js") | minify | fingerprint "sha384" -}}
+{{- $nodeLoaderSource := printf `const phone=window.matchMedia("(max-width: 47.99rem), (max-height: 31rem) and (pointer: coarse)");let loaded=false;const load=()=>{if(!loaded&&!phone.matches){loaded=true;import(%q);phone.removeEventListener("change",load)}};load();if(!loaded)phone.addEventListener("change",load)` $nodeScript.RelPermalink -}}
+{{- $nodeLoader := resources.FromString "js/node-loader.js" $nodeLoaderSource | minify | fingerprint "sha384" -}}
+<script type="module" src="{{ $nodeLoader.RelPermalink }}" integrity="{{ $nodeLoader.Data.Integrity }}"></script>

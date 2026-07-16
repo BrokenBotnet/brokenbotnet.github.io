@@ -5,6 +5,7 @@
 {{- if not $image -}}
   {{- errorf "post-figure could not find %q in assets" $src -}}
 {{- end -}}
+{{- $compact := $image.Resize "480x webp q82" -}}
 {{- $small := $image.Resize "640x webp q82" -}}
 {{- $medium := $image.Resize "960x webp q82" -}}
 {{- $large := $image.Process "webp q84" -}}
@@ -13,7 +14,7 @@
 {{- end -}}
 <figure class="post-figure{{ with $modifier }} {{ . }}{{ end }}">
   <picture>
-    <source type="image/webp" srcset="{{ $small.RelPermalink }} 640w, {{ $medium.RelPermalink }} 960w, {{ $large.RelPermalink }} {{ $large.Width }}w" sizes="(max-width: 48rem) calc(100vw - 2rem), 54rem">
+    <source type="image/webp" srcset="{{ $compact.RelPermalink }} 480w, {{ $small.RelPermalink }} 640w, {{ $medium.RelPermalink }} 960w, {{ $large.RelPermalink }} {{ $large.Width }}w" sizes="(max-width: 38rem) calc(100vw - 3.7rem), (max-width: 48rem) calc(100vw - 4rem), 54rem">
     <img src="{{ $medium.RelPermalink }}" alt="{{ $alt }}" width="{{ $image.Width }}" height="{{ $image.Height }}" loading="lazy" decoding="async" data-lightbox-src="{{ $image.RelPermalink }}">
   </picture>
   {{ with .Inner | strings.TrimSpace }}<figcaption>{{ . | markdownify }}</figcaption>{{ end }}

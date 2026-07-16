@@ -11,7 +11,7 @@ aliases:
   - /about/
 ---
 
-![rE-Bo0t.bx1, also known as r3bo0tbx1](/images/rE-Bo0t.bx1.png)
+{{< post-figure src="images/rE-Bo0t.bx1.png" alt="rE-Bo0t.bx1, also known as r3bo0tbx1" />}}
 
 `-----BEGIN WHOAMI-----`
 

@@ -1,0 +1,359 @@
+.donate-page__intro {
+  position: relative;
+  z-index: 1;
+  max-width: 70ch;
+}
+
+.donate-page__header {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.donate-page__header > .eyebrow,
+.donate-page__header > h1 {
+  position: relative;
+  z-index: 1;
+}
+
+.donate-page__currency-marks {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  z-index: 0;
+  display: flex;
+  gap: 0.8rem;
+  opacity: 0.085;
+  transform: translateY(-50%) rotate(-6deg);
+  pointer-events: none;
+}
+
+.donate-page__currency-marks img {
+  width: clamp(5rem, 11vw, 7.5rem);
+  height: auto;
+}
+
+.donation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.donation-card {
+  --donation-accent: var(--base0B);
+  display: flex;
+  position: relative;
+  min-width: 0;
+  padding: clamp(1rem, 2.5vw, 1.4rem);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--donation-accent) 8%, transparent), transparent 38%),
+    rgba(16, 21, 28, 0.74);
+  border: 1px solid color-mix(in srgb, var(--donation-accent) 32%, var(--panel-border));
+  border-radius: 0.45rem;
+  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.2);
+  flex-direction: column;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.donation-card--bitcoin { --donation-accent: #f7931a; }
+.donation-card--monero { --donation-accent: #ff6600; }
+
+.donation-card::after {
+  position: absolute;
+  right: -2.5rem;
+  bottom: -2.5rem;
+  z-index: 0;
+  width: 13rem;
+  aspect-ratio: 1;
+  background: var(--donation-accent);
+  opacity: 0.045;
+  content: "";
+  pointer-events: none;
+  -webkit-mask: var(--donation-mark) center / contain no-repeat;
+  mask: var(--donation-mark) center / contain no-repeat;
+}
+
+.donation-card--bitcoin { --donation-mark: url("/icons/donations/bitcoin.svg"); }
+.donation-card--monero { --donation-mark: url("/icons/donations/monero.svg"); }
+
+.donation-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.donation-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.donation-card__header h2 {
+  margin: 0.1rem 0 0;
+  font-size: 1.15rem;
+}
+
+.donation-card__identity {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.donation-card__icon {
+  display: grid;
+  flex: 0 0 auto;
+  width: 2.35rem;
+  height: 2.35rem;
+  background: color-mix(in srgb, var(--donation-accent) 8%, rgba(10, 14, 19, 0.82));
+  border: 1px solid color-mix(in srgb, var(--donation-accent) 30%, var(--panel-border));
+  border-radius: 0.32rem;
+  place-items: center;
+}
+
+.donation-card__icon img {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.donation-card__network {
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.donation-card__ticker {
+  padding: 0.25rem 0.45rem;
+  color: var(--donation-accent);
+  background: color-mix(in srgb, var(--donation-accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--donation-accent) 30%, transparent);
+  border-radius: 0.28rem;
+  font: 700 0.72rem var(--font-ui);
+}
+
+.donation-card__description {
+  margin: 0.75rem 0 1rem;
+  color: var(--off-fg);
+  font-size: 0.86rem;
+}
+
+.donation-card__qr {
+  display: grid;
+  width: min(100%, 17rem);
+  aspect-ratio: 1;
+  margin: 0 auto 1rem;
+  padding: 0.55rem;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--donation-accent) 38%, var(--panel-border));
+  border-radius: 0.4rem;
+  place-items: center;
+}
+
+.donation-card__qr img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.donation-card__address {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.donation-card__address > span {
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+}
+
+.donation-card__address code {
+  display: block;
+  padding: 0.48rem 0.6rem;
+  color: var(--base05);
+  background: rgba(6, 9, 13, 0.68);
+  border: 1px solid var(--panel-border);
+  border-radius: 0.3rem;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.donation-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.8rem;
+}
+
+.donation-card__actions button,
+.donation-card__actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.35rem;
+  padding: 0.45rem 0.65rem;
+  color: var(--base05) !important;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 0.3rem;
+  font: 0.72rem var(--font-ui);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.donation-card__actions button:hover,
+.donation-card__actions button:focus-visible,
+.donation-card__actions button.is-copied,
+.donation-card__actions a:hover,
+.donation-card__actions a:focus-visible {
+  color: var(--base00) !important;
+  background: var(--donation-accent);
+  border-color: var(--donation-accent);
+  outline: none;
+}
+
+.donation-card__actions .lucide {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.donation-notice {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  color: var(--off-fg);
+  background: color-mix(in srgb, var(--base09) 5%, rgba(16, 21, 28, 0.74));
+  border: 1px solid color-mix(in srgb, var(--base09) 24%, var(--panel-border));
+  border-radius: 0.4rem;
+}
+
+.donation-notice strong {
+  color: var(--base09);
+  font-family: var(--font-ui);
+}
+
+.donation-notice p {
+  margin: 0.25rem 0 0;
+  font-size: 0.82rem;
+}
+
+.supporter-section {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--panel-border);
+}
+
+.supporter-section__header {
+  max-width: 68ch;
+  margin-bottom: 1.1rem;
+}
+
+.supporter-section__header h2 {
+  margin: 0.35rem 0 0.55rem;
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+}
+
+.supporter-section__header > p:last-child {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.supporter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 0.75rem;
+}
+
+.supporter-card {
+  --supporter-accent: var(--base0D);
+  display: flex;
+  min-width: 0;
+  padding: 0.8rem;
+  color: var(--base05) !important;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--supporter-accent) 8%, transparent), transparent 48%),
+    rgba(16, 21, 28, 0.72);
+  border: 1px solid color-mix(in srgb, var(--supporter-accent) 24%, var(--panel-border));
+  border-radius: 0.45rem;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.supporter-card--tor { --supporter-accent: #9b63b5; }
+.supporter-card--tails { --supporter-accent: #8f56bd; }
+.supporter-card--qubes { --supporter-accent: #4b8ff7; }
+.supporter-card--whonix { --supporter-accent: #55bde9; }
+.supporter-card--grapheneos { --supporter-accent: #c8ced8; }
+.supporter-card--signal { --supporter-accent: #4f86ec; }
+.supporter-card--eff { --supporter-accent: #e5484d; }
+.supporter-card--fpf { --supporter-accent: #f0f0f0; }
+.supporter-card--riseup { --supporter-accent: #a970d6; }
+.supporter-card--privacy-guides { --supporter-accent: #ffbd4a; }
+
+.supporter-card:hover,
+.supporter-card:focus-visible {
+  color: var(--base05) !important;
+  border-color: color-mix(in srgb, var(--supporter-accent) 70%, var(--panel-border));
+  box-shadow: 0 0.8rem 2rem color-mix(in srgb, var(--supporter-accent) 12%, transparent);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.supporter-card__badge {
+  display: grid;
+  width: min(100%, 7.5rem);
+  aspect-ratio: 1;
+  margin-bottom: 0.75rem;
+  place-items: center;
+}
+
+.supporter-card__badge img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.supporter-card strong {
+  font: 600 0.78rem/1.35 var(--font-ui);
+}
+
+.supporter-card__description {
+  margin: 0.35rem 0 0.65rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+.supporter-card__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: auto;
+  color: var(--supporter-accent);
+  font: 600 0.68rem var(--font-ui);
+}
+
+.supporter-card__action .lucide {
+  width: 0.78rem;
+  height: 0.78rem;
+}
+
+.donate-aside__list {
+  display: grid;
+  gap: 0.4rem;
+  margin: 1rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}

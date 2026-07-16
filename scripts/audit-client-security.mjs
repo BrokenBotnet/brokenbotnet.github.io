@@ -4,6 +4,13 @@ import { attributeValue, normalizeAttributeUrl, tokenizeHtml } from "./html-toke
 
 const root = process.cwd();
 const failures = [];
+const approvedScriptNames = new Set(["site", "archive", "content", "donate", "node-loader"]);
+const approvedScriptPattern = /^\/js\/([a-z-]+)\.min\.[a-f0-9]+\.js$/;
+
+const isApprovedScript = (src, integrity) => {
+  const match = approvedScriptPattern.exec(src ?? "");
+  return Boolean(match && approvedScriptNames.has(match[1]) && integrity?.startsWith("sha384-"));
+};
 
 const walk = async (directory) => {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -40,9 +47,10 @@ for (const file of (await walk(path.join(root, "static", "js"))).filter((file) =
 for (const file of (await walk(path.join(root, "public"))).filter((file) => file.endsWith(".html"))) {
   const html = await readFile(file, "utf8");
   const { errors, scripts, tags } = tokenizeHtml(html);
-  const usesSiteScript = scripts.some((script) =>
-    /^\/js\/site\.min\.[a-f0-9]+\.js$/.test(attributeValue(script, "src") ?? "")
-  );
+  const usesSiteScript = scripts.some((script) => {
+    const src = attributeValue(script, "src") ?? "";
+    return /^\/js\/site\.min\.[a-f0-9]+\.js$/.test(src);
+  });
 
   if (usesSiteScript && !tags.some((tag) =>
     tag.name === "meta" &&
@@ -89,9 +97,7 @@ for (const file of (await walk(path.join(root, "public"))).filter((file) => file
       continue;
     }
 
-    if (src && /^\/js\/site\.min\.[a-f0-9]+\.js$/.test(src) && integrity?.startsWith("sha384-")) {
-      continue;
-    }
+    if (isApprovedScript(src, integrity)) continue;
 
     report(file, `unapproved script block${src ? ` (${src})` : ""}`);
   }

@@ -1,6 +1,12 @@
 {{ with .Site.Params.about }}
   <div class="aside__identity">
-    {{ with .logo_image }}<img class="about__logo" src="{{ . | relURL }}" width="68" height="68" alt="{{ $.Site.Params.about.logo_alt | default "rE-Bo0t.bx1 profile artwork" }}">{{ end }}
+    {{ with .logo_image }}
+      {{- $logo := resources.Get . -}}
+      {{- if not $logo }}{{ errorf "About image not found: %s" . }}{{ end -}}
+      {{- $logo1x := $logo.Fill "68x68 Center webp q82" -}}
+      {{- $logo2x := $logo.Fill "136x136 Center webp q82" -}}
+      <img class="about__logo" src="{{ $logo1x.RelPermalink }}" srcset="{{ $logo1x.RelPermalink }} 1x, {{ $logo2x.RelPermalink }} 2x" sizes="68px" width="68" height="68" alt="{{ $.Site.Params.about.logo_alt | default "rE-Bo0t.bx1 profile artwork" }}" loading="lazy" decoding="async">
+    {{ end }}
     <div>
       <h2 class="about__title">{{ .title }}</h2>
       {{ with .description }}<p class="about__description">{{ . | markdownify }}</p>{{ end }}
