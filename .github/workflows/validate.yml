@@ -133,14 +133,18 @@ jobs:
       - name: Audit SEO metadata
         shell: bash
         run: |
-          node <<'NODE'
-          const assert = require('assert');
-          const fs = require('fs');
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import { attributeValue, tokenizeHtml } from './scripts/html-tokenizer.mjs';
 
           const read = file => fs.readFileSync(file, 'utf8');
           const structuredTypes = html => {
-            const documents = [...html.matchAll(/<script\s+type=["']?application\/ld\+json["']?>(.*?)<\/script>/gis)]
-              .map(match => JSON.parse(match[1]));
+            const document = tokenizeHtml(html);
+            assert.deepEqual(document.errors, []);
+            const documents = document.scripts
+              .filter(script => attributeValue(script, 'type')?.toLowerCase() === 'application/ld+json')
+              .map(script => JSON.parse(script.body));
             return documents.flatMap(document =>
               (document['@graph'] || [document]).map(item => item['@type'])
             );
