@@ -1,6 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   const wait = (milliseconds) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const phoneViewport = window.matchMedia(
+    "(max-width: 47.99rem), (max-height: 31rem) and (pointer: coarse)"
+  );
+  const reduceMotion =
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches || phoneViewport.matches;
 
   document.querySelectorAll("[data-node-sync]").forEach((terminal) => {
     const path = terminal.querySelector("[data-terminal-path]");
@@ -257,8 +261,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.addEventListener("resize", updateBackToTop);
     backToTop.addEventListener("click", () => {
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+      const reduceScrollMotion =
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches || phoneViewport.matches;
+      window.scrollTo({ top: 0, behavior: reduceScrollMotion ? "auto" : "smooth" });
     });
 
     updateBackToTop();

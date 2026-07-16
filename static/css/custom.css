@@ -360,8 +360,19 @@ a:focus-visible {
 
 .relay-legend__hint {
   margin: 0.45rem 0 0;
+  padding: 0;
   color: color-mix(in srgb, var(--muted) 82%, transparent);
   font-size: 0.7rem;
+  list-style: none;
+}
+
+.relay-legend__hint li {
+  margin: 0;
+  padding: 0;
+}
+
+.relay-legend__hint li::before {
+  content: "- ";
 }
 
 .relay-legend__items span {
@@ -3814,6 +3825,71 @@ html.lightbox-open {
   .hero h1,
   .error-page h1 {
     font-size: 1.36rem;
+  }
+}
+
+/* Phones use a quiet static background; tablets at 768px and wider retain the full experience. */
+@media (max-width: 47.99rem), (max-height: 31rem) and (pointer: coarse) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .relay-network {
+    display: none;
+  }
+
+  .relay-legend {
+    display: none;
+  }
+
+  .hero__status-command {
+    width: 8.35ch;
+    animation: none;
+  }
+
+  .hero__status-cursor,
+  .prompt__cursor--typing {
+    display: none;
+    animation: none;
+  }
+
+  .hero__status-result,
+  .hero--status-sequence .content__body > :not(.hero__terminal),
+  .home-section-reveal {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .prompt__command--typing {
+    width: 6ch;
+    animation: none;
+  }
+
+  .terminal-prompt--whoami .prompt__input {
+    display: none;
+    animation: none;
+  }
+
+  .prompt__output {
+    visibility: visible;
+    opacity: 1;
+    animation: none;
+  }
+
+  .error-route__node:not(:last-child)::after,
+  .error-route__icon::after,
+  .error-log p {
+    animation: none;
+  }
+
+  .error-route__icon::after {
+    opacity: 0;
+  }
+
+  .error-log p {
+    opacity: 1;
+    clip-path: none;
   }
 }
 

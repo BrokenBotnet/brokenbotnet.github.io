@@ -29,6 +29,14 @@
   const canvas = document.querySelector("[data-relay-network]");
   if (!canvas) return;
 
+  const phoneViewport = window.matchMedia(
+    "(max-width: 47.99rem), (max-height: 31rem) and (pointer: coarse)"
+  );
+  if (phoneViewport.matches) {
+    canvas.hidden = true;
+    return;
+  }
+
   const context = canvas.getContext("2d", { alpha: true });
   if (!context) return;
 
