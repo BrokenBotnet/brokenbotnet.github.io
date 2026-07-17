@@ -357,3 +357,26 @@
   color: var(--muted);
   font-size: 0.78rem;
 }
+
+@media (max-width: 38rem) {
+  .donation-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.85rem;
+  }
+
+  .donation-card__header {
+    gap: 0.75rem;
+  }
+
+  .donation-card__identity {
+    min-width: 0;
+  }
+
+  .donation-card__ticker {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+}

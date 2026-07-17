@@ -2845,11 +2845,7 @@ html.lightbox-open {
   }
 
   .terminal-prompt--node-sync .prompt__identity {
-    flex: 0 0 100%;
-  }
-
-  .terminal-prompt--node-sync.is-complete .prompt__identity {
-    flex-basis: auto;
+    flex: 0 0 auto;
   }
 
   .terminal-prompt--node-sync .prompt__command--context {
@@ -3078,6 +3074,13 @@ html.lightbox-open {
   .hero h1,
   .error-page h1 {
     font-size: 1.36rem;
+  }
+}
+
+@media (max-width: 21rem) {
+  .terminal-prompt--node-sync {
+    font-size: 0.68rem;
+    letter-spacing: -0.04em;
   }
 }
 
