@@ -97,7 +97,7 @@ A useful diversity report should answer:
 6. Which loss would remove a unique region, role, or platform?
 
 {{< post-figure src="images/posts/diversity-first/aroi-diversity-all-rounders.png" alt="AROI Diversity All-Rounders table ranking relays.brokenbotnet.com first with coverage across fifteen countries, six operating systems, and eleven autonomous systems" class="post-figure--wide" >}}
-A mid-July 2026 [AROI snapshot](https://metrics.1aeo.com/relays.brokenbotnet.com/) lists Shinobi Relays first overall for combined geographic, platform, network, and fleet breadth. Rankings change, but the dimensions being measured are more useful than raw relay count alone.
+A mid-July 2026 [AROI snapshot](https://web.archive.org/web/20260717142108/https://metrics.1aeo.com/misc/aroi-leaderboards.html#most_diverse) lists Shinobi Relays first overall for combined geographic, platform, network, and fleet breadth. Rankings change, but the dimensions being measured are more useful than raw relay count alone.
 {{< /post-figure >}}
 
 Tor's operator expectations add a network-wide boundary: one operator should avoid controlling more than 20 percent of total Exit capacity or 10 percent of total consensus weight.[^operator-expectations] Shinobi Relays is far below those thresholds, but they are useful reminders that operator concentration matters alongside provider and platform concentration.

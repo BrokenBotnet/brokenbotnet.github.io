@@ -50,7 +50,7 @@ I therefore treat non-European deployment as a starting question, not proof of d
 
 <div class="post-figure-pair post-figure-pair--equal">
 {{< post-figure src="images/posts/non-eu-relays/aroi-frontier-builders.png" alt="AROI Frontier Builders table ranking relays.brokenbotnet.com third for operating relays in rarely represented countries" >}}
-A July 2026 [AROI snapshot](https://metrics.1aeo.com/relays.brokenbotnet.com/) places Shinobi Relays third for rare-country breadth. The ranking is a point-in-time view and can change with the public network.
+A July 2026 [AROI snapshot](https://web.archive.org/web/20260717142108/https://metrics.1aeo.com/misc/aroi-leaderboards.html#frontier_builders) places Shinobi Relays third for rare-country breadth. The ranking is a point-in-time view and can change with the public network.
 {{< /post-figure >}}
 {{< post-figure src="images/posts/non-eu-relays/aroi-jurisdiction-globetrotters.png" alt="AROI Jurisdiction Globetrotters table ranking relays.brokenbotnet.com second with relays across fifteen non-EU countries" >}}
 The same snapshot places Shinobi Relays second for non-EU jurisdictional breadth, reflecting the fifteen locations documented in this article.

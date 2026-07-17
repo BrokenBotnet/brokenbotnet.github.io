@@ -205,7 +205,7 @@ Diversity matters here more than raw instance count. Twenty relays concentrated 
 
 ## Independent verification
 
-The fleet also has an independent [1AEO metrics](https://metrics.1aeo.com/relays.brokenbotnet.com/) page. It checks the public relays using Tor data rather than trusting my inventory. Its report validates the AROI and CIISS v3 contact record, relay-family proof, geographic and network diversity, platforms, uptime, and measured bandwidth.
+The fleet also has an independent [1AEO metrics](https://web.archive.org/web/20260717141247/https://metrics.1aeo.com/relays.brokenbotnet.com/) page. It checks the public relays using Tor data rather than trusting my inventory. Its report validates the AROI and CIISS v3 contact record, relay-family proof, geographic and network diversity, platforms, uptime, and measured bandwidth.
 
 In its 17 July 2026 data snapshot, 1AEO sees and successfully validates all sixteen public relays. The eight bridges are absent by design because bridges are not listed in the public consensus.
 
