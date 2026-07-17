@@ -34,15 +34,15 @@ I later understood what was happening behind that small change in Tor Browser. A
 
 That is where pluggable transports help. They change how the connection appears on the network so it is harder to identify as Tor. obfs4 makes the traffic look like random data and resists attempts to discover bridges by actively probing them. WebTunnel makes a Tor connection resemble ordinary HTTPS traffic to a website. Snowflake reaches Tor through short-lived, volunteer-operated proxies and makes the connection look more like a video call, while meek makes it appear to be ordinary access to a major website through a cloud or CDN provider. They take different approaches because censorship differs from one network and country to another; a method that works in one place may be blocked in another.[^tor-circumvention]
 
-None of these methods makes censorship disappear. They make selective blocking more difficult and more costly, especially when blocking the disguised connection would also disrupt ordinary Internet use. For me, the result was much simpler: a bridge could turn a blocked connection into a working one. It quietly proved that someone, somewhere, had chosen to run infrastructure for a person they would probably never meet.
+None of these methods makes censorship disappear. They make selective blocking more difficult and more costly, especially when blocking the disguised connection would also disrupt ordinary Internet use. For me, the result was much simpler: a bridge could turn a blocked connection into a working one. It quietly proved that a volunteer, somewhere, had chosen to keep a route open for people they would probably never meet.
 
-Once connected, I would sometimes open Tor Browser’s circuit display for the site I was visiting. I could follow the route from the first relay, through the middle of the circuit, to the exit that finally reached the destination. At first they were simply relay names, countries, and lines on a screen. Later I understood what those lines represented: bandwidth, servers, maintenance, cost, and risk contributed by volunteers.
+Once connected, I would sometimes open Tor Browser’s circuit display for the site I was visiting. I could follow the route from the first relay, through the middle of the circuit, to the exit that finally reached the destination. At first they were simply relay names, countries, and lines on a screen. Later I understood what those lines represented: bandwidth, servers, maintenance, cost, and risk contributed by relay operators.
 
 That display showed a circuit reaching the public Internet. Onion-service circuits work differently: they remain inside the Tor network and do not use an Exit.
 
-That stayed with me. My access depended on strangers deciding that an open Internet was worth supporting. Their work showed me that privacy and security are not sustained by principles alone; they require people willing to build, operate, maintain, and defend the infrastructure behind them.
+That stayed with me. My access depended on volunteers who believed an open Internet was worth supporting. Their work showed me that privacy and security are not sustained by principles alone; they require people willing to build, operate, maintain, and defend the infrastructure behind them.
 
-I wanted to return that favor. I wanted to run bridges for people facing the same kind of blocking, guards and middle relays to strengthen the network behind every circuit, and exits willing to carry the responsibility of its final hop. Not for a badge or a large node count, but because each role had once made someone else’s access possible, including mine.
+I wanted to return that favor. I wanted to run bridges for people facing the same kind of blocking, guards and middle relays to strengthen the network behind every circuit, and exits willing to carry the responsibility of its final hop. Not for a badge or a large node count, but because each role had once helped make another person’s access possible, including mine.
 
 The ambition came before the container. The container was how I eventually made it practical.
 
@@ -50,7 +50,7 @@ In November 2025, I [announced](https://web.archive.org/web/20260717145712/https
 
 By the time I [released v2.0.0](https://github.com/r3bo0tbx1/tor-guard-relay/releases/tag/v2.0.0) in June 2026, the project had grown into one container for guards, middle relays, exits, and obfs4 bridges; six operator tools; multi-architecture builds; automated release and security work; deployment templates; and a real network spread across multiple providers and countries.
 
-This is the story of how a tool I relied on while growing up became infrastructure I could help provide for someone else.
+This is the story of how a tool I relied on while growing up became infrastructure I could help provide for the next person who needed it.
 
 ## Privacy needs no excuse
 
@@ -62,7 +62,7 @@ Anonymity is not inherently suspicious or outside the law. In *McIntyre v. Ohio 
 
 Tor belongs in that tradition of giving ordinary people room to act, read, and communicate without unnecessary exposure. Tor co-founder Roger Dingledine described its purpose as protecting ordinary people who want to follow the law.[^tor-purpose] Edward Snowden later made the same argument through another right: dismissing privacy because you have nothing to hide is like dismissing freedom of speech because you have nothing to say.[^snowden]
 
-None of this is abstract to me. I operate bridges and public relays across {{< project-stat key="countries" >}} countries. Someone may reach that infrastructure from a place where speaking openly, reading freely, or connecting without a permanent trail can carry consequences. I also publish under a handle rather than my legal name. That is not deception; it is a boundary between the work I make public and the life I keep private. The comparison to Publius is not a claim of equal importance. It is a recognition that ideas and public work can stand on their own without turning the person behind them into public property.
+None of this is abstract to me. I operate bridges and public relays across {{< project-stat key="countries" >}} countries. People may reach that infrastructure from places where speaking openly, reading freely, or connecting without a permanent trail can carry consequences. I also publish under a handle rather than my legal name. That is not deception; it is a boundary between the work I make public and the life I keep private. The comparison to Publius is not a claim of equal importance. It is a recognition that ideas and public work can stand on their own without turning the person behind them into public property.
 
 Privacy and anonymity are not emergency tools to reach for only after trouble arrives. They are part of the groundwork that lets people think, speak, learn, and organize before power decides those ordinary acts require permission. That is why operating Tor infrastructure feels less like running a collection of servers and more like maintaining a promise I once depended on myself.
 
@@ -84,7 +84,7 @@ A pull is not a unique operator or an active relay. The number is still encourag
 These figures combine project release data, my maintained fleet inventory, and public network observations. They do not all prove the same thing. Inventory records intended infrastructure; Onionoo and independent metrics show what the public Tor network can currently observe.
 
 {{< post-figure src="images/posts/tor-relays-project/shinobi-relays-dashboard.png" alt="Shinobi Relays dashboard showing fleet health, relay roles, and platform, network, and geographic diversity" class="post-figure--wide" >}}
-The Shinobi Relays overview on 13 July 2026. Public relay roles and consensus state follow Onionoo rather than being hard-coded into the dashboard.
+The Shinobi Relays overview on 17 July 2026. Public relay roles and consensus state follow Onionoo rather than being hard-coded into the dashboard.
 {{< /post-figure >}}
 
 ## Making relay operations repeatable
