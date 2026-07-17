@@ -189,5 +189,5 @@ Health reporting becomes trustworthy when each signal keeps its narrow meaning a
 
 - [tor-guard-relay monitoring guide](https://web.archive.org/web/20260514132423/https://github.com/r3bo0tbx1/tor-guard-relay/blob/main/docs/MONITORING.md)
 - [tor-guard-relay health check](https://github.com/r3bo0tbx1/tor-guard-relay/blob/main/healthcheck.sh)
-- [Dockerfile `HEALTHCHECK` reference](https://web.archive.org/web/20260714065926/https://docs.docker.com/reference/dockerfile#healthcheck)
+- [Dockerfile `HEALTHCHECK` reference](https://web.archive.org/web/20260716140130/https://docs.docker.com/reference/dockerfile/#healthcheck)
 - [Docker restart policies](https://web.archive.org/web/20260706103641/https://docs.docker.com/engine/containers/start-containers-automatically/)

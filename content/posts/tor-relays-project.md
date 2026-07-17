@@ -233,12 +233,12 @@ Tor needs more capacity, but capacity alone is not the goal. What matters is div
 
 ## References
 
-[^privacy-guides]: Privacy Guides, [“Why Privacy Matters”](https://web.archive.org/web/20260707163947/https://www.privacyguides.org/en/basics/why-privacy-matters/).
+[^privacy-guides]: Privacy Guides, [“Why Privacy Matters”](https://web.archive.org/web/20260716061824/https://www.privacyguides.org/en/basics/why-privacy-matters/).
 [^solove]: Daniel J. Solove, [“Why Privacy Matters Even if You Have ‘Nothing to Hide’”](https://web.archive.org/web/20260704211435/https://www.chronicle.com/article/why-privacy-matters-even-if-you-have-nothing-to-hide/), *The Chronicle of Higher Education*.
 [^un-privacy]: United Nations Human Rights Council, [“The Right to Privacy in the Digital Age”](https://web.archive.org/web/20260504060931/https://www.ohchr.org/sites/default/files/HRBodies/HRC/RegularSessions/Session27/Documents/A.HRC.27.37_en.pdf), A/HRC/27/37.
 [^schneier]: Bruce Schneier, [“Q&A with Bruce Schneier”](https://web.archive.org/web/20230605025904/https://www.schneier.com/news/archives/2009/02/qa_with_bruce_schnei_1.html).
 [^mcintyre]: United States Supreme Court, [*McIntyre v. Ohio Elections Commission*, 514 U.S. 334 (1995)](https://web.archive.org/web/20260630123542/https://supreme.justia.com/cases/federal/us/514/334/).
-[^federalist-papers]: Library of Congress, [“Federalist Papers: Primary Documents in American History”](https://web.archive.org/web/20260709145525/https://guides.loc.gov/federalist-papers).
+[^federalist-papers]: Library of Congress, [“Federalist Papers: Primary Documents in American History”](https://web.archive.org/web/20260422063417/https://guides.loc.gov/federalist-papers).
 [^udhr]: United Nations, [“Universal Declaration of Human Rights, Article 12”](https://web.archive.org/web/20260713200629/https://www.un.org/en/about-us/universal-declaration-of-human-rights#article-12).
 [^tor-purpose]: Roger Dingledine, [“Re: Tor and the National Security Letters”](https://archive.torproject.org/websites/lists.torproject.org/pipermail/tor-talk/2005-February/005029.html), Tor Project mailing-list archive.
 [^snowden]: The Guardian, [“Edward Snowden: NSA Reform in the US Is Only the Beginning”](https://web.archive.org/web/20260425013735/https://www.theguardian.com/us-news/2015/may/22/edward-snowden-nsa-reform).

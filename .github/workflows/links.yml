@@ -9,8 +9,8 @@ env:
   TZ: Asia/Tokyo
 
 concurrency:
-  group: link-check
-  cancel-in-progress: true
+  group: ${{ github.event_name == 'schedule' && 'scheduled-maintenance' || 'link-check' }}
+  cancel-in-progress: ${{ github.event_name != 'schedule' }}
 
 permissions:
   contents: read
@@ -42,10 +42,14 @@ jobs:
             --verbose
             --no-progress
             --max-retries 3
+            --retry-wait-time 2
+            --host-concurrency 2
+            --host-request-interval 500ms
             --timeout 20
             --root-dir './public'
             --exclude '^mailto:'
             --exclude '^http://.*\.onion(?:/|$)'
+            --exclude '^https://web\.archive\.org/web/'
             --exclude '^https://brokenbotnet\.com(?:/|$)'
             --exclude '^https://check\.spamhaus\.org/results\?query=157\.10\.253\.140$'
             --exclude '^https://www\.reddit\.com/user/r3bo0tbx1/?$'

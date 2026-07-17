@@ -9,8 +9,8 @@ on:
     branches: [main]
 
 concurrency:
-  group: validate-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.event_name == 'schedule' && 'scheduled-maintenance' || format('validate-{0}', github.ref) }}
+  cancel-in-progress: ${{ github.event_name != 'schedule' }}
 
 permissions:
   contents: read

@@ -1,0 +1,90 @@
+name: 🧹
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "47 20 * * 6"
+
+concurrency:
+  group: scheduled-maintenance
+  cancel-in-progress: false
+
+permissions:
+  actions: write
+  contents: read
+
+env:
+  TZ: Asia/Tokyo
+
+jobs:
+  cleanup:
+    name: Clear Actions caches
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm repository is idle
+        id: activity
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          active_runs="$(
+            for status in queued in_progress requested waiting pending; do
+              gh api --paginate \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2026-03-10" \
+                "/repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=100" \
+                --jq '.workflow_runs[] | [.id, .name, .run_number, .status] | @tsv'
+            done |
+              awk -F '\t' -v current="${GITHUB_RUN_ID}" '$1 != current {
+                printf "%s #%s (%s)\n", $2, $3, $4
+              }'
+          )"
+
+          if [[ -n "${active_runs}" ]]; then
+            echo "ready=false" >> "${GITHUB_OUTPUT}"
+            {
+              echo "## Cache cleanup"
+              echo
+              echo "Cleanup was skipped because other workflow runs were active:"
+              echo
+              while IFS= read -r run; do
+                echo "- ${run}"
+              done <<< "${active_runs}"
+            } >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+
+          echo "ready=true" >> "${GITHUB_OUTPUT}"
+
+      - name: Delete repository caches
+        if: steps.activity.outputs.ready == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          mapfile -t cache_ids < <(
+            gh api --paginate \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2026-03-10" \
+              "/repos/${GITHUB_REPOSITORY}/actions/caches?per_page=100" \
+              --jq '.actions_caches[].id'
+          )
+
+          for cache_id in "${cache_ids[@]}"; do
+            gh api --method DELETE \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2026-03-10" \
+              "/repos/${GITHUB_REPOSITORY}/actions/caches/${cache_id}" \
+              --silent
+          done
+
+          {
+            echo "## Cache cleanup"
+            echo
+            echo "- Deleted: \`${#cache_ids[@]}\`"
+            echo "- Completed: \`$(date +'%Y-%m-%d %H:%M')\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
