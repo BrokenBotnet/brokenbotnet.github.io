@@ -4,7 +4,7 @@ import { attributeValue, normalizeAttributeUrl, tokenizeHtml } from "./html-toke
 
 const root = process.cwd();
 const failures = [];
-const approvedScriptNames = new Set(["site", "archive", "content", "donate", "node-loader"]);
+const approvedScriptNames = new Set(["boot", "site", "archive", "content", "donate", "node-loader"]);
 const approvedScriptPattern = /^\/js\/([a-z-]+)\.min\.[a-f0-9]+\.js$/;
 
 const isApprovedScript = (src, integrity) => {

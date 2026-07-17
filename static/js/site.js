@@ -22,16 +22,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const setPath = (value, linkFinalPath = false) => {
       path.textContent = "";
       if (value.startsWith("~")) {
-        const home = document.createElement("a");
-        home.className = "prompt__home-link";
-        home.href = homeLink;
-        home.textContent = "~";
-        home.setAttribute("aria-label", "Go to Home");
-        home.title = "Home";
-        if (terminal.classList.contains("terminal-prompt--home")) {
-          home.setAttribute("aria-current", "page");
+        const isHomeTerminal = terminal.classList.contains("terminal-prompt--home");
+        if (isHomeTerminal) {
+          const currentHome = document.createElement("span");
+          currentHome.className = "prompt__home-current";
+          currentHome.textContent = "~";
+          currentHome.setAttribute("aria-current", "page");
+          path.append(currentHome);
+        } else {
+          const home = document.createElement("a");
+          home.className = "prompt__home-link";
+          home.href = homeLink;
+          home.textContent = "~";
+          home.setAttribute("aria-label", "Go to Home");
+          home.title = "Home";
+          path.append(home);
         }
-        path.append(home);
 
         const remainder = value.slice(1);
         const isWritingPath = linkFinalPath && remainder === "/writing";
@@ -66,8 +72,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (reduceMotion) {
       setPath(endPath, true);
       command.textContent = finalCommand;
+      terminal.classList.add("is-initialized");
       return;
     }
+
+    setPath(startPath);
+    command.textContent = "";
+    terminal.classList.add("is-initialized");
 
     const typeCommand = async (value) => {
       command.textContent = "";
@@ -78,8 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const runSequence = async () => {
-      setPath(startPath);
-      command.textContent = "";
       await wait(220);
 
       if (cdCommand) {

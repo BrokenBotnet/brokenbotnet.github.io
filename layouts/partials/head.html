@@ -35,6 +35,9 @@
 <title>{{ $title }}</title>
 <link rel="canonical" href="{{ .Permalink }}">
 
+{{- $bootScript := resources.FromString "js/boot.js" (os.ReadFile "static/js/boot.js") | minify | fingerprint "sha384" -}}
+<script src="{{ $bootScript.RelPermalink }}" integrity="{{ $bootScript.Data.Integrity }}"></script>
+
 {{- $styleFiles := slice
   (printf "static/css/palettes/%s.css" (.Site.Params.theme.palette | default "base16-dark"))
   "themes/risotto/static/css/colours.css"

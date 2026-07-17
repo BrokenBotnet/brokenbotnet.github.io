@@ -438,6 +438,10 @@ a:focus-visible {
   white-space: nowrap;
 }
 
+.js [data-terminal-sequence]:not(.is-initialized) {
+  visibility: hidden;
+}
+
 .terminal-prompt--whoami {
   display: inline-grid;
   grid-template-columns: max-content max-content;
@@ -495,17 +499,18 @@ a:focus-visible {
 .prompt__home-link,
 .prompt__home-link:link,
 .prompt__home-link:visited {
-  color: inherit;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.16em;
+  color: var(--base0C);
+  text-decoration: none;
   transition: color 140ms ease, text-decoration-color 140ms ease, text-shadow 140ms ease;
 }
 
 .prompt__home-link:hover,
 .prompt__home-link:focus-visible {
   color: var(--logo);
+  text-decoration: underline;
   text-decoration-color: currentColor;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
   text-shadow: 0 0 0.65rem color-mix(in srgb, var(--logo) 42%, transparent);
 }
 
@@ -514,8 +519,8 @@ a:focus-visible {
   outline-offset: 0.14rem;
 }
 
-.terminal-prompt--home .prompt__home-link,
 .prompt__home-link[aria-current="page"],
+.prompt__home-current,
 .prompt__cwd-link[aria-current="page"],
 .prompt__cwd-current,
 .prompt__output--current {
@@ -2670,18 +2675,31 @@ html.lightbox-open {
   }
 
   .main-nav ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: stretch;
     gap: 0.4rem 0.45rem;
     justify-content: flex-start;
   }
 
+  .main-nav .page__brand {
+    grid-column: 1 / -1;
+  }
+
   .main-nav__item {
     display: flex;
+    min-width: 0;
+  }
+
+  .main-nav__item:last-child:nth-child(even) {
+    grid-column: 1 / -1;
   }
 
   .nav-main-item {
+    width: 100%;
     min-height: 2rem;
     padding: 0.22rem 0.45rem;
+    justify-content: center;
     color: var(--base04);
     background: rgba(255, 255, 255, 0.018);
     border: 1px solid color-mix(in srgb, var(--panel-border) 78%, transparent);
