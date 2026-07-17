@@ -2,7 +2,7 @@
 title: "Returning the Favor: Building the Tor Relay Stack I Always Wanted"
 seo_title: "Why I Built Tor Guard Relay"
 date: 2025-11-01
-lastmod: 2026-07-16
+lastmod: 2026-07-17
 slug: "tor-relays-project"
 aliases:
   - "/2025/12/13/tor-relays-project/"
@@ -207,10 +207,10 @@ Diversity matters here more than raw instance count. Twenty relays concentrated 
 
 The fleet also has an independent [1AEO metrics](https://metrics.1aeo.com/relays.brokenbotnet.com/) page. It checks the public relays using Tor data rather than trusting my inventory. Its report validates the AROI and CIISS v3 contact record, relay-family proof, geographic and network diversity, platforms, uptime, and measured bandwidth.
 
-In its 11 July 2026 data snapshot, 1AEO sees all sixteen public relays: fifteen validate successfully, while one newly updated family record is waiting for Onionoo to expose the required metadata. The eight bridges are absent by design because bridges are not listed in the public consensus.
+In its 17 July 2026 data snapshot, 1AEO sees and successfully validates all sixteen public relays. The eight bridges are absent by design because bridges are not listed in the public consensus.
 
-{{< post-figure src="images/posts/tor-relays-project/1aeo-independent-validation.png" alt="1AEO contact and network overview validating relays.brokenbotnet.com and showing sixteen public relays across fifteen locations" class="post-figure--wide" >}}
-The 1AEO view captured on 12 July 2026 from data last updated on 11 July. My dashboard documents intended infrastructure; Onionoo and 1AEO show what the public Tor network can verify.
+{{< post-figure src="images/posts/tor-relays-project/1aeo-independent-validation.png" alt="1AEO contact and network overview validating all sixteen public relays for relays.brokenbotnet.com across fifteen locations" class="post-figure--wide" >}}
+The 1AEO view captured on 17 July 2026 validates the complete public relay set. My dashboard documents intended infrastructure; Onionoo and 1AEO show what the public Tor network can verify.
 {{< /post-figure >}}
 
 This evidence still has limits. Public metrics cannot verify private bridge reachability, backup quality, provider independence, or whether two differently branded services share an upstream control plane.

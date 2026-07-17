@@ -2,7 +2,7 @@
 title: "Operating Tor Relays on Linux, BSD, and SunOS"
 seo_title: "Operating Tor Relays Across Linux, BSD, and SunOS"
 date: 2026-04-07
-lastmod: 2026-07-07
+lastmod: 2026-07-17
 slug: "linux-bsd-sunos"
 aliases:
   - "/2026/07/08/tor-relays-linux-bsd-sunos/"
@@ -28,11 +28,11 @@ That difference is one reason I wanted non-Linux relays in Shinobi Relays. Platf
 Different operating systems can strengthen a relay fleet, but each one brings its own service manager, paths, privilege model, and recovery work.
 {{< /post-figure >}}
 
-These AROI snapshots from early July 2026 show how that cross-platform work was reflected in the independent operator rankings.
+These AROI snapshots from mid-July 2026 show how that cross-platform work was reflected in the independent operator rankings.
 
 <div class="post-figure-pair">
-{{< post-figure src="images/posts/linux-bsd-sunos/aroi-champion-rankings.png" alt="AROI Champion Rankings listing eight placements for relays.brokenbotnet.com, including OS Polyglot and Non-Linux Powerhouse" >}}
-Eight AROI Champion placements for relays.brokenbotnet.com.
+{{< post-figure src="images/posts/linux-bsd-sunos/aroi-champion-rankings.png" alt="AROI Champion Rankings listing eight placements for relays.brokenbotnet.com, including first place for Diversity All-Rounder and OS Polyglot" >}}
+Eight AROI Champion placements for relays.brokenbotnet.com, including first place for overall diversity and operating-system breadth.
 {{< /post-figure >}}
 {{< post-figure src="images/posts/linux-bsd-sunos/aroi-os-polyglot-ranking.png" alt="AROI OS Polyglots table ranking relays.brokenbotnet.com first with six distinct operating systems" >}}
 The OS Polyglots ranking places relays.brokenbotnet.com first for platform breadth in this snapshot.

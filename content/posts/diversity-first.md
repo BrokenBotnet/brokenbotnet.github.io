@@ -2,7 +2,7 @@
 title: "Why Relay Diversity Matters More Than Raw Node Count"
 seo_title: "Why Tor Relay Diversity Matters More Than Node Count"
 date: 2026-05-22
-lastmod: 2026-07-11
+lastmod: 2026-07-17
 slug: "diversity-first"
 aliases:
   - "/2025/11/19/relay-diversity-over-node-count/"
@@ -96,8 +96,8 @@ A useful diversity report should answer:
 5. Which relays depend on the same account, tunnel, or maintenance process?
 6. Which loss would remove a unique region, role, or platform?
 
-{{< post-figure src="images/posts/diversity-first/aroi-diversity-all-rounders.png" alt="AROI Diversity All-Rounders table ranking relays.brokenbotnet.com second with coverage across fifteen countries, six operating systems, and eleven autonomous systems" class="post-figure--wide" >}}
-A July 2026 [AROI snapshot](https://metrics.1aeo.com/relays.brokenbotnet.com/) combines geographic, platform, network, and fleet breadth into one independent view. Rankings change, but the dimensions being measured are more useful than raw relay count alone.
+{{< post-figure src="images/posts/diversity-first/aroi-diversity-all-rounders.png" alt="AROI Diversity All-Rounders table ranking relays.brokenbotnet.com first with coverage across fifteen countries, six operating systems, and eleven autonomous systems" class="post-figure--wide" >}}
+A mid-July 2026 [AROI snapshot](https://metrics.1aeo.com/relays.brokenbotnet.com/) lists Shinobi Relays first overall for combined geographic, platform, network, and fleet breadth. Rankings change, but the dimensions being measured are more useful than raw relay count alone.
 {{< /post-figure >}}
 
 Tor's operator expectations add a network-wide boundary: one operator should avoid controlling more than 20 percent of total Exit capacity or 10 percent of total consensus weight.[^operator-expectations] Shinobi Relays is far below those thresholds, but they are useful reminders that operator concentration matters alongside provider and platform concentration.
