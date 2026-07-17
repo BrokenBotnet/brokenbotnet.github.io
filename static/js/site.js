@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const finalCommand = terminal.dataset.terminalFinalCommand || "";
     const homeLink = terminal.dataset.terminalHomeLink || "/";
     const pathLink = terminal.dataset.terminalPathLink || "";
+    const pathCurrent = terminal.dataset.terminalPathCurrent === "true";
 
     const setPath = (value, linkFinalPath = false) => {
       path.textContent = "";
@@ -27,20 +28,34 @@ document.addEventListener("DOMContentLoaded", () => {
         home.textContent = "~";
         home.setAttribute("aria-label", "Go to Home");
         home.title = "Home";
+        if (terminal.classList.contains("terminal-prompt--home")) {
+          home.setAttribute("aria-current", "page");
+        }
         path.append(home);
 
         const remainder = value.slice(1);
-        if (!(linkFinalPath && pathLink && remainder === "/writing")) {
+        const isWritingPath = linkFinalPath && remainder === "/writing";
+        if (!(isWritingPath && (pathLink || pathCurrent))) {
           path.append(document.createTextNode(remainder));
           return;
         }
 
         path.append(document.createTextNode("/"));
+        if (pathCurrent && !pathLink) {
+          const current = document.createElement("span");
+          current.className = "prompt__cwd-current";
+          current.textContent = "writing";
+          current.setAttribute("aria-current", "page");
+          path.append(current);
+          return;
+        }
+
         const link = document.createElement("a");
         link.className = "prompt__cwd-link";
         link.href = pathLink;
         link.textContent = "writing";
         link.setAttribute("aria-label", "Open Writing archive");
+        if (pathCurrent) link.setAttribute("aria-current", "page");
         path.append(link);
         return;
       }

@@ -1,6 +1,9 @@
 {{- $isWhoami := eq .RelPermalink "/whoami/" -}}
 {{- $isDonate := eq .RelPermalink "/donate/" -}}
 {{- $isArticle := and .IsPage (eq .Section "posts") -}}
+{{- $isWritingArchive := and (eq .Section "posts") (not .IsPage) -}}
+{{- $isWritingTaxonomy := or (eq .Kind "taxonomy") (eq .Kind "term") -}}
+{{- $isWritingContext := or $isArticle $isWritingArchive $isWritingTaxonomy -}}
 {{- $homeURL := .Site.Home.RelPermalink -}}
 {{- $terminalStartPath := "~" -}}
 {{- $terminalEndPath := "~" -}}
@@ -35,15 +38,21 @@
   <ul>
     <li class="nomarker page__brand">
       <div class="page__logo-inner">
-        <span class="terminal-prompt{{ if .IsHome }} terminal-prompt--home{{ end }}{{ if $isWhoami }} terminal-prompt--whoami{{ else }} terminal-prompt--sequence{{ end }}{{ if $isDonate }} terminal-prompt--node-sync{{ end }}"{{ if $isDonate }} data-node-sync data-node-network="bitcoin"{{ else if not $isWhoami }} data-terminal-sequence data-terminal-start-path="{{ $terminalStartPath }}" data-terminal-end-path="{{ $terminalEndPath }}" data-terminal-home-link="{{ $homeURL }}" data-terminal-cd-command="{{ $terminalCdCommand }}" data-terminal-final-command="{{ $terminalFinalCommand }}"{{ if $isArticle }} data-terminal-path-link="{{ "posts/" | relURL }}"{{ end }}{{ end }}>
-          <span class="prompt__line"><span class="prompt__identity"><span class="prompt__bracket">[ </span><span class="prompt__user">r3bo0tbx1</span><span class="prompt__separator">@</span><span class="prompt__host">br🤖kenb🤖tnet</span><span class="prompt__path">:</span><span class="prompt__cwd"{{ if not $isWhoami }} data-terminal-path{{ end }}><a class="prompt__home-link" href="{{ $homeURL }}" aria-label="Go to Home" title="Home">~</a>{{ if $isArticle }}/<a class="prompt__cwd-link" href="{{ "posts/" | relURL }}" aria-label="Open Writing archive">writing</a>{{ else if $isDonate }}/<a class="prompt__cwd-link" href="{{ "donate/" | relURL }}" aria-label="Open Donate page" aria-current="page">donate</a>{{ else if ne $terminalEndPath "~" }}{{ strings.TrimPrefix "~" $terminalEndPath }}{{ end }}</span><span class="prompt__path">$</span><span class="prompt__bracket"> ]</span></span>{{ if $isWhoami }}<span class="prompt__input"><span class="prompt__command prompt__command--context prompt__command--typing">{{ $terminalFinalCommand }}</span><span class="prompt__cursor prompt__cursor--typing" aria-hidden="true">_</span></span>{{ else }}<span class="prompt__command prompt__command--context" data-terminal-command>{{ $terminalFinalCommand }}</span><span class="prompt__cursor" aria-hidden="true">_</span>{{ end }}</span>
-          {{ if $isWhoami }}<span class="prompt__output">r3bo0tbx1<span class="prompt__cursor prompt__cursor--output" aria-hidden="true">_</span></span>{{ end }}
+        <span class="terminal-prompt{{ if .IsHome }} terminal-prompt--home{{ end }}{{ if $isWhoami }} terminal-prompt--whoami{{ else }} terminal-prompt--sequence{{ end }}{{ if $isDonate }} terminal-prompt--node-sync{{ end }}"{{ if $isDonate }} data-node-sync data-node-network="bitcoin"{{ else if not $isWhoami }} data-terminal-sequence data-terminal-start-path="{{ $terminalStartPath }}" data-terminal-end-path="{{ $terminalEndPath }}" data-terminal-home-link="{{ $homeURL }}" data-terminal-cd-command="{{ $terminalCdCommand }}" data-terminal-final-command="{{ $terminalFinalCommand }}"{{ if and $isWritingContext (not $isWritingArchive) }} data-terminal-path-link="{{ "posts/" | relURL }}"{{ end }}{{ if $isWritingArchive }} data-terminal-path-current="true"{{ end }}{{ end }}>
+          <span class="prompt__line"><span class="prompt__identity"><span class="prompt__bracket">[ </span><span class="prompt__user">r3bo0tbx1</span><span class="prompt__separator">@</span><span class="prompt__host">br🤖kenb🤖tnet</span><span class="prompt__path">:</span><span class="prompt__cwd"{{ if not $isWhoami }} data-terminal-path{{ end }}><a class="prompt__home-link" href="{{ $homeURL }}" aria-label="Go to Home" title="Home"{{ if .IsHome }} aria-current="page"{{ end }}>~</a>{{ if $isWritingArchive }}/<span class="prompt__cwd-current" aria-current="page">writing</span>{{ else if $isWritingContext }}/<a class="prompt__cwd-link" href="{{ "posts/" | relURL }}" aria-label="Open Writing archive">writing</a>{{ else if $isDonate }}/<a class="prompt__cwd-link" href="{{ "donate/" | relURL }}" aria-label="Open Donate page" aria-current="page">donate</a>{{ else if ne $terminalEndPath "~" }}{{ strings.TrimPrefix "~" $terminalEndPath }}{{ end }}</span><span class="prompt__path">$</span><span class="prompt__bracket"> ]</span></span>{{ if $isWhoami }}<span class="prompt__input"><span class="prompt__command prompt__command--context prompt__command--typing">{{ $terminalFinalCommand }}</span><span class="prompt__cursor prompt__cursor--typing" aria-hidden="true">_</span></span>{{ else }}<span class="prompt__command prompt__command--context" data-terminal-command>{{ $terminalFinalCommand }}</span><span class="prompt__cursor" aria-hidden="true">_</span>{{ end }}</span>
+          {{ if $isWhoami }}<span class="prompt__output prompt__output--current" aria-label="Current page: Whoami">r3bo0tbx1<span class="prompt__cursor prompt__cursor--output" aria-hidden="true">_</span></span>{{ end }}
         </span>
       </div>
     </li>
     {{ $currentPage := . }}
     {{ range .Site.Menus.main }}
-      {{- if not (or (and $isArticle (eq .Identifier "writing")) (and $isDonate (eq .Identifier "donate"))) -}}
+      {{- $hideCurrentItem := or
+        (and $currentPage.IsHome (eq .Identifier "home"))
+        (and $isWhoami (eq .Identifier "whoami"))
+        (and $isWritingContext (eq .Identifier "writing"))
+        (and $isDonate (eq .Identifier "donate"))
+      -}}
+      {{- if not $hideCurrentItem -}}
       {{- $external := strings.HasPrefix .URL "http" -}}
       <li class="main-nav__item">
         <a class="nav-main-item{{ if or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) }} active{{ end }}"

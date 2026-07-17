@@ -514,6 +514,17 @@ a:focus-visible {
   outline-offset: 0.14rem;
 }
 
+.terminal-prompt--home .prompt__home-link,
+.prompt__home-link[aria-current="page"],
+.prompt__cwd-link[aria-current="page"],
+.prompt__cwd-current,
+.prompt__output--current {
+  color: var(--logo);
+  font-weight: 700;
+  text-decoration-color: color-mix(in srgb, var(--logo) 55%, transparent);
+  text-shadow: 0 0 0.65rem color-mix(in srgb, var(--logo) 24%, transparent);
+}
+
 .prompt__cwd-link:hover,
 .prompt__cwd-link:focus-visible {
   color: var(--hover);
