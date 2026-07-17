@@ -40,7 +40,7 @@ I wanted to return that favor. I wanted to run bridges for people facing the sam
 
 The ambition came before the container. The container was how I eventually made it practical.
 
-In November 2025, I [announced](https://infosec.exchange/@r3bo0tbx1/115473541878451693) the first version of tor-guard-relay. It focused on a few practical goals: one command, predictable configuration, useful diagnostics, and an image that could run on anything from a Raspberry Pi to an ordinary VPS.
+In November 2025, I [announced](https://web.archive.org/web/20260717145712/https://infosec.exchange/@r3bo0tbx1/115473541878451693) the first version of tor-guard-relay. It focused on a few practical goals: one command, predictable configuration, useful diagnostics, and an image that could run on anything from a Raspberry Pi to an ordinary VPS.
 
 By the time I [released v2.0.0](https://github.com/r3bo0tbx1/tor-guard-relay/releases/tag/v2.0.0) in June 2026, the project had grown into one container for guards, middle relays, exits, and obfs4 bridges; six operator tools; multi-architecture builds; automated release and security work; deployment templates; and a real network spread across multiple providers and countries.
 

@@ -367,12 +367,15 @@ a:focus-visible {
 }
 
 .relay-legend__hint li {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.35rem;
   margin: 0;
   padding: 0;
 }
 
-.relay-legend__hint li::marker {
-  content: "- ";
+.relay-legend__hint li::before {
+  content: "-";
 }
 
 .relay-legend__items span {
