@@ -1,3 +1,18 @@
 {{- $destination := .Destination -}}
 {{- $external := or (strings.HasPrefix $destination "https://") (strings.HasPrefix $destination "http://") -}}
+{{- $isNoJS := strings.HasPrefix .Page.RelPermalink "/nojs/" -}}
+{{- $isInternalPage := and
+  (strings.HasPrefix $destination "/")
+  (not (strings.HasPrefix $destination "//"))
+  (not (strings.HasPrefix $destination "/nojs/"))
+  (not (strings.HasPrefix $destination "/images/"))
+  (not (strings.HasPrefix $destination "/fonts/"))
+  (not (strings.HasPrefix $destination "/icons/"))
+  (not (strings.HasPrefix $destination "/css/"))
+  (not (strings.HasPrefix $destination "/js/"))
+  (not (strings.HasPrefix $destination "/.well-known/"))
+-}}
+{{- if and $isNoJS $isInternalPage -}}
+  {{- $destination = printf "/nojs%s" $destination -}}
+{{- end -}}
 <a href="{{ $destination | safeURL }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ if $external }} class="external-link" target="_blank" rel="noopener noreferrer" aria-label="{{ .PlainText }} (opens in a new tab)"{{ end }}>{{ .Text | safeHTML }}</a>

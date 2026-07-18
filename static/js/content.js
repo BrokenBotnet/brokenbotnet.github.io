@@ -70,20 +70,69 @@ document.addEventListener("DOMContentLoaded", () => {
     const frame = document.createElement("div");
     frame.className = "lightbox__frame";
 
+    const toolbar = document.createElement("div");
+    toolbar.className = "lightbox__toolbar";
+    toolbar.setAttribute("aria-label", "Image zoom controls");
+
+    const zoomOutButton = document.createElement("button");
+    zoomOutButton.className = "lightbox__zoom-button";
+    zoomOutButton.type = "button";
+    zoomOutButton.setAttribute("aria-label", "Zoom out");
+    zoomOutButton.title = "Zoom out";
+    zoomOutButton.textContent = "−";
+
+    const zoomResetButton = document.createElement("button");
+    zoomResetButton.className = "lightbox__zoom-reset";
+    zoomResetButton.type = "button";
+    zoomResetButton.setAttribute("aria-label", "Reset image zoom");
+    zoomResetButton.title = "Reset zoom";
+    zoomResetButton.textContent = "100%";
+
+    const zoomInButton = document.createElement("button");
+    zoomInButton.className = "lightbox__zoom-button";
+    zoomInButton.type = "button";
+    zoomInButton.setAttribute("aria-label", "Zoom in");
+    zoomInButton.title = "Zoom in";
+    zoomInButton.textContent = "+";
+
+    toolbar.append(zoomOutButton, zoomResetButton, zoomInButton);
+
+    const viewport = document.createElement("div");
+    viewport.className = "lightbox__viewport";
+    viewport.dataset.zoom = "100";
+
     const previewImage = document.createElement("img");
     previewImage.className = "lightbox__image";
     previewImage.alt = "";
+    viewport.append(previewImage);
 
     const caption = document.createElement("p");
     caption.className = "lightbox__caption";
     caption.hidden = true;
 
-    frame.append(previewImage, caption);
+    frame.append(toolbar, viewport, caption);
     lightbox.append(closeButton, frame);
     document.body.append(lightbox);
 
     let activeImage = null;
     let scrollPosition = 0;
+    const zoomLevels = [100, 150, 200, 300];
+    let zoomIndex = 0;
+
+    const updateZoom = (nextIndex) => {
+      zoomIndex = Math.max(0, Math.min(nextIndex, zoomLevels.length - 1));
+      const zoom = zoomLevels[zoomIndex];
+
+      viewport.dataset.zoom = String(zoom);
+      zoomResetButton.textContent = `${zoom}%`;
+      zoomResetButton.setAttribute("aria-label", `Reset image zoom from ${zoom}%`);
+      zoomOutButton.disabled = zoomIndex === 0;
+      zoomInButton.disabled = zoomIndex === zoomLevels.length - 1;
+
+      if (zoomIndex === 0) {
+        viewport.scrollTo(0, 0);
+      }
+    };
 
     const openLightbox = (image) => {
       const figureCaption = image.closest("figure")?.querySelector("figcaption")?.textContent.trim();
@@ -95,6 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
       previewImage.alt = image.alt;
       caption.textContent = description;
       caption.hidden = !description;
+      updateZoom(0);
       document.documentElement.classList.add("lightbox-open");
 
       if (typeof lightbox.showModal === "function") {
@@ -127,6 +177,23 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
         openLightbox(image);
       });
+    });
+
+    zoomOutButton.addEventListener("click", () => updateZoom(zoomIndex - 1));
+    zoomResetButton.addEventListener("click", () => updateZoom(0));
+    zoomInButton.addEventListener("click", () => updateZoom(zoomIndex + 1));
+
+    lightbox.addEventListener("keydown", (event) => {
+      if (event.key === "+" || event.key === "=") {
+        event.preventDefault();
+        updateZoom(zoomIndex + 1);
+      } else if (event.key === "-") {
+        event.preventDefault();
+        updateZoom(zoomIndex - 1);
+      } else if (event.key === "0") {
+        event.preventDefault();
+        updateZoom(0);
+      }
     });
 
     closeButton.addEventListener("click", closeLightbox);

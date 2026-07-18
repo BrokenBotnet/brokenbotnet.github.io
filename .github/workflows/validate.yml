@@ -65,6 +65,12 @@ jobs:
             test -f public/2026/07/17/non-eu-relays/index.html
           fi
           test -f public/1984/11/05/cd-whoami/index.html
+          test -f public/nojs/index.html
+          test -f public/nojs/whoami/index.html
+          test -f public/nojs/posts/index.html
+          test -f public/nojs/donate/index.html
+          test -f public/nojs/tags/tor/index.html
+          test -f public/nojs/2025/11/01/tor-relays-project/index.html
           test -f public/images/social/whoami.jpg
           test -f public/images/social/writing.jpg
           test -f public/images/social/donate.jpg
@@ -88,6 +94,14 @@ jobs:
           NODE
           if grep -R -n -E 'https?://(localhost|127\.0\.0\.1)' public; then
             echo "Local development URL found in production output"
+            exit 1
+          fi
+          if find public/nojs -type f -name '*.html' -exec grep -Eil '<script([[:space:]>])' {} + | grep -q .; then
+            echo "Executable or data script element found in no-JavaScript output"
+            exit 1
+          fi
+          if grep -Eiq '<script([[:space:]>])' public/404.html; then
+            echo "Script element found in shared 404 output"
             exit 1
           fi
 
@@ -156,6 +170,8 @@ jobs:
           const writing = read('public/posts/index.html');
           const donate = read('public/donate/index.html');
           const tag = read('public/tags/tor/index.html');
+          const nojsHome = read('public/nojs/index.html');
+          const nojsArticle = read('public/nojs/2025/11/01/tor-relays-project/index.html');
           const sitemap = read('public/sitemap.xml');
 
           assert(structuredTypes(home).includes('WebSite'));
@@ -179,6 +195,12 @@ jobs:
           assert(!home.includes('cloud.umami.is'));
           assert.match(tag, /name=["']?robots["']?\s+content=["']noindex, follow["']/i);
           assert(!sitemap.includes('/tags/'));
+          assert(!sitemap.includes('/nojs/'));
+          assert.match(nojsHome, /<meta\s+name=["']?robots["']?\s+content=["']noindex, follow["']/i);
+          assert.match(nojsHome, /<link\s+rel=["']?canonical["']?\s+href=["']?https:\/\/brokenbotnet\.com\/["']?/i);
+          assert.match(nojsArticle, /<link\s+rel=["']?canonical["']?\s+href=["']?https:\/\/brokenbotnet\.com\/2025\/11\/01\/tor-relays-project\/["']?/i);
+          assert(!/<script\b/i.test(nojsHome));
+          assert(!/<script\b/i.test(nojsArticle));
 
           for (const file of [home, profile, article, tag]) {
             assert(!/<meta\s+name=["']?keywords["']?/i.test(file));

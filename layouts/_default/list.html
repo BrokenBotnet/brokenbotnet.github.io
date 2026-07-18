@@ -1,12 +1,20 @@
 {{ define "main" }}
   {{ $pages := where .Pages.ByDate.Reverse "Params.unlisted" "ne" true }}
+  {{ $isNoJS := strings.HasPrefix .RelPermalink "/nojs/" }}
   <header class="content__header">
     <p class="eyebrow">Index</p>
     <h1>{{ partial "tag-label.html" .Title }}</h1>
     {{ .Content }}
   </header>
 
-  {{ if and (eq .Section "posts") (gt (len $pages) 2) }}
+  {{ if and $isNoJS (eq .Section "posts") }}
+  <nav class="nojs-tag-nav" aria-label="Browse writing by tag">
+    <a href="{{ partial "page-url.html" (dict "page" . "nojs" true) }}" aria-current="page">All Writing</a>
+    {{ range .Site.Taxonomies.tags.Alphabetical }}
+      <a href="{{ partial "page-url.html" (dict "page" .Page "nojs" true) }}">{{ partial "tag-label.html" .Page.Title }}</a>
+    {{ end }}
+  </nav>
+  {{ else if and (eq .Section "posts") (gt (len $pages) 2) }}
   <form class="archive-filter" data-archive-filter role="search">
     <label class="archive-filter__search">
       <span class="archive-filter__label"><i data-lucide="search" aria-hidden="true"></i>Search Writing</span>
@@ -28,7 +36,7 @@
   <ol class="post-list post-list--archive" data-post-list>
     {{ range $pages }}
       <li data-post-item data-search="{{ printf "%s %s %s" .Title .Description (delimit (.Params.tags | default (slice)) " ") | lower }}" data-tags="{{ delimit (.Params.tags | default (slice)) "," | lower }}">
-        {{ partial "post-list-card.html" (dict "page" . "showTags" true) }}
+        {{ partial "post-list-card.html" (dict "page" . "showTags" true "nojs" $isNoJS) }}
       </li>
     {{ end }}
   </ol>

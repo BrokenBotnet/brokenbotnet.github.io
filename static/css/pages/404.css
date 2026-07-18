@@ -81,6 +81,16 @@
   height: 0.9rem;
 }
 
+.error-native-icon {
+  display: inline-grid;
+  min-width: 1em;
+  place-items: center;
+  font-family: var(--font-monospace);
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1;
+}
+
 .error-console__body {
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(17rem, 0.92fr);

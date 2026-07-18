@@ -16,6 +16,14 @@
 {{- $socialImageHeight := $social.height -}}
 {{- $isTaxonomy := or (eq .Kind "taxonomy") (eq .Kind "term") -}}
 {{- $isArticle := and .IsPage (eq .Section "posts") -}}
+{{- $isNoJS := strings.HasPrefix .RelPermalink "/nojs/" -}}
+{{- $isScriptFree := or $isNoJS (eq .Kind "404") -}}
+{{- $canonical := .Permalink -}}
+{{- if $isNoJS -}}
+  {{- with .OutputFormats.Get "HTML" -}}
+    {{- $canonical = .Permalink -}}
+  {{- end -}}
+{{- end -}}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
@@ -24,19 +32,27 @@
 <meta name="author" content="{{ .Site.Params.author }}">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 {{ if hugo.IsProduction }}
+{{ if $isScriptFree }}
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'none'; form-action 'self'">
+{{ else }}
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https://img.shields.io; font-src 'self'; connect-src 'self'; frame-src 'none'; form-action 'self'">
 {{ end }}
-{{ if .Site.Params.noindex }}
+{{ end }}
+{{ if $isNoJS }}
+<meta name="robots" content="noindex, follow">
+{{ else if .Site.Params.noindex }}
 <meta name="robots" content="noindex, nofollow">
 {{ else if $isTaxonomy }}
 <meta name="robots" content="noindex, follow">
 {{ end }}
 
 <title>{{ $title }}</title>
-<link rel="canonical" href="{{ .Permalink }}">
+<link rel="canonical" href="{{ $canonical }}">
 
-{{- $bootScript := resources.FromString "js/boot.js" (os.ReadFile "static/js/boot.js") | minify | fingerprint "sha384" -}}
-<script src="{{ $bootScript.RelPermalink }}" integrity="{{ $bootScript.Data.Integrity }}"></script>
+{{- if not $isScriptFree -}}
+  {{- $bootScript := resources.FromString "js/boot.js" (os.ReadFile "static/js/boot.js") | minify | fingerprint "sha384" -}}
+  <script src="{{ $bootScript.RelPermalink }}" integrity="{{ $bootScript.Data.Integrity }}"></script>
+{{- end -}}
 
 {{- $styleFiles := slice
   (printf "static/css/palettes/%s.css" (.Site.Params.theme.palette | default "base16-dark"))
@@ -63,9 +79,17 @@
 {{- if eq .Kind "404" -}}
   {{- $pageStyleFiles = $pageStyleFiles | append "static/css/pages/404.css" -}}
 {{- end -}}
+{{- if $isNoJS -}}
+  {{- $pageStyleFiles = $pageStyleFiles | append "static/css/pages/nojs.css" -}}
+{{- end -}}
 {{- range $pageStyleFiles -}}
   {{- $pageStyle := resources.FromString (printf "css/%s" (path.Base .)) (os.ReadFile .) | minify | fingerprint "sha384" -}}
   <link rel="stylesheet" href="{{ $pageStyle.RelPermalink }}" integrity="{{ $pageStyle.Data.Integrity }}">
+{{- end -}}
+
+{{- if not $isScriptFree -}}
+  {{- $noscriptStyle := resources.FromString "css/noscript.css" (os.ReadFile "static/css/pages/noscript.css") | minify | fingerprint "sha384" -}}
+  <noscript><link rel="stylesheet" href="{{ $noscriptStyle.RelPermalink }}" integrity="{{ $noscriptStyle.Data.Integrity }}"></noscript>
 {{- end -}}
 
 <link rel="preload" href="{{ "fonts/ibm-plex/IBMPlexSans-Latin-Regular.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
@@ -83,7 +107,7 @@
 <meta property="og:type" content="{{ if $isArticle }}article{{ else }}website{{ end }}">
 <meta property="og:title" content="{{ $socialTitle }}">
 <meta property="og:description" content="{{ $description }}">
-<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:url" content="{{ $canonical }}">
 <meta property="og:site_name" content="{{ .Site.Title }}">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="{{ $socialImage }}">
@@ -106,35 +130,39 @@
   {{ range .Params.tags }}<meta property="article:tag" content="{{ . }}">{{ end }}
 {{ end }}
 
-{{ partial "structured-data.html" . }}
-
-{{- $coreScriptFiles := slice
-  "static/js/lucide-subset.js"
-  "static/js/site.js"
--}}
-{{- $coreScriptSource := "" -}}
-{{- range $coreScriptFiles -}}
-  {{- $coreScriptSource = printf "%s\n;%s" $coreScriptSource (os.ReadFile .) -}}
-{{- end -}}
-{{- $coreScript := resources.FromString "js/site.js" $coreScriptSource | minify | fingerprint "sha384" -}}
-<script defer src="{{ $coreScript.RelPermalink }}" integrity="{{ $coreScript.Data.Integrity }}"></script>
-
-{{- $pageScriptFiles := slice -}}
-{{- if eq .Layout "donate" -}}
-  {{- $pageScriptFiles = $pageScriptFiles | append "static/js/donate.js" -}}
-{{- end -}}
-{{- if and (eq .Section "posts") (not .IsPage) -}}
-  {{- $pageScriptFiles = $pageScriptFiles | append "static/js/archive.js" -}}
-{{- end -}}
-{{- if or $isArticle (eq .RelPermalink ("whoami/" | relURL)) -}}
-  {{- $pageScriptFiles = $pageScriptFiles | append "static/js/content.js" -}}
-{{- end -}}
-{{- range $pageScriptFiles -}}
-  {{- $pageScript := resources.FromString (printf "js/%s" (path.Base .)) (os.ReadFile .) | minify | fingerprint "sha384" -}}
-  <script defer src="{{ $pageScript.RelPermalink }}" integrity="{{ $pageScript.Data.Integrity }}"></script>
+{{- if not $isScriptFree -}}
+  {{ partial "structured-data.html" . }}
 {{- end -}}
 
-{{- $nodeScript := resources.FromString "js/node-background.js" (os.ReadFile "static/js/node-background.js") | minify | fingerprint "sha384" -}}
-{{- $nodeLoaderSource := printf `const phone=window.matchMedia("(max-width: 47.99rem), (max-height: 31rem) and (pointer: coarse)");let loaded=false;const load=()=>{if(!loaded&&!phone.matches){loaded=true;import(%q);phone.removeEventListener("change",load)}};load();if(!loaded)phone.addEventListener("change",load)` $nodeScript.RelPermalink -}}
-{{- $nodeLoader := resources.FromString "js/node-loader.js" $nodeLoaderSource | minify | fingerprint "sha384" -}}
-<script type="module" src="{{ $nodeLoader.RelPermalink }}" integrity="{{ $nodeLoader.Data.Integrity }}"></script>
+{{- if not $isScriptFree -}}
+  {{- $coreScriptFiles := slice
+    "static/js/lucide-subset.js"
+    "static/js/site.js"
+  -}}
+  {{- $coreScriptSource := "" -}}
+  {{- range $coreScriptFiles -}}
+    {{- $coreScriptSource = printf "%s\n;%s" $coreScriptSource (os.ReadFile .) -}}
+  {{- end -}}
+  {{- $coreScript := resources.FromString "js/site.js" $coreScriptSource | minify | fingerprint "sha384" -}}
+  <script defer src="{{ $coreScript.RelPermalink }}" integrity="{{ $coreScript.Data.Integrity }}"></script>
+
+  {{- $pageScriptFiles := slice -}}
+  {{- if eq .Layout "donate" -}}
+    {{- $pageScriptFiles = $pageScriptFiles | append "static/js/donate.js" -}}
+  {{- end -}}
+  {{- if and (eq .Section "posts") (not .IsPage) -}}
+    {{- $pageScriptFiles = $pageScriptFiles | append "static/js/archive.js" -}}
+  {{- end -}}
+  {{- if or $isArticle (eq .RelPermalink ("whoami/" | relURL)) -}}
+    {{- $pageScriptFiles = $pageScriptFiles | append "static/js/content.js" -}}
+  {{- end -}}
+  {{- range $pageScriptFiles -}}
+    {{- $pageScript := resources.FromString (printf "js/%s" (path.Base .)) (os.ReadFile .) | minify | fingerprint "sha384" -}}
+    <script defer src="{{ $pageScript.RelPermalink }}" integrity="{{ $pageScript.Data.Integrity }}"></script>
+  {{- end -}}
+
+  {{- $nodeScript := resources.FromString "js/node-background.js" (os.ReadFile "static/js/node-background.js") | minify | fingerprint "sha384" -}}
+  {{- $nodeLoaderSource := printf `const phone=window.matchMedia("(max-width: 47.99rem), (max-height: 31rem) and (pointer: coarse)");let loaded=false;const load=()=>{if(!loaded&&!phone.matches){loaded=true;import(%q);phone.removeEventListener("change",load)}};load();if(!loaded)phone.addEventListener("change",load)` $nodeScript.RelPermalink -}}
+  {{- $nodeLoader := resources.FromString "js/node-loader.js" $nodeLoaderSource | minify | fingerprint "sha384" -}}
+  <script type="module" src="{{ $nodeLoader.RelPermalink }}" integrity="{{ $nodeLoader.Data.Integrity }}"></script>
+{{- end -}}

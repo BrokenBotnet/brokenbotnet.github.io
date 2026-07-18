@@ -1,4 +1,5 @@
 {{ define "main" }}
+  {{ $isNoJS := strings.HasPrefix .RelPermalink "/nojs/" }}
   <article class="post h-entry">
     <header class="content__header post__header">
       <p class="eyebrow">{{ if eq .Section "posts" }}Field Note{{ else }}Identity File{{ end }}</p>
@@ -19,7 +20,7 @@
     {{ with .GetTerms "tags" }}
     <footer class="post__tags" aria-label="Tags">
       <span>Tags:</span>
-      {{ range . }}<a href="{{ .RelPermalink }}">#{{ partial "tag-label.html" .LinkTitle }}</a>{{ end }}
+      {{ range . }}<a href="{{ partial "page-url.html" (dict "page" . "nojs" $isNoJS) }}">#{{ partial "tag-label.html" .LinkTitle }}</a>{{ end }}
     </footer>
     {{ end }}
 
@@ -29,13 +30,13 @@
       {{ if or $previous $next }}
       <nav class="post-nav" aria-label="More writing">
         {{ with $previous }}
-        <a class="post-nav__item post-nav__item--previous" href="{{ .RelPermalink }}">
+        <a class="post-nav__item post-nav__item--previous" href="{{ partial "page-url.html" (dict "page" . "nojs" $isNoJS) }}">
           <span class="post-nav__label"><span class="post-nav__arrow" aria-hidden="true">&larr;</span> Previous Article</span>
           <strong>{{ .Title }}</strong>
         </a>
         {{ end }}
         {{ with $next }}
-        <a class="post-nav__item post-nav__item--next" href="{{ .RelPermalink }}">
+        <a class="post-nav__item post-nav__item--next" href="{{ partial "page-url.html" (dict "page" . "nojs" $isNoJS) }}">
           <span class="post-nav__label">Next Article <span class="post-nav__arrow" aria-hidden="true">&rarr;</span></span>
           <strong>{{ .Title }}</strong>
         </a>
@@ -49,7 +50,7 @@
         <h2 id="related-posts-title">Related Writing</h2>
         <ul>
           {{ range . }}
-          <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+          <li><a href="{{ partial "page-url.html" (dict "page" . "nojs" $isNoJS) }}">{{ .Title }}</a></li>
           {{ end }}
         </ul>
       </section>

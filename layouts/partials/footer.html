@@ -1,10 +1,11 @@
 <div class="footer__meta">
   <p class="copyright">© 2020–{{ now.Year }} rE-Bo0t.bx1</p>
-  <p class="footer__build"><i data-lucide="terminal"></i>Built with <a class="external-link" href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" aria-label="Hugo (opens in a new tab)">Hugo</a> + <a class="external-link" href="https://github.com/joeroe/risotto" target="_blank" rel="noopener noreferrer" aria-label="risotto (opens in a new tab)">risotto</a>.</p>
+  <p class="footer__build"><i data-lucide="terminal" aria-hidden="true"></i>Built with <a class="external-link" href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" aria-label="Hugo (opens in a new tab)">Hugo</a> + <a class="external-link" href="https://github.com/joeroe/risotto" target="_blank" rel="noopener noreferrer" aria-label="risotto (opens in a new tab)">risotto</a>.</p>
 </div>
 <nav class="footer__links" aria-label="Footer navigation">
-  <a href="{{ "index.xml" | relURL }}"><i data-lucide="rss"></i>RSS</a>
-  <a href="https://github.com/BrokenBotnet/brokenbotnet.github.io" target="_blank" rel="noopener noreferrer"><i data-lucide="code-2"></i>Source</a>
+  {{ with .OutputFormats.Get "NOJS" }}<a class="footer-link footer-link--mode" href="{{ .RelPermalink }}"><span class="footer-link__icon footer-link__icon--nojs nojs-mark" aria-hidden="true"><span>JS</span><span class="nojs-mark__cross">×</span></span><span>No-JavaScript</span></a>{{ end }}
+  <a class="footer-link footer-link--rss" href="{{ "index.xml" | relURL }}"><i class="footer-link__icon" data-lucide="rss" aria-hidden="true"></i><span>RSS</span></a>
+  <a class="footer-link footer-link--source" href="https://github.com/BrokenBotnet/brokenbotnet.github.io" target="_blank" rel="noopener noreferrer"><i class="footer-link__icon" data-lucide="code-2" aria-hidden="true"></i><span>Source</span></a>
 </nav>
 <details class="relay-legend">
   <summary>Relay Colors <i data-lucide="chevron-down" aria-hidden="true"></i></summary>

@@ -1,8 +1,13 @@
 {{ define "main" }}
+  {{ $isNoJS := strings.HasPrefix .RelPermalink "/nojs/" }}
   <article class="donate-page">
     <header class="content__header donate-page__header">
       <div class="donate-page__currency-marks" aria-hidden="true">
-        {{ range hugo.Data.donations.methods }}<img src="{{ .icon | relURL }}" alt="" width="96" height="96">{{ end }}
+        {{ range hugo.Data.donations.methods }}
+          {{ $iconPath := .icon }}
+          {{ if $isNoJS }}{{ $iconPath = printf "icons/donations/%s.png" .id }}{{ end }}
+          <img src="{{ $iconPath | relURL }}" alt="" width="96" height="96">
+        {{ end }}
       </div>
       <p class="eyebrow">Support the Network</p>
       <h1>{{ .Title }}</h1>
@@ -11,10 +16,14 @@
 
     <section class="donation-grid" aria-label="Donation methods">
       {{ range hugo.Data.donations.methods }}
+      {{ $qrPath := .qr }}
+      {{ $iconPath := .icon }}
+      {{ if $isNoJS }}{{ $qrPath = printf "images/donate/%s.png" .id }}{{ end }}
+      {{ if $isNoJS }}{{ $iconPath = printf "icons/donations/%s.png" .id }}{{ end }}
       <article class="donation-card donation-card--{{ .id }}">
         <header class="donation-card__header">
           <div class="donation-card__identity">
-            <span class="donation-card__icon" aria-hidden="true"><img src="{{ .icon | relURL }}" alt="" width="32" height="32"></span>
+            <span class="donation-card__icon" aria-hidden="true"><img src="{{ $iconPath | relURL }}" alt="" width="32" height="32"></span>
             <div>
               <p class="donation-card__network">{{ .network }} Network</p>
               <h2>{{ .name }}</h2>
@@ -26,7 +35,7 @@
         <p class="donation-card__description">{{ .description }}</p>
 
         <div class="donation-card__qr">
-          <img src="{{ .qr | relURL }}" alt="{{ .name }} donation QR code" width="100" height="100" loading="lazy" decoding="async">
+          <img src="{{ $qrPath | relURL }}" alt="{{ .name }} donation QR code" width="100" height="100" loading="lazy" decoding="async">
         </div>
 
         <div class="donation-card__address">
@@ -35,10 +44,12 @@
         </div>
 
         <div class="donation-card__actions">
-          <button type="button" data-copy-address data-address="{{ .address }}" aria-label="Copy {{ .name }} address">
-            <i data-lucide="copy" aria-hidden="true"></i>
-            <span aria-live="polite">Copy Address</span>
-          </button>
+          {{ if not $isNoJS }}
+            <button type="button" data-copy-address data-address="{{ .address }}" aria-label="Copy {{ .name }} address">
+              <i data-lucide="copy" aria-hidden="true"></i>
+              <span aria-live="polite">Copy Address</span>
+            </button>
+          {{ end }}
           <a href="{{ .uri | safeURL }}">Open Wallet <i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
         </div>
       </article>

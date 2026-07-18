@@ -4,7 +4,9 @@
       "staticDistDir": "./public",
       "url": [
         "http://localhost/",
-        "http://localhost/2025/11/01/tor-relays-project/"
+        "http://localhost/2025/11/01/tor-relays-project/",
+        "http://localhost/nojs/",
+        "http://localhost/nojs/2025/11/01/tor-relays-project/"
       ],
       "numberOfRuns": 1,
       "settings": {

@@ -1,0 +1,83 @@
+[data-lucide] {
+  display: inline-flex;
+  min-inline-size: 1em;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+}
+
+[data-lucide="arrow-right"]::before {
+  content: "→";
+}
+
+[data-lucide="arrow-up"]::before {
+  content: "↑";
+}
+
+[data-lucide="arrow-up-right"]::before,
+[data-lucide="external-link"]::before {
+  content: "↗";
+}
+
+[data-lucide="chevron-down"]::before {
+  content: "⌄";
+}
+
+[data-lucide="container"]::before {
+  content: "◇";
+}
+
+[data-lucide="cpu"]::before {
+  content: "⚙";
+}
+
+[data-lucide="network"]::before {
+  content: "⌘";
+}
+
+[data-lucide="pin"]::before {
+  content: "📌";
+}
+
+[data-lucide="rocket"]::before {
+  content: "↑";
+}
+
+[data-lucide="search"]::before {
+  content: "?";
+}
+
+[data-lucide="shield-off"]::before {
+  content: "∅";
+}
+
+[data-lucide="tag"]::before {
+  content: "#";
+}
+
+[data-lucide="terminal"]::before {
+  content: ">_";
+}
+
+[data-lucide="rss"]::before {
+  content: "◔";
+}
+
+[data-lucide="code-2"]::before {
+  content: "</>";
+}
+
+[data-copy-address] {
+  display: none !important;
+}
+
+.social-icon--github { --icon: url("/icons/raster/github.png"); }
+.social-icon--bluesky { --icon: url("/icons/raster/bluesky.png"); }
+.social-icon--x { --icon: url("/icons/raster/x.png"); }
+.social-icon--matrix { --icon: url("/icons/raster/matrix.png"); }
+.social-icon--mastodon { --icon: url("/icons/raster/mastodon.png"); }
+.social-icon--reddit { --icon: url("/icons/raster/reddit.png"); }
+.social-icon--keybase { --icon: url("/icons/raster/keybase.png"); }
+.social-icon--openpgp { --icon: url("/icons/raster/openpgp.png"); }
+.social-icon--nostr { --icon: url("/icons/raster/nostr.png"); }
+.social-icon--mail { --icon: url("/icons/raster/mail.png"); }

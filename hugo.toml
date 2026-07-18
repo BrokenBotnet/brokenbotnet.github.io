@@ -14,8 +14,21 @@ timeZone = "Asia/Tokyo"
   posts = "/:year/:month/:day/:slug/"
 
 [outputs]
-  home = ["HTML", "RSS"]
-  section = ["HTML", "RSS"]
+  home = ["HTML", "RSS", "NOJS"]
+  section = ["HTML", "RSS", "NOJS"]
+  page = ["HTML", "NOJS"]
+  taxonomy = ["HTML", "RSS", "NOJS"]
+  term = ["HTML", "RSS", "NOJS"]
+
+[outputFormats]
+  [outputFormats.NOJS]
+    mediaType = "text/html"
+    baseName = "index"
+    path = "nojs"
+    isHTML = true
+    permalinkable = true
+    notAlternative = true
+    weight = 20
 
 [params]
   author = "rE-Bo0t.bx1"

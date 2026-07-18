@@ -1,7 +1,12 @@
 {{ define "main" }}
   {{ $stats := hugo.Data.project_stats }}
+  {{ $isNoJS := strings.HasPrefix .RelPermalink "/nojs/" }}
+  {{ $homeContent := .Content }}
+  {{ if $isNoJS }}
+    {{ $homeContent = replace $homeContent `href="/whoami/"` `href="/nojs/whoami/"` | safeHTML }}
+  {{ end }}
   <article class="hero hero--status-sequence">
-    <div class="content__body">{{ .Content }}</div>
+    <div class="content__body">{{ $homeContent }}</div>
   </article>
 
   <section class="featured-projects home-section-reveal home-section-reveal--projects" aria-labelledby="featured-projects-title">
@@ -47,7 +52,7 @@
   <section class="recent-writing home-section-reveal home-section-reveal--writing" aria-labelledby="recent-writing-title">
     <div class="section-heading">
       <h2 id="recent-writing-title">Recent Writing</h2>
-      <a class="inline-action" href="{{ "posts/" | relURL }}">View Archive <i data-lucide="arrow-right"></i></a>
+      <a class="inline-action" href="{{ partial "page-url.html" (dict "page" (.Site.GetPage "/posts") "nojs" $isNoJS) }}">View Archive <i data-lucide="arrow-right"></i></a>
     </div>
     <ol class="post-list post-list--recent">
       {{ $posts := where .Site.RegularPages.ByDate.Reverse "Section" "posts" }}
@@ -56,12 +61,12 @@
       {{ $recentPosts := first 4 (where $visiblePosts "Params.pinned" "ne" true) }}
       {{ range $pinnedPosts }}
         <li class="post-list__item--pinned">
-          {{ partial "post-list-card.html" (dict "page" . "showTags" false "showPinned" true) }}
+          {{ partial "post-list-card.html" (dict "page" . "showTags" false "showPinned" true "nojs" $isNoJS) }}
         </li>
       {{ end }}
       {{ range $recentPosts }}
         <li>
-          {{ partial "post-list-card.html" (dict "page" . "showTags" false "showPinned" false) }}
+          {{ partial "post-list-card.html" (dict "page" . "showTags" false "showPinned" false "nojs" $isNoJS) }}
         </li>
       {{ end }}
     </ol>

@@ -3,9 +3,15 @@
   <head>
     {{ partial "head.html" . }}
   </head>
-  <body>
-    <canvas class="relay-network" data-relay-network aria-hidden="true"></canvas>
+  <body id="top">
+    {{ if ne .Kind "404" }}<canvas class="relay-network" data-relay-network aria-hidden="true"></canvas>{{ end }}
     <a class="skip-link" href="#main-content">Skip to content</a>
+    {{- $nojsOutput := .OutputFormats.Get "NOJS" -}}
+    <noscript>
+      <aside class="nojs-notice" aria-label="JavaScript-free version">
+        JavaScript is disabled, {{ with $nojsOutput }}Open the <a class="nojs-notice__link" href="{{ .RelPermalink }}"><span class="nojs-mark" aria-hidden="true"><span>JS</span><span class="nojs-mark__cross">×</span></span><span class="nojs-notice__label">No-JavaScript version</span></a>{{ else }}the core page remains readable and navigable{{ end }}
+      </aside>
+    </noscript>
     <div class="page{{ if eq .Kind "404" }} page--404{{ end }}">
       <header class="page__header">
         {{ partial "header.html" . }}
@@ -34,8 +40,12 @@
       </footer>
     </div>
 
-    <button class="back-to-top" type="button" data-back-to-top hidden title="Back to top" aria-label="Back to top">
-      <i data-lucide="arrow-up" aria-hidden="true"></i>
-    </button>
+    {{ if eq .Kind "404" }}
+      <a class="back-to-top back-to-top--nojs" href="#top" title="Back to top" aria-label="Back to top">↑</a>
+    {{ else }}
+      <button class="back-to-top" type="button" data-back-to-top hidden title="Back to top" aria-label="Back to top">
+        <i data-lucide="arrow-up" aria-hidden="true"></i>
+      </button>
+    {{ end }}
   </body>
 </html>

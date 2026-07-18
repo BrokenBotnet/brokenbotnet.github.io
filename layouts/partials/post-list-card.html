@@ -1,7 +1,8 @@
 {{- $post := .page -}}
 {{- $showTags := .showTags -}}
 {{- $showPinned := .showPinned -}}
-<a class="post-list__card{{ if $showTags }} post-list__card--with-tags{{ end }}" href="{{ $post.RelPermalink }}" aria-label="Read {{ $post.Title }}">
+{{- $isNoJS := .nojs | default false -}}
+<a class="post-list__card{{ if $showTags }} post-list__card--with-tags{{ end }}" href="{{ partial "page-url.html" (dict "page" $post "nojs" $isNoJS) }}" aria-label="Read {{ $post.Title }}">
   <span class="post-list__meta">
     <time datetime="{{ $post.Date.Format "2006-01-02" }}">{{ $post.Date.Format "2006-01-02" }}</time>
     {{ if and $showPinned $post.Params.pinned }}

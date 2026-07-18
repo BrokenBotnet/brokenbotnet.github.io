@@ -1,0 +1,10 @@
+{{- $htmlOutput := .OutputFormats.Get "HTML" -}}
+<div class="footer__meta">
+  <p class="copyright">© 2020–{{ now.Year }} rE-Bo0t.bx1</p>
+  <p class="footer__build"><span class="footer-link__icon footer-link__icon--terminal" aria-hidden="true">&gt;_</span>Built with <a class="external-link" href="https://gohugo.io/" target="_blank" rel="noopener noreferrer">Hugo</a> + <a class="external-link" href="https://github.com/joeroe/risotto" target="_blank" rel="noopener noreferrer">risotto</a>.</p>
+</div>
+<nav class="footer__links footer__links--nojs" aria-label="Footer navigation">
+  {{ with $htmlOutput }}<a class="footer-link footer-link--mode" href="{{ .RelPermalink }}"><span class="footer-link__icon" aria-hidden="true">◫</span><span>Standard version</span></a>{{ end }}
+  <a class="footer-link footer-link--rss" href="{{ "index.xml" | relURL }}"><span class="footer-link__icon" aria-hidden="true">◔</span><span>RSS</span></a>
+  <a class="footer-link footer-link--source" href="https://github.com/BrokenBotnet/brokenbotnet.github.io" target="_blank" rel="noopener noreferrer"><span class="footer-link__icon footer-link__icon--code" aria-hidden="true">&lt;/&gt;</span><span>Source</span></a>
+</nav>

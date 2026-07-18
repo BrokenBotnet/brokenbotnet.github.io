@@ -47,6 +47,10 @@ for (const file of (await walk(path.join(root, "static", "js"))).filter((file) =
 for (const file of (await walk(path.join(root, "public"))).filter((file) => file.endsWith(".html"))) {
   const html = await readFile(file, "utf8");
   const { errors, scripts, tags } = tokenizeHtml(html);
+  const relativeFile = path.relative(root, file).split(path.sep).join("/");
+  const isNoJsPage = relativeFile.startsWith("public/nojs/");
+  const isShared404 = relativeFile === "public/404.html";
+  const mustBeScriptFree = isNoJsPage || isShared404;
   const usesSiteScript = scripts.some((script) => {
     const src = attributeValue(script, "src") ?? "";
     return /^\/js\/site\.min\.[a-f0-9]+\.js$/.test(src);
@@ -61,7 +65,22 @@ for (const file of (await walk(path.join(root, "public"))).filter((file) => file
 
   for (const error of errors) report(file, error);
 
+  if (mustBeScriptFree && scripts.length) {
+    report(file, `script-free output contains ${scripts.length} script element(s)`);
+  }
+
   for (const tag of tags) {
+    if (mustBeScriptFree && ["iframe", "object", "embed"].includes(tag.name)) {
+      report(file, `script-free output contains executable or embedded content in ${tag.raw.slice(0, 120)}`);
+    }
+    if (
+      mustBeScriptFree &&
+      tag.name === "link" &&
+      attributeValue(tag, "rel")?.toLowerCase().split(/\s+/).includes("modulepreload")
+    ) {
+      report(file, `script-free output contains a module preload in ${tag.raw.slice(0, 120)}`);
+    }
+
     for (const attribute of tag.attributes) {
       const normalizedUrl = normalizeAttributeUrl(attribute.value);
       const hasUnsafeScheme =
@@ -83,6 +102,8 @@ for (const file of (await walk(path.join(root, "public"))).filter((file) => file
   }
 
   for (const script of scripts) {
+    if (mustBeScriptFree) continue;
+
     const body = script.body.trim();
     const type = attributeValue(script, "type")?.toLowerCase();
     const src = attributeValue(script, "src");

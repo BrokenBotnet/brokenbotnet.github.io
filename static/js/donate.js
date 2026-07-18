@@ -1,10 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const wait = (milliseconds) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
-  const phoneViewport = window.matchMedia(
-    "(max-width: 47.99rem), (max-height: 31rem) and (pointer: coarse)"
-  );
-  const reduceMotion =
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches || phoneViewport.matches;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   document.querySelectorAll("[data-node-sync]").forEach((terminal) => {
     const path = terminal.querySelector("[data-terminal-path]");
@@ -15,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
       { network: "bitcoin", command: "bitcoin-cli getblockchaininfo" },
       { network: "monero", command: "monerod sync_info" },
     ];
-    const playbackKey = "brokenbotnet:donate-node-sync-played";
     const waitUntilVisible = () => {
       if (!document.hidden) return Promise.resolve();
       return new Promise((resolve) => {
@@ -33,18 +28,11 @@ document.addEventListener("DOMContentLoaded", () => {
       await waitUntilVisible();
     };
     const updateVisibility = () => terminal.classList.toggle("is-paused", document.hidden);
-    let hasPlayed = false;
-
-    try {
-      hasPlayed = window.sessionStorage.getItem(playbackKey) === "true";
-    } catch {
-      hasPlayed = false;
-    }
 
     document.addEventListener("visibilitychange", updateVisibility);
     updateVisibility();
 
-    if (reduceMotion || hasPlayed) {
+    if (reduceMotion) {
       command.textContent = "";
       terminal.classList.add("is-complete");
       return;
@@ -73,12 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       terminal.classList.add("is-complete");
-
-      try {
-        window.sessionStorage.setItem(playbackKey, "true");
-      } catch {
-        // The animation remains functional when session storage is unavailable.
-      }
     };
 
     runNodeSync();

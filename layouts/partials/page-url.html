@@ -1,0 +1,11 @@
+{{- $page := .page -}}
+{{- $nojs := .nojs | default false -}}
+{{- if $nojs -}}
+  {{- with $page.OutputFormats.Get "NOJS" -}}
+    {{- .RelPermalink -}}
+  {{- else -}}
+    {{- $page.RelPermalink -}}
+  {{- end -}}
+{{- else -}}
+  {{- $page.RelPermalink -}}
+{{- end -}}

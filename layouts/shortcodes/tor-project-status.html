@@ -5,6 +5,9 @@
 {{- $version := $stats.tor_guard_relay.release -}}
 {{- $pulls := printf "%s pulls" $stats.tor_guard_relay.docker_pulls_formatted -}}
 {{- $variant := .Get "variant" | default "native" -}}
+{{- if strings.HasPrefix .Page.RelPermalink "/nojs/" -}}
+  {{- $variant = "native" -}}
+{{- end -}}
 
 {{- if eq $variant "badges" }}
 <div class="project-badges" role="group" aria-label="Tor Guard Relay build, release, platform, and registry badges">

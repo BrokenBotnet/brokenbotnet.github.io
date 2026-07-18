@@ -1,0 +1,87 @@
+{{- $isWhoami := eq .RelPermalink "/nojs/whoami/" -}}
+{{- $isDonate := eq .RelPermalink "/nojs/donate/" -}}
+{{- $isArticle := and .IsPage (eq .Section "posts") -}}
+{{- $isWritingArchive := and (eq .Section "posts") (not .IsPage) -}}
+{{- $isWritingTaxonomy := or (eq .Kind "taxonomy") (eq .Kind "term") -}}
+{{- $isWritingContext := or $isArticle $isWritingArchive $isWritingTaxonomy -}}
+{{- $is404 := eq .Kind "404" -}}
+{{- $homeURL := partial "page-url.html" (dict "page" .Site.Home "nojs" true) -}}
+{{- $path := "~" -}}
+{{- $command := "pwd" -}}
+{{- if .IsHome -}}
+  {{- $command = "cd ~/" -}}
+{{- else if $is404 -}}
+  {{- $command = "cat ~/route-trace.log" -}}
+{{- else if $isWhoami -}}
+  {{- $command = "whoami" -}}
+{{- else if $isDonate -}}
+  {{- $path = "~/donate" -}}
+  {{- $command = "" -}}
+{{- else if $isArticle -}}
+  {{- $postName := .Slug | default .File.ContentBaseName -}}
+  {{- $path = "~/writing" -}}
+  {{- $command = printf "less %s.md" $postName -}}
+{{- else if $isWritingArchive -}}
+  {{- $path = "~/writing" -}}
+  {{- $command = "ls" -}}
+{{- else if $isWritingTaxonomy -}}
+  {{- $path = "~/writing" -}}
+  {{- $command = "find . -type f" -}}
+{{- end -}}
+{{- $commandLength := len $command -}}
+{{- $typingClass := "prompt__input--nojs-short" -}}
+{{- if gt $commandLength 20 -}}
+  {{- $typingClass = "prompt__input--nojs-long" -}}
+{{- else if gt $commandLength 8 -}}
+  {{- $typingClass = "prompt__input--nojs-medium" -}}
+{{- else if le $commandLength 3 -}}
+  {{- $typingClass = "prompt__input--nojs-tiny" -}}
+{{- end -}}
+<nav class="page__nav main-nav main-nav--nojs" aria-label="Primary navigation">
+  <ul>
+    <li class="nomarker page__brand">
+      <div class="page__logo-inner">
+        <span class="terminal-prompt terminal-prompt--static{{ if .IsHome }} terminal-prompt--home terminal-prompt--nojs-home{{ end }}{{ if $isWhoami }} terminal-prompt--whoami terminal-prompt--nojs-whoami{{ end }}{{ if $isDonate }} terminal-prompt--node-sync terminal-prompt--nojs-donate{{ end }}">
+          <span class="prompt__line">
+            <span class="prompt__identity">
+              <span class="prompt__bracket">[ </span><span class="prompt__user">r3bo0tbx1</span><span class="prompt__separator">@</span><span class="prompt__host">br🤖kenb🤖tnet</span><span class="prompt__path">:</span><span class="prompt__cwd">{{ if .IsHome }}<span class="prompt__home-current" aria-current="page">~</span>{{ else }}<a class="prompt__home-link" href="{{ $homeURL }}" aria-label="Go to the no-JavaScript home page" title="Home">~</a>{{ end }}{{ if $isWritingArchive }}/<span class="prompt__cwd-current" aria-current="page">writing</span>{{ else if $isWritingContext }}/<a class="prompt__cwd-link" href="{{ partial "page-url.html" (dict "page" (.Site.GetPage "/posts") "nojs" true) }}" aria-label="Open the no-JavaScript Writing archive">writing</a>{{ else if $isDonate }}/<span class="prompt__cwd-current" aria-current="page">donate</span>{{ end }}</span><span class="prompt__path">$</span><span class="prompt__bracket"> ]</span>
+            </span>
+            {{ if $isDonate }}
+              <span class="prompt__node-sync prompt__node-sync--nojs" aria-label="Run bitcoin-cli getblockchaininfo, then monerod sync_info">
+                <span class="prompt__node-sync-step prompt__node-sync-step--bitcoin" aria-hidden="true"><span class="prompt__command prompt__command--context">bitcoin-cli getblockchaininfo</span><span class="prompt__cursor">_</span></span>
+                <span class="prompt__node-sync-step prompt__node-sync-step--monero" aria-hidden="true"><span class="prompt__command prompt__command--context">monerod sync_info</span><span class="prompt__cursor">_</span></span>
+                <span class="prompt__cursor prompt__node-sync-cursor" aria-hidden="true">_</span>
+              </span>
+            {{ else }}
+              {{ with $command }}<span class="prompt__input prompt__input--nojs {{ $typingClass }}{{ if $.IsHome }} prompt__input--nojs-home{{ end }}"><span class="prompt__command prompt__command--context">{{ . }}</span><span class="prompt__cursor prompt__cursor--nojs" aria-hidden="true">_</span></span>{{ end }}
+            {{ end }}
+          </span>
+          {{ if $isWhoami }}<span class="prompt__output prompt__output--current prompt__output--nojs" aria-label="Whoami output: r3bo0tbx1">r3bo0tbx1<span class="prompt__cursor prompt__cursor--output" aria-hidden="true">_</span></span>{{ end }}
+        </span>
+      </div>
+    </li>
+    {{- $currentPage := . -}}
+    {{- range .Site.Menus.main -}}
+      {{- $hideCurrentItem := or
+        (and $currentPage.IsHome (eq .Identifier "home"))
+        (and $isWhoami (eq .Identifier "whoami"))
+        (and $isWritingContext (eq .Identifier "writing"))
+        (and $isDonate (eq .Identifier "donate"))
+      -}}
+      {{- if not $hideCurrentItem -}}
+        {{- $external := strings.HasPrefix .URL "http" -}}
+        {{- $target := .URL -}}
+        {{- if not $external -}}
+          {{- with .Page -}}
+            {{- $target = partial "page-url.html" (dict "page" . "nojs" true) -}}
+          {{- end -}}
+        {{- end -}}
+        <li class="main-nav__item">
+          <a class="nav-main-item"
+             href="{{ $target }}"
+             {{ if $external }}target="_blank" rel="noopener noreferrer"{{ end }}>{{ .Name }}{{ if $external }} <span aria-hidden="true">↗</span>{{ end }}</a>
+        </li>
+      {{- end -}}
+    {{- end -}}
+  </ul>
+</nav>
