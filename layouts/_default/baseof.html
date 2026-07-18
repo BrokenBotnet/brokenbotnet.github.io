@@ -36,7 +36,11 @@
       {{ end }}
 
       <footer class="page__footer">
-        {{ partial "footer.html" . }}
+        {{ if eq .Kind "404" }}
+          {{ partial "footer-nojs.html" . }}
+        {{ else }}
+          {{ partial "footer.html" . }}
+        {{ end }}
       </footer>
     </div>
 
