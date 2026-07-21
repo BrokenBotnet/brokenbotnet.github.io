@@ -207,10 +207,10 @@ jobs:
           assert(!/<script\b/i.test(nojsArticle));
           const homeFrames = tokenizeHtml(home).tags.filter(tag => !tag.closing && tag.name === 'iframe');
           assert.equal(homeFrames.length, 1);
-          assert.equal(attributeValue(homeFrames[0], 'src'), 'https://snowflake.torproject.org/embed.html');
+          assert.equal(attributeValue(homeFrames[0], 'src'), 'https://embed-snowflake.torproject.org/');
           assert(attributeValue(homeFrames[0], 'title'));
           assert.equal(attributeValue(homeFrames[0], 'loading'), 'lazy');
-          assert.match(home, /frame-src https:\/\/snowflake\.torproject\.org/);
+          assert.match(home, /frame-src https:\/\/embed-snowflake\.torproject\.org/);
           assert.match(nojsHome, /frame-src 'none'/);
           assert(!/<iframe\b/i.test(nojsHome));
           assert(!/<iframe\b/i.test(nojsArticle));

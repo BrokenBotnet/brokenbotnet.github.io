@@ -77,7 +77,7 @@ for (const file of (await walk(path.join(root, "public"))).filter((file) => file
       const src = attributeValue(tag, "src");
       const title = attributeValue(tag, "title");
       const loading = attributeValue(tag, "loading");
-      if (src !== "https://snowflake.torproject.org/embed.html") {
+      if (src !== "https://embed-snowflake.torproject.org/") {
         report(file, `unapproved iframe source in ${tag.raw.slice(0, 120)}`);
       }
       if (!title?.trim()) report(file, `iframe without an accessible title in ${tag.raw.slice(0, 120)}`);
