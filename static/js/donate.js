@@ -1,11 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
   const wait = (milliseconds) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+  const phoneViewport = window.matchMedia(
+    "(max-width: 47.99rem), (max-height: 31rem) and (pointer: coarse)"
+  );
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   document.querySelectorAll("[data-node-sync]").forEach((terminal) => {
-    const path = terminal.querySelector("[data-terminal-path]");
     const command = terminal.querySelector("[data-terminal-command]");
-    if (!path || !command) return;
+    if (!command) return;
 
     const commands = [
       { network: "bitcoin", command: "bitcoin-cli getblockchaininfo" },
@@ -32,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("visibilitychange", updateVisibility);
     updateVisibility();
 
-    if (reduceMotion) {
+    if (phoneViewport.matches || reduceMotion) {
       command.textContent = "";
       terminal.classList.add("is-complete");
       return;

@@ -31,6 +31,7 @@
             <div class="aside__content">
               {{ block "aside" . }}{{ end }}
             </div>
+            {{ partial "snowflake.html" . }}
           </div>
         </aside>
       {{ end }}
@@ -45,7 +46,7 @@
     </div>
 
     {{ if eq .Kind "404" }}
-      <a class="back-to-top back-to-top--nojs" href="#top" title="Back to top" aria-label="Back to top">↑</a>
+      <a class="back-to-top back-to-top--nojs back-to-top--scriptfree-404" href="#top" title="Back to top" aria-label="Back to top"><span aria-hidden="true">↑</span></a>
     {{ else }}
       <button class="back-to-top" type="button" data-back-to-top hidden title="Back to top" aria-label="Back to top">
         <i data-lucide="arrow-up" aria-hidden="true"></i>

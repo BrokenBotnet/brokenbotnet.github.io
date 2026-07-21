@@ -72,7 +72,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const toolbar = document.createElement("div");
     toolbar.className = "lightbox__toolbar";
-    toolbar.setAttribute("aria-label", "Image zoom controls");
+    toolbar.setAttribute("aria-label", "Image controls");
+
+    const previousButton = document.createElement("button");
+    previousButton.className = "lightbox__nav-button";
+    previousButton.type = "button";
+    previousButton.setAttribute("aria-label", "Previous image");
+    previousButton.title = "Previous image";
+    previousButton.textContent = "←";
+
+    const positionLabel = document.createElement("span");
+    positionLabel.className = "lightbox__position";
+    positionLabel.setAttribute("aria-live", "polite");
 
     const zoomOutButton = document.createElement("button");
     zoomOutButton.className = "lightbox__zoom-button";
@@ -95,11 +106,24 @@ document.addEventListener("DOMContentLoaded", () => {
     zoomInButton.title = "Zoom in";
     zoomInButton.textContent = "+";
 
-    toolbar.append(zoomOutButton, zoomResetButton, zoomInButton);
+    const nextButton = document.createElement("button");
+    nextButton.className = "lightbox__nav-button";
+    nextButton.type = "button";
+    nextButton.setAttribute("aria-label", "Next image");
+    nextButton.title = "Next image";
+    nextButton.textContent = "→";
+
+    toolbar.append(
+      previousButton,
+      positionLabel,
+      zoomOutButton,
+      zoomResetButton,
+      zoomInButton,
+      nextButton
+    );
 
     const viewport = document.createElement("div");
     viewport.className = "lightbox__viewport";
-    viewport.dataset.zoom = "100";
 
     const previewImage = document.createElement("img");
     previewImage.className = "lightbox__image";
@@ -115,36 +139,94 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.append(lightbox);
 
     let activeImage = null;
+    let activeIndex = 0;
     let scrollPosition = 0;
-    const zoomLevels = [100, 150, 200, 300];
+    const zoomLevels = [1, 1.5, 2, 3, 4];
     let zoomIndex = 0;
+    let currentScale = 1;
+    let panX = 0;
+    let panY = 0;
+    const pointers = new Map();
+    let dragOrigin = null;
+    let pinchOrigin = null;
 
-    const updateZoom = (nextIndex) => {
-      zoomIndex = Math.max(0, Math.min(nextIndex, zoomLevels.length - 1));
-      const zoom = zoomLevels[zoomIndex];
+    const clamp = (value, minimum, maximum) => Math.min(maximum, Math.max(minimum, value));
 
-      viewport.dataset.zoom = String(zoom);
-      zoomResetButton.textContent = `${zoom}%`;
-      zoomResetButton.setAttribute("aria-label", `Reset image zoom from ${zoom}%`);
-      zoomOutButton.disabled = zoomIndex === 0;
-      zoomInButton.disabled = zoomIndex === zoomLevels.length - 1;
-
-      if (zoomIndex === 0) {
-        viewport.scrollTo(0, 0);
+    const clampPan = () => {
+      const scale = currentScale;
+      if (scale === 1 || !previewImage.clientWidth || !viewport.clientWidth) {
+        panX = 0;
+        panY = 0;
+        return;
       }
+
+      const maximumX = Math.max(0, (previewImage.clientWidth * scale - viewport.clientWidth) / 2);
+      const maximumY = Math.max(0, (previewImage.clientHeight * scale - viewport.clientHeight) / 2);
+      panX = clamp(panX, -maximumX, maximumX);
+      panY = clamp(panY, -maximumY, maximumY);
     };
 
-    const openLightbox = (image) => {
+    const renderTransform = () => {
+      clampPan();
+      const scale = currentScale;
+      previewImage.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+      viewport.classList.toggle("is-zoomed", scale > 1);
+      viewport.classList.toggle("is-dragging", pointers.size > 0 && scale > 1);
+    };
+
+    const updateZoomControls = () => {
+      const zoom = Math.round(currentScale * 100);
+
+      zoomResetButton.textContent = `${zoom}%`;
+      zoomResetButton.setAttribute("aria-label", `Reset image zoom from ${zoom}%`);
+      zoomOutButton.disabled = currentScale <= zoomLevels[0];
+      zoomInButton.disabled = currentScale >= zoomLevels[zoomLevels.length - 1];
+    };
+
+    const updateZoom = (nextIndex, resetPan = false) => {
+      zoomIndex = Math.max(0, Math.min(nextIndex, zoomLevels.length - 1));
+      currentScale = zoomLevels[zoomIndex];
+
+      if (resetPan || zoomIndex === 0) {
+        panX = 0;
+        panY = 0;
+      }
+
+      updateZoomControls();
+      renderTransform();
+    };
+
+    const resetInteraction = () => {
+      pointers.clear();
+      dragOrigin = null;
+      pinchOrigin = null;
+      zoomIndex = 0;
+      currentScale = 1;
+      panX = 0;
+      panY = 0;
+      updateZoom(0, true);
+    };
+
+    const loadImage = (index) => {
+      activeIndex = (index + lightboxImages.length) % lightboxImages.length;
+      activeImage = lightboxImages[activeIndex];
+      const image = activeImage;
       const figureCaption = image.closest("figure")?.querySelector("figcaption")?.textContent.trim();
       const description = figureCaption || image.alt.trim();
 
-      activeImage = image;
-      scrollPosition = window.scrollY;
       previewImage.src = image.dataset.lightboxSrc || image.currentSrc || image.src;
       previewImage.alt = image.alt;
       caption.textContent = description;
       caption.hidden = !description;
-      updateZoom(0);
+      positionLabel.textContent = `${activeIndex + 1} / ${lightboxImages.length}`;
+      previousButton.disabled = lightboxImages.length < 2;
+      nextButton.disabled = lightboxImages.length < 2;
+      resetInteraction();
+    };
+
+    const openLightbox = (index) => {
+      scrollPosition = window.scrollY;
+      loadImage(index);
       document.documentElement.classList.add("lightbox-open");
 
       if (typeof lightbox.showModal === "function") {
@@ -156,6 +238,11 @@ document.addEventListener("DOMContentLoaded", () => {
       closeButton.focus({ preventScroll: true });
     };
 
+    const showAdjacentImage = (direction) => {
+      if (lightboxImages.length < 2) return;
+      loadImage(activeIndex + direction);
+    };
+
     const closeLightbox = () => {
       if (typeof lightbox.close === "function") {
         lightbox.close();
@@ -165,26 +252,112 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
 
-    lightboxImages.forEach((image) => {
+    lightboxImages.forEach((image, index) => {
       image.dataset.lightboxTrigger = "";
       image.tabIndex = 0;
       image.setAttribute("role", "button");
       image.setAttribute("aria-label", image.alt ? `Open image: ${image.alt}` : "Open image preview");
 
-      image.addEventListener("click", () => openLightbox(image));
+      image.addEventListener("click", () => openLightbox(index));
       image.addEventListener("keydown", (event) => {
         if (event.key !== "Enter" && event.key !== " ") return;
         event.preventDefault();
-        openLightbox(image);
+        openLightbox(index);
       });
     });
 
     zoomOutButton.addEventListener("click", () => updateZoom(zoomIndex - 1));
-    zoomResetButton.addEventListener("click", () => updateZoom(0));
+    zoomResetButton.addEventListener("click", () => updateZoom(0, true));
     zoomInButton.addEventListener("click", () => updateZoom(zoomIndex + 1));
+    previousButton.addEventListener("click", () => showAdjacentImage(-1));
+    nextButton.addEventListener("click", () => showAdjacentImage(1));
+
+    previewImage.addEventListener("load", renderTransform);
+    window.addEventListener("resize", renderTransform);
+
+    viewport.addEventListener("pointerdown", (event) => {
+      if (currentScale === 1 && event.pointerType === "mouse") return;
+      event.preventDefault();
+      viewport.setPointerCapture?.(event.pointerId);
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+      if (pointers.size === 1) {
+        dragOrigin = { x: event.clientX, y: event.clientY, panX, panY };
+      } else if (pointers.size === 2) {
+        const [first, second] = [...pointers.values()];
+        pinchOrigin = {
+          distance: Math.hypot(second.x - first.x, second.y - first.y),
+          scale: currentScale,
+          centerX: (first.x + second.x) / 2,
+          centerY: (first.y + second.y) / 2,
+          panX,
+          panY
+        };
+      }
+
+      renderTransform();
+    });
+
+    viewport.addEventListener("pointermove", (event) => {
+      if (!pointers.has(event.pointerId)) return;
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+      if (pointers.size === 2 && pinchOrigin) {
+        const [first, second] = [...pointers.values()];
+        const distance = Math.hypot(second.x - first.x, second.y - first.y);
+        const centerX = (first.x + second.x) / 2;
+        const centerY = (first.y + second.y) / 2;
+        const targetScale = clamp(
+          pinchOrigin.scale * (distance / Math.max(1, pinchOrigin.distance)),
+          zoomLevels[0],
+          zoomLevels[zoomLevels.length - 1]
+        );
+        zoomIndex = zoomLevels.reduce((nearest, level, index) => (
+          Math.abs(level - targetScale) < Math.abs(zoomLevels[nearest] - targetScale) ? index : nearest
+        ), 0);
+        currentScale = targetScale;
+        panX = pinchOrigin.panX + centerX - pinchOrigin.centerX;
+        panY = pinchOrigin.panY + centerY - pinchOrigin.centerY;
+        updateZoomControls();
+        renderTransform();
+        return;
+      }
+
+      if (pointers.size === 1 && dragOrigin) {
+        panX = dragOrigin.panX + event.clientX - dragOrigin.x;
+        panY = dragOrigin.panY + event.clientY - dragOrigin.y;
+        renderTransform();
+      }
+    });
+
+    const releasePointer = (event) => {
+      pointers.delete(event.pointerId);
+      if (viewport.hasPointerCapture?.(event.pointerId)) {
+        viewport.releasePointerCapture(event.pointerId);
+      }
+      pinchOrigin = null;
+
+      const remaining = [...pointers.values()][0];
+      dragOrigin = remaining ? { x: remaining.x, y: remaining.y, panX, panY } : null;
+      renderTransform();
+    };
+
+    viewport.addEventListener("pointerup", releasePointer);
+    viewport.addEventListener("pointercancel", releasePointer);
+    viewport.addEventListener("lostpointercapture", (event) => {
+      pointers.delete(event.pointerId);
+      if (!pointers.size) {
+        dragOrigin = null;
+        pinchOrigin = null;
+      }
+      renderTransform();
+    });
 
     lightbox.addEventListener("keydown", (event) => {
-      if (event.key === "+" || event.key === "=") {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeLightbox();
+      } else if (event.key === "+" || event.key === "=") {
         event.preventDefault();
         updateZoom(zoomIndex + 1);
       } else if (event.key === "-") {
@@ -192,7 +365,13 @@ document.addEventListener("DOMContentLoaded", () => {
         updateZoom(zoomIndex - 1);
       } else if (event.key === "0") {
         event.preventDefault();
-        updateZoom(0);
+        updateZoom(0, true);
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        showAdjacentImage(-1);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        showAdjacentImage(1);
       }
     });
 
@@ -206,6 +385,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     lightbox.addEventListener("close", () => {
       document.documentElement.classList.remove("lightbox-open");
+      resetInteraction();
+      previewImage.removeAttribute("src");
       activeImage?.focus({ preventScroll: true });
       window.scrollTo(0, scrollPosition);
       activeImage = null;

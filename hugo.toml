@@ -7,6 +7,9 @@ enableRobotsTXT = true
 enableGitInfo = true
 timeZone = "Asia/Tokyo"
 
+[frontmatter]
+  lastmod = ["lastmod", ":git", "date", "publishDate"]
+
 [pagination]
   pagerSize = 10
 

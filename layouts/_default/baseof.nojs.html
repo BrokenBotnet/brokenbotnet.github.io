@@ -33,6 +33,6 @@
       </footer>
     </div>
 
-    <a class="back-to-top back-to-top--nojs" href="#top" title="Back to top" aria-label="Back to top">↑</a>
+    <a class="back-to-top back-to-top--nojs back-to-top--nojs-only{{ if eq .Kind "404" }} back-to-top--scriptfree-404{{ end }}" href="#top" title="Back to top" aria-label="Back to top"><span aria-hidden="true">↑</span></a>
   </body>
 </html>

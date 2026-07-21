@@ -8,6 +8,7 @@
 {{- $homeURL := partial "page-url.html" (dict "page" .Site.Home "nojs" true) -}}
 {{- $path := "~" -}}
 {{- $command := "pwd" -}}
+{{- $postName := "" -}}
 {{- if .IsHome -}}
   {{- $command = "cd ~/" -}}
 {{- else if $is404 -}}
@@ -18,7 +19,10 @@
   {{- $path = "~/donate" -}}
   {{- $command = "" -}}
 {{- else if $isArticle -}}
-  {{- $postName := .Slug | default .File.ContentBaseName -}}
+  {{- $postName = .Slug -}}
+  {{- with .File -}}
+    {{- $postName = .ContentBaseName -}}
+  {{- end -}}
   {{- $path = "~/writing" -}}
   {{- $command = printf "less %s.md" $postName -}}
 {{- else if $isWritingArchive -}}
@@ -41,19 +45,28 @@
   <ul>
     <li class="nomarker page__brand">
       <div class="page__logo-inner">
-        <span class="terminal-prompt terminal-prompt--static{{ if .IsHome }} terminal-prompt--home terminal-prompt--nojs-home{{ end }}{{ if $isWhoami }} terminal-prompt--whoami terminal-prompt--nojs-whoami{{ end }}{{ if $isDonate }} terminal-prompt--node-sync terminal-prompt--nojs-donate{{ end }}">
-          <span class="prompt__line">
+        <span class="terminal-prompt terminal-prompt--static{{ if .IsHome }} terminal-prompt--home terminal-prompt--nojs-home{{ end }}{{ if $isWhoami }} terminal-prompt--whoami terminal-prompt--nojs-whoami{{ end }}{{ if $isDonate }} terminal-prompt--node-sync terminal-prompt--nojs-donate{{ end }}{{ if $isWritingContext }} terminal-prompt--nojs-writing-sequence{{ end }}{{ if $isArticle }} terminal-prompt--nojs-article{{ end }}">
+          {{ if $isWritingContext }}
+          <span class="prompt__line prompt__line--nojs-writing-start" aria-hidden="true">
+            <span class="prompt__identity">
+              <span class="prompt__bracket">[ </span><span class="prompt__user">r3bo0tbx1</span><span class="prompt__separator">@</span><span class="prompt__host">br🤖kenb🤖tnet</span><span class="prompt__path">:</span><span class="prompt__cwd">~</span><span class="prompt__path">$</span><span class="prompt__bracket"> ]</span>
+            </span>
+            <span class="prompt__input prompt__input--nojs prompt__input--nojs-writing-cd"><span class="prompt__command prompt__command--context">cd ~/writing</span><span class="prompt__cursor prompt__cursor--nojs" aria-hidden="true">_</span></span>
+          </span>
+          {{ end }}
+          <span class="prompt__line{{ if $isWritingContext }} prompt__line--nojs-writing-final{{ end }}">
             <span class="prompt__identity">
               <span class="prompt__bracket">[ </span><span class="prompt__user">r3bo0tbx1</span><span class="prompt__separator">@</span><span class="prompt__host">br🤖kenb🤖tnet</span><span class="prompt__path">:</span><span class="prompt__cwd">{{ if .IsHome }}<span class="prompt__home-current" aria-current="page">~</span>{{ else }}<a class="prompt__home-link" href="{{ $homeURL }}" aria-label="Go to the no-JavaScript home page" title="Home">~</a>{{ end }}{{ if $isWritingArchive }}/<span class="prompt__cwd-current" aria-current="page">writing</span>{{ else if $isWritingContext }}/<a class="prompt__cwd-link" href="{{ partial "page-url.html" (dict "page" (.Site.GetPage "/posts") "nojs" true) }}" aria-label="Open the no-JavaScript Writing archive">writing</a>{{ else if $isDonate }}/<span class="prompt__cwd-current" aria-current="page">donate</span>{{ end }}</span><span class="prompt__path">$</span><span class="prompt__bracket"> ]</span>
             </span>
             {{ if $isDonate }}
-              <span class="prompt__node-sync prompt__node-sync--nojs" aria-label="Run bitcoin-cli getblockchaininfo, then monerod sync_info">
+              <span class="prompt__node-sync prompt__node-sync--nojs">
+                <span class="visually-hidden prompt__node-sync-a11y">Bitcoin and Monero node synchronization commands</span>
                 <span class="prompt__node-sync-step prompt__node-sync-step--bitcoin" aria-hidden="true"><span class="prompt__command prompt__command--context">bitcoin-cli getblockchaininfo</span><span class="prompt__cursor">_</span></span>
                 <span class="prompt__node-sync-step prompt__node-sync-step--monero" aria-hidden="true"><span class="prompt__command prompt__command--context">monerod sync_info</span><span class="prompt__cursor">_</span></span>
                 <span class="prompt__cursor prompt__node-sync-cursor" aria-hidden="true">_</span>
               </span>
             {{ else }}
-              {{ with $command }}<span class="prompt__input prompt__input--nojs {{ $typingClass }}{{ if $.IsHome }} prompt__input--nojs-home{{ end }}"><span class="prompt__command prompt__command--context">{{ . }}</span><span class="prompt__cursor prompt__cursor--nojs" aria-hidden="true">_</span></span>{{ end }}
+              {{ with $command }}<span class="prompt__input prompt__input--nojs {{ $typingClass }}{{ if $.IsHome }} prompt__input--nojs-home{{ end }}{{ if $isWritingContext }} prompt__input--nojs-writing-final{{ end }}"><span class="prompt__command prompt__command--context">{{ . }}</span><span class="prompt__cursor prompt__cursor--nojs" aria-hidden="true">_</span></span>{{ end }}
             {{ end }}
           </span>
           {{ if $isWhoami }}<span class="prompt__output prompt__output--current prompt__output--nojs" aria-label="Whoami output: r3bo0tbx1">r3bo0tbx1<span class="prompt__cursor prompt__cursor--output" aria-hidden="true">_</span></span>{{ end }}

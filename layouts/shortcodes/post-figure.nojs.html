@@ -28,23 +28,12 @@
   <a class="nojs-lightbox__backdrop" href="#{{ $figureID }}" aria-label="Close image preview"></a>
   <figure class="nojs-lightbox__frame">
     <a class="nojs-lightbox__close" href="#{{ $figureID }}" aria-label="Close image preview"><span aria-hidden="true">×</span></a>
-    <fieldset class="nojs-lightbox__zoom" aria-label="Image zoom">
-      <legend class="visually-hidden">Image zoom</legend>
-      <label class="nojs-lightbox__zoom-option">
-        <input class="nojs-lightbox__zoom-state nojs-lightbox__zoom-state--fit" type="radio" name="{{ $previewID }}-zoom" checked>
-        <span>Fit</span>
-      </label>
-      <label class="nojs-lightbox__zoom-option">
-        <input class="nojs-lightbox__zoom-state nojs-lightbox__zoom-state--150" type="radio" name="{{ $previewID }}-zoom">
-        <span>150%</span>
-      </label>
-      <label class="nojs-lightbox__zoom-option">
-        <input class="nojs-lightbox__zoom-state nojs-lightbox__zoom-state--200" type="radio" name="{{ $previewID }}-zoom">
-        <span>200%</span>
-      </label>
-    </fieldset>
     <div class="nojs-lightbox__viewport">
       <img src="{{ $image.RelPermalink }}" alt="{{ $alt }}" width="{{ $image.Width }}" height="{{ $image.Height }}" loading="lazy" decoding="async">
+    </div>
+    <div class="nojs-lightbox__actions" role="group" aria-label="Image preview actions">
+      <a href="{{ $image.RelPermalink }}" target="_blank" rel="noopener noreferrer">Open Full-Resolution File</a>
+      <a href="#{{ $figureID }}">Return to Figure</a>
     </div>
     {{ with $caption }}<figcaption>{{ . | markdownify }}</figcaption>{{ end }}
   </figure>

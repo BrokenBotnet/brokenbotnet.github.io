@@ -73,6 +73,16 @@ for (const file of (await walk(path.join(root, "public"))).filter((file) => file
     if (mustBeScriptFree && ["iframe", "object", "embed"].includes(tag.name)) {
       report(file, `script-free output contains executable or embedded content in ${tag.raw.slice(0, 120)}`);
     }
+    if (!mustBeScriptFree && !tag.closing && tag.name === "iframe") {
+      const src = attributeValue(tag, "src");
+      const title = attributeValue(tag, "title");
+      const loading = attributeValue(tag, "loading");
+      if (src !== "https://snowflake.torproject.org/embed.html") {
+        report(file, `unapproved iframe source in ${tag.raw.slice(0, 120)}`);
+      }
+      if (!title?.trim()) report(file, `iframe without an accessible title in ${tag.raw.slice(0, 120)}`);
+      if (loading !== "lazy") report(file, `iframe without lazy loading in ${tag.raw.slice(0, 120)}`);
+    }
     if (
       mustBeScriptFree &&
       tag.name === "link" &&

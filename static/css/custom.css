@@ -693,10 +693,6 @@ a:focus-visible {
   animation: terminal-cursor-blink 1.05s steps(1, end) infinite;
 }
 
-.terminal-prompt--home .prompt__cursor {
-  display: none;
-}
-
 .prompt__cursor--typing {
   animation: terminal-input-cursor 1.45s steps(1, end) forwards;
 }
@@ -2233,9 +2229,11 @@ html.lightbox-open {
 }
 
 .lightbox__toolbar {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-self: end;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 0.25rem;
   padding: 0.2rem;
   background: rgba(7, 11, 16, 0.82);
@@ -2244,7 +2242,8 @@ html.lightbox-open {
 }
 
 .lightbox__zoom-button,
-.lightbox__zoom-reset {
+.lightbox__zoom-reset,
+.lightbox__nav-button {
   display: grid;
   min-width: 2.25rem;
   height: 2.25rem;
@@ -2266,29 +2265,47 @@ html.lightbox-open {
 .lightbox__zoom-button:hover,
 .lightbox__zoom-button:focus-visible,
 .lightbox__zoom-reset:hover,
-.lightbox__zoom-reset:focus-visible {
+.lightbox__zoom-reset:focus-visible,
+.lightbox__nav-button:hover,
+.lightbox__nav-button:focus-visible {
   color: var(--base00);
   background: var(--base0C);
   border-color: var(--base0C);
   outline: none;
 }
 
-.lightbox__zoom-button:disabled {
+.lightbox__zoom-button:disabled,
+.lightbox__nav-button:disabled {
   color: var(--base03);
   background: transparent;
   cursor: not-allowed;
   opacity: 0.48;
 }
 
+.lightbox__position {
+  min-width: 3.8rem;
+  color: var(--muted);
+  font: 600 0.68rem/1 var(--font-monospace);
+  text-align: center;
+}
+
 .lightbox__viewport {
   display: grid;
   width: 100%;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
   overscroll-behavior: contain;
   place-items: center;
-  scrollbar-color: var(--base03) rgba(0, 0, 0, 0.18);
-  scrollbar-width: thin;
+  touch-action: none;
+  user-select: none;
+}
+
+.lightbox__viewport.is-zoomed {
+  cursor: grab;
+}
+
+.lightbox__viewport.is-dragging {
+  cursor: grabbing;
 }
 
 .lightbox__image {
@@ -2303,31 +2320,8 @@ html.lightbox-open {
   object-fit: contain;
   border: 0;
   border-radius: 0.3rem;
-}
-
-.lightbox__viewport[data-zoom="150"],
-.lightbox__viewport[data-zoom="200"],
-.lightbox__viewport[data-zoom="300"] {
-  display: block;
-}
-
-.lightbox__viewport[data-zoom="150"] .lightbox__image,
-.lightbox__viewport[data-zoom="200"] .lightbox__image,
-.lightbox__viewport[data-zoom="300"] .lightbox__image {
-  max-width: none;
-  max-height: none;
-}
-
-.lightbox__viewport[data-zoom="150"] .lightbox__image {
-  width: 150%;
-}
-
-.lightbox__viewport[data-zoom="200"] .lightbox__image {
-  width: 200%;
-}
-
-.lightbox__viewport[data-zoom="300"] .lightbox__image {
-  width: 300%;
+  transform-origin: center;
+  will-change: transform;
 }
 
 .lightbox__close {
@@ -2700,6 +2694,47 @@ html.lightbox-open {
   color: var(--muted);
 }
 
+.aside__snowflake {
+  --snowflake-scale: 0.75;
+  display: none;
+  width: calc(320px * var(--snowflake-scale));
+  max-width: 100%;
+  margin: 1.15rem auto 0;
+  overflow: hidden;
+  background: transparent;
+  border: 0;
+}
+
+.aside__snowflake-viewport {
+  width: calc(320px * var(--snowflake-scale));
+  height: calc(240px * var(--snowflake-scale));
+  overflow: hidden;
+  background: rgba(7, 11, 16, 0.66);
+  border: 1px solid var(--panel-border);
+  border-radius: 0.4rem;
+}
+
+.aside__snowflake iframe {
+  display: block;
+  width: 320px;
+  height: 240px;
+  max-width: none;
+  border: 0;
+  transform: scale(var(--snowflake-scale));
+  transform-origin: top left;
+}
+
+.back-to-top--scriptfree-404::before,
+.back-to-top--scriptfree-404::after {
+  content: none;
+}
+
+@media (min-width: 52rem) {
+  .js .aside__snowflake {
+    display: block;
+  }
+}
+
 .lucide {
   flex: 0 0 auto;
   stroke: currentColor;
@@ -2758,6 +2793,16 @@ html.lightbox-open {
 .back-to-top .lucide {
   width: 1.1rem;
   height: 1.1rem;
+}
+
+.back-to-top--scriptfree-404 {
+  overflow: hidden;
+  line-height: 1;
+  text-decoration: none !important;
+}
+
+.back-to-top--scriptfree-404 > span {
+  text-decoration: none !important;
 }
 
 @media (min-width: 52rem) {
@@ -2972,6 +3017,21 @@ html.lightbox-open {
     overflow-wrap: anywhere;
   }
 
+  .terminal-prompt--node-sync .prompt__line {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: nowrap;
+  }
+
+  .terminal-prompt--node-sync .prompt__identity {
+    flex: 0 0 auto;
+  }
+
+  .terminal-prompt--node-sync .prompt__command--context {
+    min-width: 0;
+    margin-left: 0;
+  }
+
   .content__header h1,
   .hero h1,
   .error-page h1 {
@@ -3016,22 +3076,6 @@ html.lightbox-open {
     min-height: 2.6rem;
     padding: 0.5rem 0.72rem;
     font-size: 0.8rem;
-  }
-
-  .terminal-prompt--node-sync .prompt__line {
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-  }
-
-  .terminal-prompt--node-sync .prompt__identity {
-    flex: 0 0 auto;
-  }
-
-  .terminal-prompt--node-sync .prompt__command--context {
-    min-width: 0;
-    margin-left: 0;
-    overflow-wrap: anywhere;
   }
 
   .post-list li {
@@ -3257,13 +3301,6 @@ html.lightbox-open {
   }
 }
 
-@media (max-width: 21rem) {
-  .terminal-prompt--node-sync {
-    font-size: 0.68rem;
-    letter-spacing: -0.04em;
-  }
-}
-
 @supports (content-visibility: auto) {
   .featured-projects,
   .recent-writing,
@@ -3297,6 +3334,18 @@ html.lightbox-open {
   .lightbox__close {
     width: 2.75rem;
     height: 2.75rem;
+  }
+
+  .lightbox__zoom-button,
+  .lightbox__zoom-reset,
+  .lightbox__nav-button {
+    min-width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .lightbox__toolbar {
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -3364,8 +3413,7 @@ html.lightbox-open {
     animation: none;
   }
 
-  .hero__status-cursor,
-  .prompt__cursor--typing {
+  .hero__status-cursor {
     display: none;
     animation: none;
   }
@@ -3375,22 +3423,6 @@ html.lightbox-open {
   .home-section-reveal {
     opacity: 1;
     transform: none;
-    animation: none;
-  }
-
-  .prompt__command--typing {
-    width: 6ch;
-    animation: none;
-  }
-
-  .terminal-prompt--whoami .prompt__input {
-    display: none;
-    animation: none;
-  }
-
-  .prompt__output {
-    visibility: visible;
-    opacity: 1;
     animation: none;
   }
 

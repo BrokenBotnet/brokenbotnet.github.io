@@ -3,8 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const phoneViewport = window.matchMedia(
     "(max-width: 47.99rem), (max-height: 31rem) and (pointer: coarse)"
   );
-  const reduceMotion =
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches || phoneViewport.matches;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   document.querySelectorAll("[data-terminal-sequence]").forEach((terminal) => {
     const path = terminal.querySelector("[data-terminal-path]");
@@ -18,6 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const homeLink = terminal.dataset.terminalHomeLink || "/";
     const pathLink = terminal.dataset.terminalPathLink || "";
     const pathCurrent = terminal.dataset.terminalPathCurrent === "true";
+    const retainCdCommand = terminal.dataset.terminalRetainCd === "true";
+    const animateOnPhone = terminal.dataset.terminalMobileAnimate === "true";
+    const finalDisplayCommand = retainCdCommand ? cdCommand : finalCommand;
 
     const setPath = (value, linkFinalPath = false) => {
       path.textContent = "";
@@ -69,9 +71,9 @@ document.addEventListener("DOMContentLoaded", () => {
       path.textContent = value;
     };
 
-    if (reduceMotion) {
+    if (prefersReducedMotion || (phoneViewport.matches && !animateOnPhone)) {
       setPath(endPath, true);
-      command.textContent = finalCommand;
+      command.textContent = finalDisplayCommand;
       terminal.classList.add("is-initialized");
       return;
     }
@@ -93,6 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (cdCommand) {
         await typeCommand(cdCommand);
+        if (retainCdCommand) return;
         await wait(480);
         command.textContent = "";
         setPath(endPath, true);

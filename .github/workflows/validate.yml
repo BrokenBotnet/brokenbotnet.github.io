@@ -109,7 +109,7 @@ jobs:
         shell: bash
         run: |
           python3 -m pip install --disable-pip-version-check html5validator==0.4.2
-          html5validator --root public --ignore-re 'CSS:.*color-scheme.*Property.*doesn.t exist'
+          html5validator --root public --ignore-re 'CSS:.*color-scheme.*Property.*doesn.t exist|Attribute "loading" not allowed on element "iframe"'
 
       - name: Audit external-link security
         shell: bash
@@ -172,7 +172,11 @@ jobs:
           const tag = read('public/tags/tor/index.html');
           const nojsHome = read('public/nojs/index.html');
           const nojsArticle = read('public/nojs/2025/11/01/tor-relays-project/index.html');
+          const nojsDonate = read('public/nojs/donate/index.html');
+          const shared404 = read('public/404.html');
           const sitemap = read('public/sitemap.xml');
+          const donateScript = read('static/js/donate.js');
+          const nojsStyles = read('static/css/pages/nojs.css');
 
           assert(structuredTypes(home).includes('WebSite'));
           assert(!structuredTypes(home).includes('ProfilePage'));
@@ -201,6 +205,37 @@ jobs:
           assert.match(nojsArticle, /<link\s+rel=["']?canonical["']?\s+href=["']?https:\/\/brokenbotnet\.com\/2025\/11\/01\/tor-relays-project\/["']?/i);
           assert(!/<script\b/i.test(nojsHome));
           assert(!/<script\b/i.test(nojsArticle));
+          const homeFrames = tokenizeHtml(home).tags.filter(tag => !tag.closing && tag.name === 'iframe');
+          assert.equal(homeFrames.length, 1);
+          assert.equal(attributeValue(homeFrames[0], 'src'), 'https://snowflake.torproject.org/embed.html');
+          assert(attributeValue(homeFrames[0], 'title'));
+          assert.equal(attributeValue(homeFrames[0], 'loading'), 'lazy');
+          assert.match(home, /frame-src https:\/\/snowflake\.torproject\.org/);
+          assert.match(nojsHome, /frame-src 'none'/);
+          assert(!/<iframe\b/i.test(nojsHome));
+          assert(!/<iframe\b/i.test(nojsArticle));
+          assert(!/<iframe\b/i.test(shared404));
+
+          assert.match(donate, /data-node-sync/);
+          assert.match(donateScript, /bitcoin-cli getblockchaininfo/);
+          assert.match(donateScript, /monerod sync_info/);
+          assert.match(donateScript, /phoneViewport\.matches/);
+          assert.match(nojsDonate, /bitcoin-cli getblockchaininfo/);
+          assert.match(nojsDonate, /monerod sync_info/);
+          assert.match(nojsStyles, /max-width: 47\.99rem[\s\S]*?prompt__node-sync-step/);
+          assert.match(nojsStyles, /prompt__input--nojs-home[\s\S]*?nojs-home-command-clear/);
+          assert(!/data-terminal-retain-cd/i.test(home));
+          assert.match(home, /data-terminal-mobile-animate=["']?true/i);
+
+          const onlyBackToTopArrow = (html, className) => {
+            const pattern = new RegExp(`<a\\b[^>]*class=["'][^"']*${className}[^"']*["'][^>]*>([\\s\\S]*?)<\\/a>`, 'i');
+            const match = html.match(pattern);
+            assert(match, `Missing ${className}`);
+            assert.equal(match[1].replace(/<[^>]+>/g, '').trim(), '↑');
+          };
+
+          onlyBackToTopArrow(nojsHome, 'back-to-top--nojs-only');
+          onlyBackToTopArrow(shared404, 'back-to-top--scriptfree-404');
 
           for (const file of [home, profile, article, tag]) {
             assert(!/<meta\s+name=["']?keywords["']?/i.test(file));

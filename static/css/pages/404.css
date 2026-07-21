@@ -407,6 +407,44 @@
   animation: terminal-cursor-blink 1.05s steps(1, end) infinite;
 }
 
+.page--404 .terminal-prompt .prompt__command[data-terminal-command] {
+  display: inline-block;
+  width: 0;
+  overflow: hidden;
+  vertical-align: bottom;
+  white-space: nowrap;
+  animation: error-header-command-type 1.05s steps(21, end) 180ms forwards;
+}
+
+@keyframes error-header-command-type {
+  to { width: 21ch; }
+}
+
+@media (max-width: 47.99rem) {
+  .page--404 .terminal-prompt .prompt__command[data-terminal-command] {
+    width: 21ch;
+    clip-path: none;
+    animation: none;
+  }
+
+  .page--404 .terminal-prompt .prompt__cursor {
+    animation: terminal-cursor-blink 1.05s steps(1, end) infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page--404 .terminal-prompt .prompt__command[data-terminal-command] {
+    width: auto;
+    animation: none;
+  }
+
+  .page--404 .terminal-prompt .prompt__cursor,
+  .error-log__cursor {
+    opacity: 1;
+    animation: none;
+  }
+}
+
 .error-console__footer {
   color: var(--muted);
   background: color-mix(in srgb, var(--code-toolbar) 78%, transparent);

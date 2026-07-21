@@ -2,7 +2,7 @@
 title: "Returning the Favor: Building the Tor Relay Stack I Always Wanted"
 seo_title: "Why I Built Tor Guard Relay"
 date: 2025-11-01
-lastmod: 2026-07-17
+lastmod: 2026-07-22
 slug: "tor-relays-project"
 aliases:
   - "/2025/12/13/tor-relays-project/"
@@ -84,7 +84,7 @@ A pull is not a unique operator or an active relay. The number is still encourag
 These figures combine project release data, my maintained fleet inventory, and public network observations. They do not all prove the same thing. Inventory records intended infrastructure; Onionoo and independent metrics show what the public Tor network can currently observe.
 
 {{< post-figure src="images/posts/tor-relays-project/shinobi-relays-dashboard.png" alt="Shinobi Relays dashboard showing fleet health, relay roles, and platform, network, and geographic diversity" class="post-figure--wide" >}}
-The Shinobi Relays overview on 17 July 2026. Public relay roles and consensus state follow Onionoo rather than being hard-coded into the dashboard.
+The Shinobi Relays overview on 22 July 2026. Public relay roles and consensus state follow Onionoo rather than being hard-coded into the dashboard.
 {{< /post-figure >}}
 
 ## Making relay operations repeatable
