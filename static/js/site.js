@@ -19,6 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const pathCurrent = terminal.dataset.terminalPathCurrent === "true";
     const retainCdCommand = terminal.dataset.terminalRetainCd === "true";
     const animateOnPhone = terminal.dataset.terminalMobileAnimate === "true";
+    const skipCdOnPhone = terminal.dataset.terminalSkipCdOnPhone === "true";
+    const skipCd = phoneViewport.matches && skipCdOnPhone;
     const finalDisplayCommand = retainCdCommand ? cdCommand : finalCommand;
 
     const setPath = (value, linkFinalPath = false) => {
@@ -78,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    setPath(startPath);
+    setPath(skipCd ? endPath : startPath, skipCd);
     command.textContent = "";
     terminal.classList.add("is-initialized");
 
@@ -93,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const runSequence = async () => {
       await wait(220);
 
-      if (cdCommand) {
+      if (cdCommand && !skipCd) {
         await typeCommand(cdCommand);
         if (retainCdCommand) return;
         await wait(480);

@@ -2,7 +2,7 @@
 title: "Returning the Favor: Building the Tor Relay Stack I Always Wanted"
 seo_title: "Why I Built Tor Guard Relay"
 date: 2025-11-01
-lastmod: 2026-07-22
+lastmod: 2026-07-23
 slug: "tor-relays-project"
 aliases:
   - "/2025/12/13/tor-relays-project/"
@@ -75,7 +75,7 @@ Project statistics last verified {{< project-stat key="verified-date" >}}:
 - the current stable release is {{< project-stat key="release" >}}
 - one image supports guard, middle, exit, and obfs4 bridge modes
 - stable and edge builds are published for AMD64 and ARM64
-- six BusyBox-compatible tools ship inside the image
+- seven BusyBox-compatible tools ship inside the image
 - Docker Hub records {{< project-stat key="docker-pulls" >}} pulls
 - the public inventory covers {{< project-stat key="nodes" >}} relays and bridges across {{< project-stat key="countries" >}} countries
 
@@ -116,12 +116,14 @@ docker run -d \
   --restart unless-stopped \
   -e TOR_RELAY_MODE=guard \
   -e TOR_NICKNAME=MyRelay \
-  -e TOR_CONTACT_INFO="email:operator@example.com" \
+  -e TOR_CONTACT_INFO="email:operator[]example.com" \
   -v tor-data:/var/lib/tor \
   r3bo0tbx1/onion-relay:latest
 ```
 
 That is an introduction, not a complete production checklist. The [deployment documentation](https://github.com/r3bo0tbx1/tor-guard-relay/blob/main/docs/DEPLOYMENT.md) covers Compose, Cosmos Cloud, Portainer, persistent configuration, monitoring, and multi-relay layouts.
+
+The same stable release is available as `ghcr.io/r3bo0tbx1/onion-relay:latest`. Operators testing the edge variant can use `ghcr.io/r3bo0tbx1/onion-relay:edge`.
 
 The runtime image is Alpine-based and is roughly 20 MB compressed, depending on the architecture and release. Lyrebird is compiled in a separate Go builder stage, leaving the compiler and build dependencies out of the final image. Tor then runs as the unprivileged `tor` user under `tini`, with restrictive permissions on its data and key directories.
 
@@ -152,18 +154,59 @@ That is the project’s recovery model: fail fast during startup, publish useful
 
 ## Diagnostics made for operators
 
-The image contains six small tools:
+The image contains seven small tools:
 
 | Command | What it means |
 | --- | --- |
 | `status` | Human-readable local summary of the process, bootstrap, ORPort self-test, identity, configuration, family state, errors, and warnings. |
 | `health` | Machine-readable JSON snapshot of local process state and log-derived relay state for monitoring and automation. |
+| `refresh` | Validate the active `torrc`, reload it without replacing the Tor process, and verify that its PID and process uptime were preserved. |
 | `fingerprint` | Relay nickname, full fingerprint, and Tor Metrics lookup link. |
 | `bridge-line` | Generated obfs4 client bridge line and sharing guidance for bridge mode. |
 | `gen-auth` | ControlPort password and `HashedControlPassword` value for Nyx. |
 | `gen-family` | Happy Family key and `FamilyId` generation, plus inspection of existing family configuration. |
 
 Run them with `docker exec tor-relay <command>`. To create a named Happy Family key, use `docker exec tor-relay gen-family MyRelays`.
+
+In v2.1.0, `status` reports populated process uptime, a numeric error count, and the ORPort result Tor recorded through its own self-test:
+
+```text
+$ docker exec tor-relay status
+Status: RUNNING (PID: 123)
+Bootstrap: 100% COMPLETE
+ORPort: REACHABLE (Tor self-test)
+Nickname: MyGuardRelay
+Errors: 0
+Uptime: 2d 14h 30m
+```
+
+The same facts are available to monitoring as valid JSON:
+
+```json
+{
+  "status": "up",
+  "pid": 123,
+  "uptime": "2d 14h 30m",
+  "bootstrap": 100,
+  "reachable": "true",
+  "errors": 0,
+  "nickname": "MyGuardRelay",
+  "tor_version": "0.4.9.1",
+  "relay_mode": "guard",
+  "build_version": "2.1.0",
+  "config_source": "environment"
+}
+```
+
+The `reachable` value is Tor's log-derived ORPort self-test result, not a new external probe. The numeric `errors` value remains valid when the count is zero, and `uptime` is populated from the running process rather than left blank.
+
+The new `refresh` command provides a guarded reload for edits already present in the active `torrc`:
+
+```bash
+docker exec tor-relay refresh
+```
+
+Before sending a signal, it discovers the active configuration and runs `tor --verify-config` against it. A valid configuration receives `SIGHUP` on the exact Tor PID. The command then confirms that both the PID and the process start time are unchanged, which demonstrates that Tor reloaded without losing its accumulated uptime. An invalid configuration is rejected before signalling, so the running relay continues with its existing configuration. Changes to environment variables still require recreating the container because those values are rendered into the configuration during startup.
 
 The JSON report includes process state, uptime, bootstrap percentage, Tor's log-derived ORPort self-test state, error count, nickname, fingerprint, Tor version, relay mode, image build version, and configuration source. It is local operational evidence, not a fresh external probe of the advertised ORPort. The final two fields matter because “which image is this?” and “where did this configuration come from?” are incident-response questions, not cosmetic metadata.
 
@@ -195,7 +238,7 @@ Before an image is published, the validation workflow:
 - enforces a minimum OpenSSL package version
 - scans the image and repository with Trivy
 
-Release jobs publish stable and edge manifests for AMD64 and ARM64. BuildKit attaches provenance and an SBOM, while the GitHub release contains downloadable CycloneDX and SPDX inventories for both variants. Stable images are rebuilt weekly with refreshed packages; edge is rebuilt more frequently. Registry cleanup retains a bounded set of older versions instead of allowing tags and caches to grow forever.
+Release jobs publish stable and edge manifests for AMD64 and ARM64. BuildKit attaches provenance and an SBOM, while the GitHub release contains downloadable CycloneDX and SPDX inventories for both variants. Stable images are rebuilt weekly with refreshed packages; edge is rebuilt more frequently. Scheduled and manual rebuilds resolve the latest released semantic-version tag and check out that source tag before building, so refreshed packages are applied to released source rather than an arbitrary state of `main`. Registry cleanup retains a bounded set of older versions instead of allowing tags and caches to grow forever.
 
 Publishing an image is only one part of a release. The tests, provenance, upgrade path, and documented failure behavior are what make it possible to operate safely over time.
 

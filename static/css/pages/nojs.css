@@ -809,6 +809,25 @@
 }
 
 @media (max-width: 47.99rem) {
+  .no-js .terminal-prompt--nojs-article .prompt__line--nojs-writing-start {
+    display: none;
+    animation: none !important;
+  }
+
+  .no-js .terminal-prompt--nojs-article .prompt__line--nojs-writing-final {
+    visibility: visible;
+    opacity: 1;
+    animation: none !important;
+  }
+
+  .no-js .terminal-prompt--nojs-article .prompt__input--nojs-writing-final .prompt__command--context {
+    animation-delay: 180ms !important;
+  }
+
+  .no-js .terminal-prompt--nojs-article .prompt__input--nojs-writing-final .prompt__cursor--nojs {
+    animation-delay: 180ms, 1.23s !important;
+  }
+
   .no-js .prompt__node-sync-step,
   .no-js .prompt__node-sync-a11y {
     display: none;
