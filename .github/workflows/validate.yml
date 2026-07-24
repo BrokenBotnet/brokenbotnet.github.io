@@ -108,8 +108,15 @@ jobs:
       - name: Validate generated HTML
         shell: bash
         run: |
-          python3 -m pip install --disable-pip-version-check html5validator==0.4.2
-          html5validator --root public --ignore-re 'CSS:.*color-scheme.*Property.*doesn.t exist|Attribute "loading" not allowed on element "iframe"'
+          set -euo pipefail
+
+          python3 -m pip install \
+            --disable-pip-version-check \
+            html5validator==0.4.2
+
+          html5validator \
+            --root public \
+            --ignore-re 'CSS:.*color-scheme.*Property.*doesn.t exist|Attribute "loading" not allowed on element "iframe"|Bad value "onion-location" for attribute "http-equiv" on element "meta"'
 
       - name: Audit external-link security
         shell: bash
@@ -153,31 +160,73 @@ jobs:
           import { attributeValue, tokenizeHtml } from './scripts/html-tokenizer.mjs';
 
           const read = file => fs.readFileSync(file, 'utf8');
+          const read = file => fs.readFileSync(file, 'utf8');
+
           const structuredTypes = html => {
             const document = tokenizeHtml(html);
             assert.deepEqual(document.errors, []);
+
             const documents = document.scripts
-              .filter(script => attributeValue(script, 'type')?.toLowerCase() === 'application/ld+json')
+              .filter(script =>
+                attributeValue(script, 'type')?.toLowerCase() ===
+                'application/ld+json'
+              )
               .map(script => JSON.parse(script.body));
+
             return documents.flatMap(document =>
-              (document['@graph'] || [document]).map(item => item['@type'])
+              (document['@graph'] || [document]).map(
+                item => item['@type']
+              )
             );
+          };
+
+          const onionBase =
+            'http://brokenbotqk7v7y3xpvr6ik7rofivu2dsr5rpkx6xons45reksaykuad.onion';
+
+          const onionLocation = html => {
+            const document = tokenizeHtml(html);
+
+            const elements = document.tags.filter(tag =>
+              !tag.closing &&
+              tag.name === 'meta' &&
+              attributeValue(tag, 'http-equiv')?.toLowerCase() ===
+                'onion-location'
+            );
+
+            assert.equal(elements.length, 1);
+
+            return attributeValue(elements[0], 'content');
           };
 
           const home = read('public/index.html');
           const profile = read('public/whoami/index.html');
-          const article = read('public/2025/11/01/tor-relays-project/index.html');
+          const article = read(
+            'public/2025/11/01/tor-relays-project/index.html'
+          );
           const writing = read('public/posts/index.html');
           const donate = read('public/donate/index.html');
           const tag = read('public/tags/tor/index.html');
           const nojsHome = read('public/nojs/index.html');
-          const nojsArticle = read('public/nojs/2025/11/01/tor-relays-project/index.html');
+          const nojsArticle = read(
+            'public/nojs/2025/11/01/tor-relays-project/index.html'
+          );
           const nojsDonate = read('public/nojs/donate/index.html');
           const shared404 = read('public/404.html');
           const sitemap = read('public/sitemap.xml');
           const donateScript = read('static/js/donate.js');
           const nojsStyles = read('static/css/pages/nojs.css');
-
+          const onionBase = 'http://brokenbotqk7v7y3xpvr6ik7rofivu2dsr5rpkx6xons45reksaykuad.onion';
+          const onionLocation = html => {
+          const document = tokenizeHtml(html);
+          const elements = document.tags.filter(
+          tag =>
+          !tag.closing &&
+          tag.name === 'meta' &&
+          attributeValue(tag, 'http-equiv')?.toLowerCase() === 'onion-location'
+          );
+          assert.equal(elements.length, 1);
+          return attributeValue(elements[0], 'content');
+          };
           assert(structuredTypes(home).includes('WebSite'));
           assert(!structuredTypes(home).includes('ProfilePage'));
           assert(structuredTypes(profile).includes('ProfilePage'));
@@ -200,9 +249,46 @@ jobs:
           assert.match(tag, /name=["']?robots["']?\s+content=["']noindex, follow["']/i);
           assert(!sitemap.includes('/tags/'));
           assert(!sitemap.includes('/nojs/'));
-          assert.match(nojsHome, /<meta\s+name=["']?robots["']?\s+content=["']noindex, follow["']/i);
-          assert.match(nojsHome, /<link\s+rel=["']?canonical["']?\s+href=["']?https:\/\/brokenbotnet\.com\/["']?/i);
-          assert.match(nojsArticle, /<link\s+rel=["']?canonical["']?\s+href=["']?https:\/\/brokenbotnet\.com\/2025\/11\/01\/tor-relays-project\/["']?/i);
+          assert.match(
+            nojsHome,
+            /<meta\s+name=["']?robots["']?\s+content=["']noindex, follow["']/i
+          );
+
+          assert.match(
+            nojsHome,
+            /<link\s+rel=["']?canonical["']?\s+href=["']?https:\/\/brokenbotnet\.com\/["']?/i
+          );
+
+          assert.match(
+            nojsArticle,
+            /<link\s+rel=["']?canonical["']?\s+href=["']?https:\/\/brokenbotnet\.com\/2025\/11\/01\/tor-relays-project\/["']?/i
+          );
+
+          assert.equal(
+            onionLocation(home),
+            `${onionBase}/`
+          );
+
+          assert.equal(
+            onionLocation(profile),
+            `${onionBase}/whoami/`
+          );
+
+          assert.equal(
+            onionLocation(article),
+            `${onionBase}/2025/11/01/tor-relays-project/`
+          );
+
+          assert.equal(
+            onionLocation(nojsHome),
+            `${onionBase}/nojs/`
+          );
+
+          assert.equal(
+            onionLocation(nojsArticle),
+            `${onionBase}/nojs/2025/11/01/tor-relays-project/`
+          );
+
           assert(!/<script\b/i.test(nojsHome));
           assert(!/<script\b/i.test(nojsArticle));
           const homeFrames = tokenizeHtml(home).tags.filter(tag => !tag.closing && tag.name === 'iframe');
