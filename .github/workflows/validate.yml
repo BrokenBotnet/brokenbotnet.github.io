@@ -22,6 +22,7 @@ jobs:
   build:
     name: Build and inspect
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out repository and theme
         uses: actions/checkout@v7
@@ -53,6 +54,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           test -f public/index.html
           test -f public/whoami/index.html
           test -f public/2025/11/01/tor-relays-project/index.html
@@ -61,9 +63,11 @@ jobs:
           test -f public/2026/03/02/happy-families/index.html
           test -f public/2026/04/07/linux-bsd-sunos/index.html
           test -f public/2026/05/22/diversity-first/index.html
+
           if [[ "$(date +%F)" > "2026-07-14" ]]; then
             test -f public/2026/07/17/non-eu-relays/index.html
           fi
+
           test -f public/1984/11/05/cd-whoami/index.html
           test -f public/nojs/index.html
           test -f public/nojs/whoami/index.html
@@ -76,30 +80,67 @@ jobs:
           test -f public/images/social/donate.jpg
           test -f public/.well-known/nostr.json
           test -f public/.well-known/security.txt
+
           test "$(cat public/CNAME)" = "brokenbotnet.com"
-          jq -e '.names.r3bo0tbx1 == "1c6234b2c80549b609be27522cbe2b73400859b24a913855d48503d5d819060d"' public/.well-known/nostr.json
-          grep -Fx 'Contact: mailto:r3bo0tbx1@brokenbotnet.com' public/.well-known/security.txt
-          grep -Fx 'Encryption: openpgp4fpr:33727F5377D296C320AF704AB3BD6196E1CFBFB4' public/.well-known/security.txt
-          grep -Fx 'Preferred-Languages: en' public/.well-known/security.txt
-          grep -Fx 'Canonical: https://brokenbotnet.com/.well-known/security.txt' public/.well-known/security.txt
+
+          jq -e \
+            '.names.r3bo0tbx1 == "1c6234b2c80549b609be27522cbe2b73400859b24a913855d48503d5d819060d"' \
+            public/.well-known/nostr.json
+
+          grep -Fx \
+            'Contact: mailto:r3bo0tbx1@brokenbotnet.com' \
+            public/.well-known/security.txt
+
+          grep -Fx \
+            'Encryption: openpgp4fpr:33727F5377D296C320AF704AB3BD6196E1CFBFB4' \
+            public/.well-known/security.txt
+
+          grep -Fx \
+            'Preferred-Languages: en' \
+            public/.well-known/security.txt
+
+          grep -Fx \
+            'Canonical: https://brokenbotnet.com/.well-known/security.txt' \
+            public/.well-known/security.txt
+
           node <<'NODE'
           const fs = require('fs');
-          const file = fs.readFileSync('public/.well-known/security.txt', 'utf8');
+
+          const file = fs.readFileSync(
+            'public/.well-known/security.txt',
+            'utf8'
+          );
+
           const match = file.match(/^Expires:\s*(\S+)$/m);
-          if (!match) throw new Error('security.txt is missing Expires');
+
+          if (!match) {
+            throw new Error('security.txt is missing Expires');
+          }
+
           const expires = Date.parse(match[1]);
+
           if (!Number.isFinite(expires) || expires <= Date.now()) {
-            throw new Error('security.txt is expired or has an invalid Expires value');
+            throw new Error(
+              'security.txt is expired or has an invalid Expires value'
+            );
           }
           NODE
+
           if grep -R -n -E 'https?://(localhost|127\.0\.0\.1)' public; then
             echo "Local development URL found in production output"
             exit 1
           fi
-          if find public/nojs -type f -name '*.html' -exec grep -Eil '<script([[:space:]>])' {} + | grep -q .; then
+
+          if find public/nojs \
+            -type f \
+            -name '*.html' \
+            -exec grep -Eil '<script([[:space:]>])' {} + |
+            grep -q .
+          then
             echo "Executable or data script element found in no-JavaScript output"
             exit 1
           fi
+
           if grep -Eiq '<script([[:space:]>])' public/404.html; then
             echo "Script element found in shared 404 output"
             exit 1
@@ -126,20 +167,41 @@ jobs:
           const path = require('path');
 
           const files = [];
+
           const walk = directory => {
-            for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
+            for (
+              const entry of fs.readdirSync(
+                directory,
+                {withFileTypes: true}
+              )
+            ) {
               const full = path.join(directory, entry.name);
-              if (entry.isDirectory()) walk(full);
-              else if (entry.name.endsWith('.html')) files.push(full);
+
+              if (entry.isDirectory()) {
+                walk(full);
+              } else if (entry.name.endsWith('.html')) {
+                files.push(full);
+              }
             }
           };
 
           walk('public');
+
           const failures = [];
+
           for (const file of files) {
             const html = fs.readFileSync(file, 'utf8');
-            for (const match of html.matchAll(/<a\b[^>]*target=["']?_blank["']?[^>]*>/gi)) {
-              if (!/rel=["'][^"']*noopener[^"']*["']/i.test(match[0])) {
+
+            for (
+              const match of html.matchAll(
+                /<a\b[^>]*target=["']?_blank["']?[^>]*>/gi
+              )
+            ) {
+              if (
+                !/rel=["'][^"']*noopener[^"']*["']/i.test(
+                  match[0]
+                )
+              ) {
                 failures.push(`${file}: ${match[0]}`);
               }
             }
@@ -157,19 +219,26 @@ jobs:
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
           import fs from 'node:fs';
-          import { attributeValue, tokenizeHtml } from './scripts/html-tokenizer.mjs';
 
-          const read = file => fs.readFileSync(file, 'utf8');
+          import {
+            attributeValue,
+            tokenizeHtml
+          } from './scripts/html-tokenizer.mjs';
+
           const read = file => fs.readFileSync(file, 'utf8');
 
           const structuredTypes = html => {
             const document = tokenizeHtml(html);
+
             assert.deepEqual(document.errors, []);
 
             const documents = document.scripts
-              .filter(script =>
-                attributeValue(script, 'type')?.toLowerCase() ===
-                'application/ld+json'
+              .filter(
+                script =>
+                  attributeValue(
+                    script,
+                    'type'
+                  )?.toLowerCase() === 'application/ld+json'
               )
               .map(script => JSON.parse(script.body));
 
@@ -186,69 +255,155 @@ jobs:
           const onionLocation = html => {
             const document = tokenizeHtml(html);
 
-            const elements = document.tags.filter(tag =>
-              !tag.closing &&
-              tag.name === 'meta' &&
-              attributeValue(tag, 'http-equiv')?.toLowerCase() ===
-                'onion-location'
+            assert.deepEqual(document.errors, []);
+
+            const elements = document.tags.filter(
+              tag =>
+                !tag.closing &&
+                tag.name === 'meta' &&
+                attributeValue(
+                  tag,
+                  'http-equiv'
+                )?.toLowerCase() === 'onion-location'
             );
 
             assert.equal(elements.length, 1);
 
-            return attributeValue(elements[0], 'content');
+            return attributeValue(
+              elements[0],
+              'content'
+            );
           };
 
           const home = read('public/index.html');
           const profile = read('public/whoami/index.html');
+
           const article = read(
             'public/2025/11/01/tor-relays-project/index.html'
           );
+
           const writing = read('public/posts/index.html');
           const donate = read('public/donate/index.html');
           const tag = read('public/tags/tor/index.html');
           const nojsHome = read('public/nojs/index.html');
+
           const nojsArticle = read(
             'public/nojs/2025/11/01/tor-relays-project/index.html'
           );
-          const nojsDonate = read('public/nojs/donate/index.html');
+
+          const nojsDonate = read(
+            'public/nojs/donate/index.html'
+          );
+
           const shared404 = read('public/404.html');
           const sitemap = read('public/sitemap.xml');
           const donateScript = read('static/js/donate.js');
           const nojsStyles = read('static/css/pages/nojs.css');
-          const onionBase = 'http://brokenbotqk7v7y3xpvr6ik7rofivu2dsr5rpkx6xons45reksaykuad.onion';
-          const onionLocation = html => {
-          const document = tokenizeHtml(html);
-          const elements = document.tags.filter(
-          tag =>
-          !tag.closing &&
-          tag.name === 'meta' &&
-          attributeValue(tag, 'http-equiv')?.toLowerCase() === 'onion-location'
+
+          assert(
+            structuredTypes(home).includes('WebSite')
           );
-          assert.equal(elements.length, 1);
-          return attributeValue(elements[0], 'content');
-          };
-          assert(structuredTypes(home).includes('WebSite'));
-          assert(!structuredTypes(home).includes('ProfilePage'));
-          assert(structuredTypes(profile).includes('ProfilePage'));
-          assert(structuredTypes(article).includes('BlogPosting'));
-          assert(structuredTypes(article).includes('BreadcrumbList'));
-          assert.match(article, /<title>Why I Built Tor Guard Relay \| Br🤖ken B🤖tnet<\/title>/);
-          assert.match(article, /property=["']?og:image:alt["']?/i);
-          assert.match(article, /name=["']?twitter:image:alt["']?/i);
-          assert.match(profile, /property=["']?og:image["']?\s+content=["']?https:\/\/brokenbotnet\.com\/images\/social\/whoami\.jpg["']?/);
-          assert.match(writing, /property=["']?og:image["']?\s+content=["']?https:\/\/brokenbotnet\.com\/images\/social\/writing\.jpg["']?/);
-          assert.match(donate, /property=["']?og:image["']?\s+content=["']?https:\/\/brokenbotnet\.com\/images\/social\/donate\.jpg["']?/);
-          assert.match(home, /\/css\/site\.min\.[a-f0-9]+\.css/);
-          assert.match(home, /\/js\/site\.min\.[a-f0-9]+\.js/);
-          assert.match(home, /integrity=["']?sha384-/);
-          assert.match(home, /Project statistics last verified/);
-          assert.match(article, /class=["']?heading-anchor["']?/);
-          assert.match(article, /class=["']?footnotes["']?\s+role=["']?doc-endnotes["']?/);
-          assert.match(article, /role=["']?doc-backlink["']?/);
-          assert(!home.includes('cloud.umami.is'));
-          assert.match(tag, /name=["']?robots["']?\s+content=["']noindex, follow["']/i);
-          assert(!sitemap.includes('/tags/'));
-          assert(!sitemap.includes('/nojs/'));
+
+          assert(
+            !structuredTypes(home).includes('ProfilePage')
+          );
+
+          assert(
+            structuredTypes(profile).includes('ProfilePage')
+          );
+
+          assert(
+            structuredTypes(article).includes('BlogPosting')
+          );
+
+          assert(
+            structuredTypes(article).includes(
+              'BreadcrumbList'
+            )
+          );
+
+          assert.match(
+            article,
+            /<title>Why I Built Tor Guard Relay \| Br🤖ken B🤖tnet<\/title>/
+          );
+
+          assert.match(
+            article,
+            /property=["']?og:image:alt["']?/i
+          );
+
+          assert.match(
+            article,
+            /name=["']?twitter:image:alt["']?/i
+          );
+
+          assert.match(
+            profile,
+            /property=["']?og:image["']?\s+content=["']?https:\/\/brokenbotnet\.com\/images\/social\/whoami\.jpg["']?/
+          );
+
+          assert.match(
+            writing,
+            /property=["']?og:image["']?\s+content=["']?https:\/\/brokenbotnet\.com\/images\/social\/writing\.jpg["']?/
+          );
+
+          assert.match(
+            donate,
+            /property=["']?og:image["']?\s+content=["']?https:\/\/brokenbotnet\.com\/images\/social\/donate\.jpg["']?/
+          );
+
+          assert.match(
+            home,
+            /\/css\/site\.min\.[a-f0-9]+\.css/
+          );
+
+          assert.match(
+            home,
+            /\/js\/site\.min\.[a-f0-9]+\.js/
+          );
+
+          assert.match(
+            home,
+            /integrity=["']?sha384-/
+          );
+
+          assert.match(
+            home,
+            /Project statistics last verified/
+          );
+
+          assert.match(
+            article,
+            /class=["']?heading-anchor["']?/
+          );
+
+          assert.match(
+            article,
+            /class=["']?footnotes["']?\s+role=["']?doc-endnotes["']?/
+          );
+
+          assert.match(
+            article,
+            /role=["']?doc-backlink["']?/
+          );
+
+          assert(
+            !home.includes('cloud.umami.is')
+          );
+
+          assert.match(
+            tag,
+            /name=["']?robots["']?\s+content=["']noindex, follow["']/i
+          );
+
+          assert(
+            !sitemap.includes('/tags/')
+          );
+
+          assert(
+            !sitemap.includes('/nojs/')
+          );
+
           assert.match(
             nojsHome,
             /<meta\s+name=["']?robots["']?\s+content=["']noindex, follow["']/i
@@ -289,42 +444,157 @@ jobs:
             `${onionBase}/nojs/2025/11/01/tor-relays-project/`
           );
 
-          assert(!/<script\b/i.test(nojsHome));
-          assert(!/<script\b/i.test(nojsArticle));
-          const homeFrames = tokenizeHtml(home).tags.filter(tag => !tag.closing && tag.name === 'iframe');
-          assert.equal(homeFrames.length, 1);
-          assert.equal(attributeValue(homeFrames[0], 'src'), 'https://embed-snowflake.torproject.org/');
-          assert(attributeValue(homeFrames[0], 'title'));
-          assert.equal(attributeValue(homeFrames[0], 'loading'), 'lazy');
-          assert.match(home, /frame-src https:\/\/embed-snowflake\.torproject\.org/);
-          assert.match(nojsHome, /frame-src 'none'/);
-          assert(!/<iframe\b/i.test(nojsHome));
-          assert(!/<iframe\b/i.test(nojsArticle));
-          assert(!/<iframe\b/i.test(shared404));
+          assert(
+            !/<script\b/i.test(nojsHome)
+          );
 
-          assert.match(donate, /data-node-sync/);
-          assert.match(donateScript, /bitcoin-cli getblockchaininfo/);
-          assert.match(donateScript, /monerod sync_info/);
-          assert.match(donateScript, /phoneViewport\.matches/);
-          assert.match(nojsDonate, /bitcoin-cli getblockchaininfo/);
-          assert.match(nojsDonate, /monerod sync_info/);
-          assert.match(nojsStyles, /max-width: 47\.99rem[\s\S]*?prompt__node-sync-step/);
-          assert.match(nojsStyles, /prompt__input--nojs-home[\s\S]*?nojs-home-command-clear/);
-          assert(!/data-terminal-retain-cd/i.test(home));
-          assert.match(home, /data-terminal-mobile-animate=["']?true/i);
+          assert(
+            !/<script\b/i.test(nojsArticle)
+          );
 
-          const onlyBackToTopArrow = (html, className) => {
-            const pattern = new RegExp(`<a\\b[^>]*class=["'][^"']*${className}[^"']*["'][^>]*>([\\s\\S]*?)<\\/a>`, 'i');
+          const homeFrames = tokenizeHtml(home).tags.filter(
+            tag =>
+              !tag.closing &&
+              tag.name === 'iframe'
+          );
+
+          assert.equal(
+            homeFrames.length,
+            1
+          );
+
+          assert.equal(
+            attributeValue(homeFrames[0], 'src'),
+            'https://embed-snowflake.torproject.org/'
+          );
+
+          assert(
+            attributeValue(homeFrames[0], 'title')
+          );
+
+          assert.equal(
+            attributeValue(homeFrames[0], 'loading'),
+            'lazy'
+          );
+
+          assert.match(
+            home,
+            /frame-src https:\/\/embed-snowflake\.torproject\.org/
+          );
+
+          assert.match(
+            nojsHome,
+            /frame-src 'none'/
+          );
+
+          assert(
+            !/<iframe\b/i.test(nojsHome)
+          );
+
+          assert(
+            !/<iframe\b/i.test(nojsArticle)
+          );
+
+          assert(
+            !/<iframe\b/i.test(shared404)
+          );
+
+          assert.match(
+            donate,
+            /data-node-sync/
+          );
+
+          assert.match(
+            donateScript,
+            /bitcoin-cli getblockchaininfo/
+          );
+
+          assert.match(
+            donateScript,
+            /monerod sync_info/
+          );
+
+          assert.match(
+            donateScript,
+            /phoneViewport\.matches/
+          );
+
+          assert.match(
+            nojsDonate,
+            /bitcoin-cli getblockchaininfo/
+          );
+
+          assert.match(
+            nojsDonate,
+            /monerod sync_info/
+          );
+
+          assert.match(
+            nojsStyles,
+            /max-width: 47\.99rem[\s\S]*?prompt__node-sync-step/
+          );
+
+          assert.match(
+            nojsStyles,
+            /prompt__input--nojs-home[\s\S]*?nojs-home-command-clear/
+          );
+
+          assert(
+            !/data-terminal-retain-cd/i.test(home)
+          );
+
+          assert.match(
+            home,
+            /data-terminal-mobile-animate=["']?true/i
+          );
+
+          const onlyBackToTopArrow = (
+            html,
+            className
+          ) => {
+            const pattern = new RegExp(
+              `<a\\b[^>]*class=["'][^"']*${className}[^"']*["'][^>]*>([\\s\\S]*?)<\\/a>`,
+              'i'
+            );
+
             const match = html.match(pattern);
-            assert(match, `Missing ${className}`);
-            assert.equal(match[1].replace(/<[^>]+>/g, '').trim(), '↑');
+
+            assert(
+              match,
+              `Missing ${className}`
+            );
+
+            assert.equal(
+              match[1]
+                .replace(/<[^>]+>/g, '')
+                .trim(),
+              '↑'
+            );
           };
 
-          onlyBackToTopArrow(nojsHome, 'back-to-top--nojs-only');
-          onlyBackToTopArrow(shared404, 'back-to-top--scriptfree-404');
+          onlyBackToTopArrow(
+            nojsHome,
+            'back-to-top--nojs-only'
+          );
 
-          for (const file of [home, profile, article, tag]) {
-            assert(!/<meta\s+name=["']?keywords["']?/i.test(file));
+          onlyBackToTopArrow(
+            shared404,
+            'back-to-top--scriptfree-404'
+          );
+
+          for (
+            const file of [
+              home,
+              profile,
+              article,
+              tag
+            ]
+          ) {
+            assert(
+              !/<meta\s+name=["']?keywords["']?/i.test(
+                file
+              )
+            );
           }
           NODE
 
@@ -333,8 +603,11 @@ jobs:
         env:
           LHCI_BUILD_CONTEXT__CURRENT_HASH: ${{ github.sha }}
         run: |
-          npx --yes @lhci/cli@0.15.1 collect --config=.lighthouserc.json
-          npx --yes @lhci/cli@0.15.1 assert --config=.lighthouserc.json
+          npx --yes @lhci/cli@0.15.1 collect \
+            --config=.lighthouserc.json
+
+          npx --yes @lhci/cli@0.15.1 assert \
+            --config=.lighthouserc.json
 
       - name: Confirm generated output is not tracked
         shell: bash
@@ -357,6 +630,7 @@ jobs:
   config:
     name: Repository configuration
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -367,22 +641,33 @@ jobs:
           set -euo pipefail
 
           mapfile -t configured_themes < <(
-            git config -f .gitmodules --get-regexp '^submodule\..*\.path$' | awk '{ print $2 }'
+            git config \
+              -f .gitmodules \
+              --get-regexp '^submodule\..*\.path$' |
+            awk '{ print $2 }'
           )
+
           mapfile -t tracked_themes < <(
-            git ls-files --stage themes | awk '$1 == "160000" { print $4 }'
+            git ls-files --stage themes |
+            awk '$1 == "160000" { print $4 }'
           )
 
           test "${#configured_themes[@]}" -eq 1
           test "${configured_themes[0]}" = "themes/risotto"
           test "${#tracked_themes[@]}" -eq 1
           test "${tracked_themes[0]}" = "themes/risotto"
-          test "$(git config -f .gitmodules --get submodule.themes/risotto.url)" = "https://github.com/joeroe/risotto.git"
+
+          test "$(
+            git config \
+              -f .gitmodules \
+              --get submodule.themes/risotto.url
+          )" = "https://github.com/joeroe/risotto.git"
 
       - name: Validate JSON files
         shell: bash
         run: |
           set -euo pipefail
+
           jq empty .lighthouserc.json
           jq empty .github/renovate.json
           jq empty data/project_stats.json
@@ -391,3 +676,4 @@ jobs:
 
       - name: Check workflow syntax
         uses: raven-actions/actionlint@v2
+        
