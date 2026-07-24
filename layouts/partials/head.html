@@ -18,6 +18,7 @@
 {{- $isArticle := and .IsPage (eq .Section "posts") -}}
 {{- $isNoJS := strings.HasPrefix .RelPermalink "/nojs/" -}}
 {{- $isScriptFree := or $isNoJS (eq .Kind "404") -}}
+{{- $isOnionBuild := strings.Contains site.BaseURL ".onion" -}}
 {{- $canonical := .Permalink -}}
 {{- if $isNoJS -}}
   {{- with .OutputFormats.Get "HTML" -}}
@@ -26,6 +27,7 @@
 {{- end -}}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+{{ partial "onion.html" . }}
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#181b20">
 <meta name="description" content="{{ $description }}">
@@ -34,6 +36,8 @@
 {{ if hugo.IsProduction }}
 {{ if $isScriptFree }}
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'none'; form-action 'self'">
+{{ else if $isOnionBuild }}
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https://img.shields.io; font-src 'self'; connect-src 'self'; frame-src 'none'; form-action 'self'">
 {{ else }}
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https://img.shields.io; font-src 'self'; connect-src 'self'; frame-src https://embed-snowflake.torproject.org; form-action 'self'">
 {{ end }}

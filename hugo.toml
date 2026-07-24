@@ -38,6 +38,7 @@ timeZone = "Asia/Tokyo"
   description = "Independent security research, privacy infrastructure, and open-source operations by rE-Bo0t.bx1."
   socialImage = "og.jpg"
   socialImageAlt = "Br🤖ken B🤖tnet: security research, open-source infrastructure, and Tor"
+  onionBaseURL = "http://brokenbotqk7v7y3xpvr6ik7rofivu2dsr5rpkx6xons45reksaykuad.onion"
   noindex = false
 
   [params.theme]

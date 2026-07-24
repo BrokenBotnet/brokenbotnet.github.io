@@ -1,0 +1,9 @@
+{{- $onion := site.Params.onionBaseURL -}}
+{{- $isOnionBuild := strings.Contains site.BaseURL ".onion" -}}
+
+{{- if and $onion (not $isOnionBuild) -}}
+<meta
+  http-equiv="onion-location"
+  content="{{ $onion }}{{ .RelPermalink }}"
+>
+{{- end -}}
