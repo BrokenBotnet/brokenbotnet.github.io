@@ -1,0 +1,112 @@
+name: 🔔
+
+run-name: 🔔
+
+on:
+  workflow_run:
+    workflows: ["🚀"]
+    branches: [main]
+    types: [completed]
+
+permissions: {}
+
+concurrency:
+  group: deployment-notification-blog
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    name: Send deployment notification
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Send authenticated notification
+        shell: bash
+        env:
+          DISPATCH_TOKEN: ${{ secrets.WEB2ONION_DISPATCH_TOKEN }}
+          TARGET_REPOSITORY: ${{ secrets.WEB2ONION_TARGET_REPOSITORY }}
+          SOURCE_REPOSITORY: ${{ github.repository }}
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+          SOURCE_RUN_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          set -euo pipefail
+
+          [[ -n "${DISPATCH_TOKEN}" ]] || {
+            echo 'Dispatch credential is not configured' >&2
+            exit 78
+          }
+
+          [[ "${TARGET_REPOSITORY}" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || {
+            echo 'Target repository setting is invalid' >&2
+            exit 78
+          }
+
+          [[ "${SOURCE_REPOSITORY}" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || {
+            echo 'Source repository metadata is invalid' >&2
+            exit 64
+          }
+
+          [[ "${SOURCE_SHA}" =~ ^[0-9a-f]{40}$ ]] || {
+            echo 'Source commit metadata is invalid' >&2
+            exit 64
+          }
+
+          source_prefix="https://github.com/${SOURCE_REPOSITORY}/actions/runs/"
+
+          [[ "${SOURCE_RUN_URL}" == "${source_prefix}"* ]] || {
+            echo 'Source workflow URL is invalid' >&2
+            exit 64
+          }
+
+          source_run_id="${SOURCE_RUN_URL#"${source_prefix}"}"
+
+          [[ "${source_run_id}" =~ ^[0-9]+$ ]] || {
+            echo 'Source workflow run ID is invalid' >&2
+            exit 64
+          }
+
+          payload="$(
+            jq -cn \
+              --arg repository "${SOURCE_REPOSITORY}" \
+              --arg sha "${SOURCE_SHA}" \
+              --arg run_url "${SOURCE_RUN_URL}" \
+              '{
+                event_type: "source-updated",
+                client_payload: {
+                  repository: $repository,
+                  sha: $sha,
+                  run_url: $run_url
+                }
+              }'
+          )"
+
+          response="${RUNNER_TEMP}/dispatch-response.txt"
+
+          http_code="$(
+            curl \
+              --silent \
+              --show-error \
+              --connect-timeout 15 \
+              --max-time 60 \
+              --output "${response}" \
+              --write-out '%{http_code}' \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer ${DISPATCH_TOKEN}" \
+              --header 'X-GitHub-Api-Version: 2026-03-10' \
+              --data "${payload}" \
+              "https://api.github.com/repos/${TARGET_REPOSITORY}/dispatches"
+          )"
+
+          rm -f -- "${response}"
+
+          if [[ "${http_code}" != '204' ]]; then
+            echo "Notification failed with HTTP ${http_code}" >&2
+            exit 1
+          fi
+
+          echo 'Authenticated deployment notification accepted.'
