@@ -20,9 +20,26 @@ env:
 jobs:
   build:
     name: Build Pages artifact
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+
     steps:
+      - name: Require successful validation
+        if: github.event_name == 'workflow_run'
+        shell: bash
+        env:
+          VALIDATION_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          VALIDATION_RUN_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          set -euo pipefail
+
+          if [[ "${VALIDATION_CONCLUSION}" == "success" ]]; then
+            echo "Validation succeeded: ${VALIDATION_RUN_URL}"
+            exit 0
+          fi
+
+          echo "::error::Validation concluded ${VALIDATION_CONCLUSION}: ${VALIDATION_RUN_URL}"
+          exit 1
+
       - name: Check out repository and theme
         uses: actions/checkout@v7
         with:
@@ -68,41 +85,155 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
 
+  onion:
+    name: Request onion mirror rebuild
+    needs: deploy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: {}
+
+    steps:
+      - name: Send authenticated deployment request
+        shell: bash
+        env:
+          DISPATCH_TOKEN: ${{ secrets.WEB2ONION_DISPATCH_TOKEN }}
+          TARGET_REPOSITORY: ${{ secrets.WEB2ONION_TARGET_REPOSITORY }}
+          SOURCE_REPOSITORY: ${{ github.repository }}
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+          SOURCE_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          [[ -n "${DISPATCH_TOKEN}" ]] || {
+            echo 'Dispatch credential is not configured' >&2
+            exit 78
+          }
+
+          [[ "${TARGET_REPOSITORY}" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || {
+            echo 'Target repository setting is invalid' >&2
+            exit 78
+          }
+
+          [[ "${SOURCE_REPOSITORY}" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || {
+            echo 'Source repository metadata is invalid' >&2
+            exit 64
+          }
+
+          [[ "${SOURCE_SHA}" =~ ^[0-9a-f]{40}$ ]] || {
+            echo 'Source commit metadata is invalid' >&2
+            exit 64
+          }
+
+          source_prefix="https://github.com/${SOURCE_REPOSITORY}/actions/runs/"
+
+          [[ "${SOURCE_RUN_URL}" == "${source_prefix}"* ]] || {
+            echo 'Source workflow URL is invalid' >&2
+            exit 64
+          }
+
+          source_run_id="${SOURCE_RUN_URL#"${source_prefix}"}"
+
+          [[ "${source_run_id}" =~ ^[0-9]+$ ]] || {
+            echo 'Source workflow run ID is invalid' >&2
+            exit 64
+          }
+
+          payload="$(
+            jq -cn \
+              --arg repository "${SOURCE_REPOSITORY}" \
+              --arg sha "${SOURCE_SHA}" \
+              --arg run_url "${SOURCE_RUN_URL}" \
+              '{
+                event_type: "source-updated",
+                client_payload: {
+                  repository: $repository,
+                  sha: $sha,
+                  run_url: $run_url
+                }
+              }'
+          )"
+
+          response="${RUNNER_TEMP}/dispatch-response.txt"
+
+          http_code="$(
+            curl \
+              --silent \
+              --show-error \
+              --retry 3 \
+              --retry-all-errors \
+              --connect-timeout 15 \
+              --max-time 60 \
+              --output "${response}" \
+              --write-out '%{http_code}' \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer ${DISPATCH_TOKEN}" \
+              --header 'X-GitHub-Api-Version: 2026-03-10' \
+              --data "${payload}" \
+              "https://api.github.com/repos/${TARGET_REPOSITORY}/dispatches"
+          )"
+
+          if [[ "${http_code}" != '204' ]]; then
+            echo "Onion rebuild request failed with HTTP ${http_code}" >&2
+            cat "${response}" >&2 || true
+            rm -f -- "${response}"
+            exit 1
+          fi
+
+          rm -f -- "${response}"
+          echo 'Onion mirror rebuild request accepted.'
+
   notify:
     name: Send Matrix notification
-    needs: [build, deploy]
+    needs: [build, deploy, onion]
     if: always()
+    continue-on-error: true
     runs-on: ubuntu-latest
     permissions: {}
     env:
       MATRIX_SERVER_URL: ${{ secrets.MATRIX_SERVER_URL }}
       MATRIX_ROOM_ID: ${{ secrets.MATRIX_ROOM_ID }}
       MATRIX_ACCESS_TOKEN: ${{ secrets.MATRIX_ACCESS_TOKEN }}
+      BUILD_RESULT: ${{ needs.build.result }}
+      DEPLOY_RESULT: ${{ needs.deploy.result }}
+      ONION_RESULT: ${{ needs.onion.result }}
+
     steps:
       - name: Report deployment result
         shell: bash
         run: |
           set -euo pipefail
+
           if [[ -z "${MATRIX_SERVER_URL}" || -z "${MATRIX_ROOM_ID}" || -z "${MATRIX_ACCESS_TOKEN}" ]]; then
-            echo "Matrix secrets are not configured; skipping notification."
+            echo 'Matrix secrets are not configured; skipping notification.'
             exit 0
           fi
 
-          if [[ "${{ needs.deploy.result }}" == "success" ]]; then
-            body="✅ Br🤖ken B🤖tnet deployed successfully at $(date +'%Y-%m-%d %H:%M'): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          timestamp="$(date +'%Y-%m-%d %H:%M')"
+
+          if [[ "${BUILD_RESULT}" == 'success' && "${DEPLOY_RESULT}" == 'success' && "${ONION_RESULT}" == 'success' ]]; then
+            body="✅ Br🤖ken B🤖tnet deployed and onion rebuild requested successfully at ${timestamp}: ${run_url}"
           else
-            body="❌ Br🤖ken B🤖tnet deployment failed at $(date +'%Y-%m-%d %H:%M'): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            body="❌ Br🤖ken B🤖tnet deployment pipeline failed at ${timestamp} (build: ${BUILD_RESULT}, publish: ${DEPLOY_RESULT}, onion request: ${ONION_RESULT}): ${run_url}"
           fi
 
-          payload=$(jq -n --arg body "$body" '{msgtype: "m.text", body: $body}')
-          curl --fail-with-body --retry 3 \
+          payload="$(jq -cn --arg body "${body}" '{msgtype: "m.text", body: $body}')"
+
+          curl \
+            --fail-with-body \
+            --retry 3 \
+            --retry-all-errors \
+            --connect-timeout 15 \
+            --max-time 60 \
             --request PUT \
             --header "Authorization: Bearer ${MATRIX_ACCESS_TOKEN}" \
-            --header "Content-Type: application/json" \
-            --data "$payload" \
+            --header 'Content-Type: application/json' \
+            --data "${payload}" \
             "${MATRIX_SERVER_URL%/}/_matrix/client/v3/rooms/${MATRIX_ROOM_ID}/send/m.room.message/${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
