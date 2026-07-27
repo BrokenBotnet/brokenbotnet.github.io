@@ -4,6 +4,8 @@
     {{ partial "head.html" . }}
   </head>
   <body id="top">
+    {{- $isArticle := and .IsPage (eq .Section "posts") -}}
+    {{ if $isArticle }}<div class="reading-progress" data-reading-progress hidden aria-hidden="true"><span class="reading-progress__fill"></span></div>{{ end }}
     {{ if ne .Kind "404" }}<canvas class="relay-network" data-relay-network aria-hidden="true"></canvas>{{ end }}
     <a class="skip-link" href="#main-content">Skip to content</a>
     {{- $nojsOutput := .OutputFormats.Get "NOJS" -}}
@@ -23,7 +25,7 @@
 
       {{ if ne .Kind "404" }}
         <aside class="page__aside" aria-label="About and page navigation">
-          <div class="aside__panel">
+          <div class="aside__panel{{ if $isArticle }} aside__panel--article{{ end }}">
             <div class="aside__about">
               {{ partial "about.html" . }}
             </div>
@@ -39,15 +41,14 @@
       <footer class="page__footer">
         {{ if eq .Kind "404" }}
           {{ partial "footer-nojs.html" . }}
+          <a class="back-to-top back-to-top--nojs back-to-top--scriptfree-404" href="#top" title="Back to top" aria-label="Back to top"><span aria-hidden="true">↑</span></a>
         {{ else }}
           {{ partial "footer.html" . }}
         {{ end }}
       </footer>
     </div>
 
-    {{ if eq .Kind "404" }}
-      <a class="back-to-top back-to-top--nojs back-to-top--scriptfree-404" href="#top" title="Back to top" aria-label="Back to top"><span aria-hidden="true">↑</span></a>
-    {{ else }}
+    {{ if ne .Kind "404" }}
       <button class="back-to-top" type="button" data-back-to-top hidden title="Back to top" aria-label="Back to top">
         <i data-lucide="arrow-up" aria-hidden="true"></i>
       </button>

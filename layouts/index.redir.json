@@ -1,0 +1,7 @@
+{{- $pages := where .Site.RegularPages "Params.unlisted" "!=" true -}}
+{{- $map := dict -}}
+{{- range $pages -}}
+  {{- $key := .Slug | default .File.ContentBaseName -}}
+  {{- $map = merge $map (dict $key .Permalink) -}}
+{{- end -}}
+{{ jsonify (dict "indent" "  ") $map }}

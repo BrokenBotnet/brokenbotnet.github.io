@@ -1,0 +1,27 @@
+{{- $primary := site.Params.onionBaseURL -}}
+{{- $fallback := site.Params.onionFallbackURL -}}
+{{- $isNoJS := .nojs -}}
+{{- with $primary }}
+  <a class="footer-link footer-link--onion" href="{{ . }}/" target="_blank" rel="noopener noreferrer" aria-label="Open the primary Onion mirror in a new tab" title="Primary Onion mirror">
+    {{- if $isNoJS -}}
+      <img class="footer-link__onion-icon" src="{{ "icons/onion.png" | relURL }}" width="23" height="23" alt="" aria-hidden="true">
+    {{- else -}}
+      <svg class="footer-link__onion-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C55BE3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="2"/><circle cx="12" cy="12" r="6"/><path d="M2.8 8.1a10 10 0 1 0 5.3-5.3C5 4 3 2 3 2L2 3s2 2 .8 5.1"/><path d="M18 20v2"/><path d="m21 21-1.9-1.9"/><path d="M22 18h-2"/></svg>
+    {{- end }}
+    <span>Primary</span>
+  </a>
+{{- end }}
+{{- with $fallback }}
+  <a class="footer-link footer-link--onion" href="{{ . }}/" target="_blank" rel="noopener noreferrer" aria-label="Open the fallback Onion mirror in a new tab" title="Fallback Onion mirror">
+    {{- if $isNoJS -}}
+      <img class="footer-link__onion-icon" src="{{ "icons/onion.png" | relURL }}" width="23" height="23" alt="" aria-hidden="true">
+    {{- else -}}
+      <svg class="footer-link__onion-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C55BE3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="2"/><circle cx="12" cy="12" r="6"/><path d="M2.8 8.1a10 10 0 1 0 5.3-5.3C5 4 3 2 3 2L2 3s2 2 .8 5.1"/><path d="M18 20v2"/><path d="m21 21-1.9-1.9"/><path d="M22 18h-2"/></svg>
+    {{- end }}
+    <span>Fallback</span>
+  </a>
+{{- end }}
+<a class="footer-link footer-link--verify" href="{{ "onion-mirror.txt" | relURL }}" target="_blank" rel="noopener noreferrer" aria-label="Verify the signed Onion mirror statement in a new tab" title="Signed Onion mirror statement">
+  <span class="footer-link__icon footer-link__icon--verify" aria-hidden="true">✓</span>
+  <span>Verify</span>
+</a>

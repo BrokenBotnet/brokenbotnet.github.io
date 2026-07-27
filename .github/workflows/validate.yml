@@ -251,6 +251,8 @@ jobs:
 
           const onionBase =
             'http://brokenbotqk7v7y3xpvr6ik7rofivu2dsr5rpkx6xons45reksaykuad.onion';
+          const onionFallback =
+            'http://brokenbotcukepazwp3zhgxhh5jdklnm4kyxqduqrk5gxmh3xcmt7oad.onion';
 
           const onionLocation = html => {
             const document = tokenizeHtml(html);
@@ -295,8 +297,19 @@ jobs:
             'public/nojs/donate/index.html'
           );
 
+          const nojsWriting = read(
+            'public/nojs/posts/index.html'
+          );
+
+          const nojsTag = read(
+            'public/nojs/tags/tor/index.html'
+          );
+
           const shared404 = read('public/404.html');
           const sitemap = read('public/sitemap.xml');
+          const redirectMap = JSON.parse(
+            read('public/redir.json')
+          );
           const donateScript = read('static/js/donate.js');
           const nojsStyles = read('static/css/pages/nojs.css');
 
@@ -443,6 +456,55 @@ jobs:
             onionLocation(nojsArticle),
             `${onionBase}/nojs/2025/11/01/tor-relays-project/`
           );
+
+          for (const page of [home, nojsHome]) {
+            assert(
+              page.includes(`${onionBase}/`)
+            );
+
+            assert(
+              page.includes(`${onionFallback}/`)
+            );
+
+            assert(
+              page.includes('/onion-mirror.txt')
+            );
+
+            assert(
+              page.includes('/icons/tor-onion.png')
+            );
+          }
+
+          assert.equal(
+            redirectMap.whoami,
+            'https://brokenbotnet.com/whoami/'
+          );
+
+          assert.equal(
+            redirectMap.donate,
+            'https://brokenbotnet.com/donate/'
+          );
+
+          assert.equal(
+            redirectMap['tor-relays-project'],
+            'https://brokenbotnet.com/2025/11/01/tor-relays-project/'
+          );
+
+          assert(
+            !Object.values(redirectMap).some(url =>
+              String(url).includes('localhost')
+            )
+          );
+
+          for (const page of [nojsWriting, nojsTag]) {
+            assert(
+              !page.includes('cd ~/writing')
+            );
+
+            assert(
+              !page.includes('prompt__line--nojs-writing-start')
+            );
+          }
 
           assert(
             !/<script\b/i.test(nojsHome)
@@ -676,4 +738,3 @@ jobs:
 
       - name: Check workflow syntax
         uses: raven-actions/actionlint@v2
-        

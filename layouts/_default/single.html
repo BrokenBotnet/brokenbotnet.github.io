@@ -60,11 +60,29 @@
 {{ end }}
 
 {{ define "aside" }}
-  {{ with .Description }}<p>{{ . }}</p>{{ end }}
+  {{ $isNoJS := strings.HasPrefix .RelPermalink "/nojs/" }}
+  {{ with .Description }}
+  <details class="aside__summary"{{ if not $isNoJS }} data-aside-summary{{ end }}>
+    <summary>
+      <span class="aside__summary-text">{{ . }}</span>
+      <span class="aside__summary-action" aria-hidden="true">
+        <span class="aside__summary-action--more">Read More</span>
+        <span class="aside__summary-action--less">Show Less</span>
+      </span>
+    </summary>
+  </details>
+  {{ end }}
   {{ if and .Params.toc .TableOfContents }}
-  <div class="toc">
-    <p class="toc__title">On This Page</p>
-    {{ .TableOfContents }}
+  <div class="toc{{ if $isNoJS }} toc--nojs{{ else }} toc--enhanced{{ end }}"{{ if not $isNoJS }} data-toc{{ end }}>
+    <div class="toc__header">
+      <p class="toc__title">On This Page</p>
+      {{ if not $isNoJS }}
+      <button class="toc__toggle" type="button" data-toc-toggle aria-expanded="false">View All</button>
+      {{ end }}
+    </div>
+    <div class="toc__viewport"{{ if not $isNoJS }} data-toc-viewport{{ end }}>
+      {{ .TableOfContents }}
+    </div>
   </div>
   {{ end }}
 {{ end }}

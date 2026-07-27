@@ -16,13 +16,6 @@ timeZone = "Asia/Tokyo"
 [permalinks]
   posts = "/:year/:month/:day/:slug/"
 
-[outputs]
-  home = ["HTML", "RSS", "NOJS"]
-  section = ["HTML", "RSS", "NOJS"]
-  page = ["HTML", "NOJS"]
-  taxonomy = ["HTML", "RSS", "NOJS"]
-  term = ["HTML", "RSS", "NOJS"]
-
 [outputFormats]
   [outputFormats.NOJS]
     mediaType = "text/html"
@@ -33,12 +26,26 @@ timeZone = "Asia/Tokyo"
     notAlternative = true
     weight = 20
 
+  [outputFormats.REDIR]
+    mediaType = "application/json"
+    baseName = "redir"
+    isPlainText = true
+    notAlternative = true
+
+[outputs]
+  home = ["HTML", "RSS", "NOJS", "REDIR"]
+  section = ["HTML", "RSS", "NOJS"]
+  page = ["HTML", "NOJS"]
+  taxonomy = ["HTML", "RSS", "NOJS"]
+  term = ["HTML", "RSS", "NOJS"]
+
 [params]
   author = "rE-Bo0t.bx1"
   description = "Independent security research, privacy infrastructure, and open-source operations by rE-Bo0t.bx1."
   socialImage = "og.jpg"
   socialImageAlt = "Br🤖ken B🤖tnet: security research, open-source infrastructure, and Tor"
   onionBaseURL = "http://brokenbotqk7v7y3xpvr6ik7rofivu2dsr5rpkx6xons45reksaykuad.onion"
+  onionFallbackURL = "http://brokenbotcukepazwp3zhgxhh5jdklnm4kyxqduqrk5gxmh3xcmt7oad.onion"
   noindex = false
 
   [params.theme]

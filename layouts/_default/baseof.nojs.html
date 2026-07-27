@@ -4,6 +4,8 @@
     {{ partial "head.html" . }}
   </head>
   <body id="top">
+    {{- $isArticle := and .IsPage (eq .Section "posts") -}}
+    {{ if $isArticle }}<div class="reading-progress reading-progress--nojs" aria-hidden="true"><span class="reading-progress__fill"></span></div>{{ end }}
     <a class="skip-link" href="#main-content">Skip to content</a>
     <div class="page page--nojs{{ if eq .Kind "404" }} page--404{{ end }}">
       <header class="page__header">
@@ -16,7 +18,7 @@
 
       {{ if ne .Kind "404" }}
         <aside class="page__aside" aria-label="About and page navigation">
-          <div class="aside__panel">
+          <div class="aside__panel{{ if $isArticle }} aside__panel--article{{ end }}">
             <div class="aside__about">
               {{ partial "about.html" . }}
             </div>
@@ -30,9 +32,8 @@
 
       <footer class="page__footer">
         {{ partial "footer-nojs.html" . }}
+        <a class="back-to-top back-to-top--nojs back-to-top--nojs-only{{ if eq .Kind "404" }} back-to-top--scriptfree-404{{ end }}" href="#top" title="Back to top" aria-label="Back to top"><span aria-hidden="true">↑</span></a>
       </footer>
     </div>
-
-    <a class="back-to-top back-to-top--nojs back-to-top--nojs-only{{ if eq .Kind "404" }} back-to-top--scriptfree-404{{ end }}" href="#top" title="Back to top" aria-label="Back to top"><span aria-hidden="true">↑</span></a>
   </body>
 </html>

@@ -110,22 +110,37 @@
   animation: nojs-home-command-clear 1ms linear 1.18s forwards !important;
 }
 
-.no-js .terminal-prompt--nojs-writing-sequence {
+.no-js .terminal-prompt--nojs-article {
   display: inline-grid;
+  width: min(100%, max-content);
+  max-width: 100%;
+  vertical-align: top;
 }
 
-.no-js .terminal-prompt--nojs-writing-sequence .prompt__line {
+.no-js .terminal-prompt--nojs-article .prompt__line {
+  display: flex;
   grid-area: 1 / 1;
+  align-items: baseline;
+  flex-wrap: wrap;
+  min-width: 0;
+  max-width: 100%;
 }
 
-.no-js .prompt__line--nojs-writing-start {
+.no-js .terminal-prompt--nojs-article .prompt__identity {
+  flex: 0 0 auto;
+}
+
+.no-js .terminal-prompt--nojs-article .prompt__line--nojs-writing-start {
+  visibility: visible;
+  opacity: 1;
   animation: nojs-writing-stage-hide 1ms linear 1.42s forwards !important;
 }
 
-.no-js .prompt__line--nojs-writing-final {
+.no-js .terminal-prompt--nojs-article .prompt__line--nojs-writing-final {
   visibility: hidden;
   opacity: 0;
-  animation: nojs-writing-stage-reveal 1ms linear 1.42s forwards !important;
+  pointer-events: none;
+  animation: nojs-writing-stage-reveal 1ms linear 1.48s forwards !important;
 }
 
 .no-js .prompt__input--nojs-writing-cd .prompt__command--context {
@@ -139,36 +154,12 @@
     nojs-terminal-cursor-blink 1.05s steps(1, end) 940ms infinite !important;
 }
 
-.no-js .prompt__input--nojs-writing-final.prompt__input--nojs-tiny .prompt__command--context {
-  animation-delay: 1.6s !important;
+.no-js .prompt__input--nojs-writing-final .prompt__command--context {
+  animation-delay: 1.66s !important;
 }
 
-.no-js .prompt__input--nojs-writing-final.prompt__input--nojs-tiny .prompt__cursor--nojs {
-  animation-delay: 1.6s, 1.82s !important;
-}
-
-.no-js .prompt__input--nojs-writing-final.prompt__input--nojs-short .prompt__command--context {
-  animation-delay: 1.6s !important;
-}
-
-.no-js .prompt__input--nojs-writing-final.prompt__input--nojs-short .prompt__cursor--nojs {
-  animation-delay: 1.6s, 2.02s !important;
-}
-
-.no-js .prompt__input--nojs-writing-final.prompt__input--nojs-medium .prompt__command--context {
-  animation-delay: 1.6s !important;
-}
-
-.no-js .prompt__input--nojs-writing-final.prompt__input--nojs-medium .prompt__cursor--nojs {
-  animation-delay: 1.6s, 2.32s !important;
-}
-
-.no-js .prompt__input--nojs-writing-final.prompt__input--nojs-long .prompt__command--context {
-  animation-delay: 1.6s !important;
-}
-
-.no-js .prompt__input--nojs-writing-final.prompt__input--nojs-long .prompt__cursor--nojs {
-  animation-delay: 1.6s, 2.65s !important;
+.no-js .prompt__input--nojs-writing-final .prompt__cursor--nojs {
+  animation-delay: 1.66s, 2.71s !important;
 }
 
 .no-js .terminal-prompt--nojs-whoami .prompt__input {
@@ -332,6 +323,8 @@
   to {
     visibility: hidden;
     opacity: 0;
+    pointer-events: none;
+    clip-path: inset(0 100% 0 0);
   }
 }
 
@@ -339,6 +332,7 @@
   to {
     visibility: visible;
     opacity: 1;
+    pointer-events: auto;
   }
 }
 
@@ -602,8 +596,98 @@
 }
 
 .no-js .back-to-top--nojs {
+  position: static;
   display: grid;
+  flex: 0 0 auto;
+  margin-left: auto;
   text-decoration: none;
+}
+
+.no-js .reading-progress--nojs {
+  display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .no-js .reading-progress--nojs {
+    display: block;
+    opacity: 0;
+    animation: nojs-reading-progress-visibility 1ms linear both !important;
+    animation-timeline: scroll(root) !important;
+    animation-range: 0% 100% !important;
+  }
+
+  .no-js .reading-progress--nojs .reading-progress__fill {
+    animation: nojs-reading-progress-fill 1ms linear both !important;
+    animation-timeline: scroll(root) !important;
+    animation-range: 0% 100% !important;
+  }
+
+  .no-js .back-to-top--nojs-only,
+  .no-js .back-to-top--scriptfree-404 {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 20;
+    margin-left: 0;
+    opacity: 0;
+    pointer-events: none;
+    animation: nojs-back-to-top-reveal 1ms linear both !important;
+    animation-timeline: scroll(root) !important;
+    animation-range: 0 50rem !important;
+  }
+}
+
+@keyframes nojs-reading-progress-visibility {
+  0%,
+  2% {
+    opacity: 0;
+  }
+
+  4%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes nojs-reading-progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes nojs-back-to-top-reveal {
+  0%,
+  70% {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(0.4rem);
+  }
+
+  100% {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .no-js .back-to-top--nojs-only,
+  .no-js .back-to-top--scriptfree-404 {
+    transform: none !important;
+  }
+}
+
+/* Preserve a footer-flow fallback when scroll-driven animations are unavailable. */
+@supports not (animation-timeline: scroll()) {
+  .no-js .back-to-top--nojs-only,
+  .no-js .back-to-top--scriptfree-404 {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 .no-js .back-to-top--nojs-only,
@@ -763,14 +847,25 @@
     inset-inline-start: 0;
   }
 
-  .no-js .prompt__line--nojs-writing-start {
+  .no-js .terminal-prompt--nojs-article .prompt__line--nojs-writing-start {
     display: none;
     animation: none !important;
   }
 
-  .no-js .prompt__line--nojs-writing-final {
+  .no-js .terminal-prompt--nojs-article .prompt__line--nojs-writing-final {
     visibility: visible;
     opacity: 1;
+    pointer-events: auto;
+    animation: none !important;
+  }
+
+  .no-js .terminal-prompt--nojs-article .prompt__input--nojs-writing-final .prompt__command--context {
+    clip-path: none;
+    animation: none !important;
+  }
+
+  .no-js .terminal-prompt--nojs-article .prompt__input--nojs-writing-final .prompt__cursor--nojs {
+    inset-inline-start: 100%;
     animation: none !important;
   }
 
@@ -809,23 +904,21 @@
 }
 
 @media (max-width: 47.99rem) {
-  .no-js .terminal-prompt--nojs-article .prompt__line--nojs-writing-start {
-    display: none;
-    animation: none !important;
+  .no-js .terminal-prompt--nojs-article {
+    width: 100%;
   }
 
-  .no-js .terminal-prompt--nojs-article .prompt__line--nojs-writing-final {
-    visibility: visible;
-    opacity: 1;
-    animation: none !important;
+  .no-js .terminal-prompt--nojs-article .prompt__line {
+    width: 100%;
   }
 
-  .no-js .terminal-prompt--nojs-article .prompt__input--nojs-writing-final .prompt__command--context {
-    animation-delay: 180ms !important;
-  }
-
-  .no-js .terminal-prompt--nojs-article .prompt__input--nojs-writing-final .prompt__cursor--nojs {
-    animation-delay: 180ms, 1.23s !important;
+  .no-js .terminal-prompt--nojs-article .prompt__input {
+    flex: 0 0 100%;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    padding-left: 0.55em;
   }
 
   .no-js .prompt__node-sync-step,
@@ -843,27 +936,6 @@
   .no-js .prompt__node-sync-cursor {
     visibility: visible;
     opacity: 1;
-    animation: nojs-terminal-cursor-blink 1.05s steps(1, end) infinite !important;
-  }
-
-  .no-js .terminal-prompt--nojs-writing-sequence:not(.terminal-prompt--nojs-article) .prompt__line--nojs-writing-start {
-    display: none;
-    animation: none !important;
-  }
-
-  .no-js .terminal-prompt--nojs-writing-sequence:not(.terminal-prompt--nojs-article) .prompt__line--nojs-writing-final {
-    visibility: visible;
-    opacity: 1;
-    animation: none !important;
-  }
-
-  .no-js .terminal-prompt--nojs-writing-sequence:not(.terminal-prompt--nojs-article) .prompt__input--nojs-writing-final .prompt__command--context {
-    clip-path: none;
-    animation: none !important;
-  }
-
-  .no-js .terminal-prompt--nojs-writing-sequence:not(.terminal-prompt--nojs-article) .prompt__input--nojs-writing-final .prompt__cursor--nojs {
-    inset-inline-start: 100%;
     animation: nojs-terminal-cursor-blink 1.05s steps(1, end) infinite !important;
   }
 
