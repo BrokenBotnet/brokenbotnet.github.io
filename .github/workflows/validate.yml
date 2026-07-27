@@ -469,11 +469,39 @@ jobs:
             assert(
               page.includes('/onion-mirror.txt')
             );
-
-            assert(
-              page.includes('/icons/tor-onion.png')
-            );
           }
+
+          const hasClass = (tag, className) =>
+            (attributeValue(tag, 'class') || '')
+              .split(/\s+/)
+              .includes(className);
+
+          const homeOnionIcons = tokenizeHtml(home).tags.filter(
+            tag =>
+              !tag.closing &&
+              tag.name === 'svg' &&
+              hasClass(tag, 'footer-link__onion-icon')
+          );
+
+          assert.equal(
+            homeOnionIcons.length,
+            2,
+            'Expected two inline Onion SVG icons on the standard homepage'
+          );
+
+          const nojsOnionIcons = tokenizeHtml(nojsHome).tags.filter(
+            tag =>
+              !tag.closing &&
+              tag.name === 'img' &&
+              hasClass(tag, 'footer-link__onion-icon') &&
+              attributeValue(tag, 'src')?.endsWith('/icons/onion.png')
+          );
+
+          assert.equal(
+            nojsOnionIcons.length,
+            2,
+            'Expected two Onion PNG icons on the No-JS homepage'
+          );
 
           assert.equal(
             redirectMap.whoami,
