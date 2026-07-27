@@ -15,3 +15,4 @@
 *.woff binary
 *.woff2 binary
 *.zip binary
+static/onion-mirror.txt -text
