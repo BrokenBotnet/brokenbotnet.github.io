@@ -23,7 +23,7 @@ Vulnerabilities in Hugo, the risotto theme, GitHub Pages, or another third-party
 
 ## Reporting a vulnerability
 
-Do not open a public issue or pull request for a suspected vulnerability. Email [r3bo0tbx1@brokenbotnet.com](mailto:r3bo0tbx1@brokenbotnet.com). Sensitive reports should be encrypted with the published [OpenPGP key](https://keys.openpgp.org/vks/v1/by-fingerprint/33727F5377D296C320AF704AB3BD6196E1CFBFB4).
+Do not open a public issue or pull request for a suspected vulnerability. Email [r3bo0tbx1@brokenbotnet.com](mailto:r3bo0tbx1@brokenbotnet.com). Sensitive reports should be encrypted with the published [OpenPGP key](https://brokenbotnet.com/0xB3BD6196E1CFBFB4.asc).
 
 - **Fingerprint:** `3372 7F53 77D2 96C3 20AF 704A B3BD 6196 E1CF BFB4`
 - **Key ID:** `B3BD6196E1CFBFB4`

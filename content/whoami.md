@@ -38,7 +38,7 @@ This site began as an information security blog covering privacy, offensive secu
 
 ## Get in touch
 
-Email me at [r3bo0tbx1@brokenbotnet.com](mailto:r3bo0tbx1@brokenbotnet.com) or find me on [Keybase](https://keybase.io/brokenbotnet). For sensitive email, please use my [OpenPGP key `0xB3BD6196E1CFBFB4`](https://keys.openpgp.org/vks/v1/by-fingerprint/33727F5377D296C320AF704AB3BD6196E1CFBFB4).
+Email me at [r3bo0tbx1@brokenbotnet.com](mailto:r3bo0tbx1@brokenbotnet.com) or find me on [Keybase](https://keybase.io/brokenbotnet). For sensitive email, please use my [OpenPGP key `0xB3BD6196E1CFBFB4`](https://brokenbotnet.com/0xB3BD6196E1CFBFB4.asc). A [backup copy](https://gitlab.torproject.org/r3bo0tbx1.gpg) is also available.
 
 If OpenPGP is new to you, these introductions will help you get started:
 

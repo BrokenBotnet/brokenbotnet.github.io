@@ -108,7 +108,7 @@ timeZone = "Asia/Tokyo"
   [[params.socialLinks]]
     icon = "openpgp"
     title = "OpenPGP public key"
-    url = "https://keys.openpgp.org/vks/v1/by-fingerprint/33727F5377D296C320AF704AB3BD6196E1CFBFB4"
+    url = "/0xB3BD6196E1CFBFB4.asc"
     primary = true
 
   [[params.socialLinks]]
