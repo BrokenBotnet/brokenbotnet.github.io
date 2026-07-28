@@ -1,7 +1,7 @@
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA256
 
-I hereby state that I operate and endorse the following Tor onion service addresses for the Shinobi Relays site:
+I hereby state that I operate and endorse the following Tor onion service addresses for the BrokenBotnet blog:
 
 Primary:    http://brokenbotqk7v7y3xpvr6ik7rofivu2dsr5rpkx6xons45reksaykuad.onion
 Fallback:   http://brokenbotcukepazwp3zhgxhh5jdklnm4kyxqduqrk5gxmh3xcmt7oad.onion
@@ -31,18 +31,18 @@ Messages claiming to be from me that are not signed by this key should be treate
 rE-Bo0t.bx1 (r3bo0tbx1)
 -----BEGIN PGP SIGNATURE-----
 
-iQJPBAEBCAA5FiEEM3J/U3fSlsMgr3BKs71hluHPv7QFAmpo/8MbFIAAAAAABAAO
-bWFudTIsMi41KzEuMTIsMiwxAAoJELO9YZbhz7+0ex4P/0qdvAcLsrJXmGWEUfvv
-u1R3CkccNFC4aopIRuWHSdo1i8Tg1qgWC3WOGUdTu57g4J64b3G/8QWIa7N3mt72
-rUKxOYTIFUYcTPIQsuCzsYxPDoENdSqaHzBYjpKgDlUQ/5r5DptBeCBkbPO3mKcB
-r8+l3R+N0Sn0Vcsvcqx7mlx8oOQKlg8+YE6WexLnR5YzW8XBeQkNtHNumMXL+Efu
-zxzO18+1liSP1JxRpsOPZ705cWvdzcQSnBBYaV6USWqzWTnZDm2OiROUvcXnGKV6
-xnfR8n2Jjz+uimhQKSwmc0FP9XR8pB1v4zuZ4psxcoWuTHlqfvNMJst9NC/DrlQE
-YyUMZY1omh6BcsCW46haP/jD/cChZY4arIYiVQ4DAFxYPdzabF23PzA3OtyBQRro
-6oiTydFvFZwfqAC1M8qJ59tHy8kt6UdGuR4rsiP43215yaMy19bj/SpjsgSf6qgG
-yKq7vNhLvn5VUa6coIyPV1SYGWAjX8YoVVTbkl+xk3bD5+L81d+pUPp30/7DiYmb
-YEaJgSEs5LX7hyAUqx6sRC1HeDdo24lxx7I/J8rmaSk4Cqz1NOJH0xlCP4b4QBOy
-YCbtC0zqHJRHYyqwBdvQhu3k3Rftga7WQs33rFHgk0UJ/HOq/kr+5i9aIRefsL4o
-dPEv9d2/Bt8QN5AvO6/hspnS
-=vgqy
+iQJPBAEBCAA5FiEEM3J/U3fSlsMgr3BKs71hluHPv7QFAmppH/4bFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwxAAoJELO9YZbhz7+0juMP/jYR6k1BQteh5lDTk+b1
+PBr5f8Fp/uQhLrf9BB0J//erAxFYlBf5EherAeHq3VgvjBNt16RZA1qpW8HtqECW
+t7cpy1IB4inRkgqqUgPufv9471vmMn0M0wj+CIdY4iif4biC6Gd7IN5IBVdYjSoN
+adZbkVHv/UtsOjpVuVEaUWG8gdUnlHFyWC9eeB/F5UbV/nzTCMCV0nl62KsmgSwM
+RKZZC8Lv4ReCqhWSiLFTvXzBBApjo0JUB+v8wfuFb17Pqpa+kAjXLdgyRLgTeR10
+3uZO/H1Z4rezPnUHRUdhS8Y6dZpEXEXLQB0IldAFJjMKM/zDfZ7Id7qV/RAC3Heh
+xMndjYOiEy7Z6O5CBFSctW60/yX+MJSam/JWOqJ+MnEeydSg1s8C+8MEQBGgkv6k
+Mz9XCpYJwe5zKUc0PahIZ/VPwyhLzcbNv6Uot6KBJ0YISy6FzpO39J9furJeaKm/
+aFm9l061NGhJfhKKM2TZSHRwyOCFlBoIsOS968zVAqg1bVkyZpc5WfkzFkxzOK7u
+gIbOLx5Q0jG4qP1El99WSbZ4Dsc8GSNMAQSwrXS9t+pPFjX0UwAVwHoTJxi50gQE
+ukR3JGp+LjAkYWHq9+7wgzaQm81Yyxmy83dmQpbOkT0rSlZ/xzvb050FQwQTDft7
+j0GUxcALjwDkOR+E5nNqP8MK
+=LsXF
 -----END PGP SIGNATURE-----
