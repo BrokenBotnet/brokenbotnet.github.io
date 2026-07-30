@@ -57,10 +57,10 @@ jobs:
         id: pages
         uses: actions/configure-pages@v6
 
-      - name: Refresh project statistics
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: node scripts/fetch-project-stats.mjs
+      - name: Validate committed project statistics
+        run: |
+          node scripts/fetch-project-stats.mjs
+          node --test scripts/fetch-project-stats.test.mjs
 
       - name: Build production site
         run: hugo --gc --minify --panicOnWarning
