@@ -211,9 +211,11 @@ jobs:
             exit 1
           }
 
-          echo "number=${pr_number}" >> "${GITHUB_OUTPUT}"
-          echo "url=${pr_url}" >> "${GITHUB_OUTPUT}"
-          echo "merge_state=${merge_state}" >> "${GITHUB_OUTPUT}"
+          {
+            echo "number=${pr_number}"
+            echo "url=${pr_url}"
+            echo "merge_state=${merge_state}"
+          } >> "${GITHUB_OUTPUT}"
 
       - name: Write refresh summary
         if: always()
