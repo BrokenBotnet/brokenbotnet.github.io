@@ -1,9 +1,9 @@
-name: 🚀
+name: 🚀✨
 
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["✅"]
+    workflows: ["✅⌛"]
     branches: [main]
     types: [completed]
 
