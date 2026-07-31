@@ -10,15 +10,17 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  actions: write
-  contents: write
+  contents: read
 
 env:
   TZ: Asia/Tokyo
+  AUTOMATION_BRANCH: automation/project-statistics
+  AUTOMATION_COMMIT: "📊 chore(stats): refresh project metrics"
 
 jobs:
   refresh:
     name: Refresh committed project statistics
+    if: github.repository == 'BrokenBotnet/brokenbotnet.github.io'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -27,6 +29,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          persist-credentials: false
           ref: main
 
       - name: Refresh authoritative statistics
@@ -71,32 +74,148 @@ jobs:
           git config user.email \
             '41898282+github-actions[bot]@users.noreply.github.com'
 
+          git switch -c "${AUTOMATION_BRANCH}"
           git add -- data/project_stats.json
 
           test "$(
             git diff --cached --name-only
           )" = 'data/project_stats.json'
 
-          git commit -m '📊 chore(stats): refresh project metrics'
-          git push origin HEAD:main
+          git commit -m "${AUTOMATION_COMMIT}"
 
           echo 'changed=true' >> "${GITHUB_OUTPUT}"
           echo "sha=$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
 
-      - name: Start validation for current main
+      - name: Create or update the protected-branch pull request
+        id: pull_request
+        if: steps.snapshot.outputs.changed == 'true'
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
-          SNAPSHOT_SHA: ${{ steps.snapshot.outputs.sha }}
+          GH_TOKEN: ${{ secrets.BLOG_STATS_TOKEN }}
+          HEAD_SHA: ${{ steps.snapshot.outputs.sha }}
         run: |
           set -euo pipefail
 
-          git fetch --quiet origin main
-          git merge-base --is-ancestor \
-            "${SNAPSHOT_SHA}" \
-            refs/remotes/origin/main
+          [[ -n "${GH_TOKEN}" ]] || {
+            echo 'BLOG_STATS_TOKEN is not configured' >&2
+            exit 78
+          }
 
-          gh workflow run validate.yml --ref main
+          [[ "${HEAD_SHA}" =~ ^[0-9a-f]{40}$ ]] || {
+            echo 'Generated snapshot commit SHA is invalid' >&2
+            exit 64
+          }
+
+          gh auth setup-git
+
+          remote_sha="$(
+            git ls-remote \
+              --heads \
+              origin \
+              "refs/heads/${AUTOMATION_BRANCH}" |
+              awk 'NR == 1 { print $1 }'
+          )"
+
+          if [[ -n "${remote_sha}" ]]; then
+            git push \
+              --force-with-lease="refs/heads/${AUTOMATION_BRANCH}:${remote_sha}" \
+              origin \
+              "HEAD:refs/heads/${AUTOMATION_BRANCH}"
+          else
+            git push \
+              origin \
+              "HEAD:refs/heads/${AUTOMATION_BRANCH}"
+          fi
+
+          pr_number="$(
+            gh pr list \
+              --repo "${GITHUB_REPOSITORY}" \
+              --state open \
+              --base main \
+              --head "${AUTOMATION_BRANCH}" \
+              --json number \
+              --jq '.[0].number // empty'
+          )"
+
+          body_file="${RUNNER_TEMP}/project-statistics-pr.md"
+
+          cat > "${body_file}" <<EOF
+          Automated refresh of the committed project statistics snapshot.
+
+          The workflow validated that only \`data/project_stats.json\` changed.
+
+          Source workflow: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+          Snapshot commit: \`${HEAD_SHA}\`
+          EOF
+
+          if [[ -z "${pr_number}" ]]; then
+            pr_url="$(
+              gh pr create \
+                --repo "${GITHUB_REPOSITORY}" \
+                --base main \
+                --head "${AUTOMATION_BRANCH}" \
+                --title "${AUTOMATION_COMMIT}" \
+                --body-file "${body_file}"
+            )"
+
+            pr_number="$(
+              gh pr view \
+                "${pr_url}" \
+                --repo "${GITHUB_REPOSITORY}" \
+                --json number \
+                --jq .number
+            )"
+          else
+            gh pr edit \
+              "${pr_number}" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --title "${AUTOMATION_COMMIT}" \
+              --body-file "${body_file}"
+
+            pr_url="$(
+              gh pr view \
+                "${pr_number}" \
+                --repo "${GITHUB_REPOSITORY}" \
+                --json url \
+                --jq .url
+            )"
+          fi
+
+          gh pr merge \
+            "${pr_number}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --squash \
+            --auto \
+            --subject "${AUTOMATION_COMMIT}" \
+            --body '' \
+            --match-head-commit "${HEAD_SHA}"
+
+          merge_state="$(
+            gh pr view \
+              "${pr_number}" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --json state,mergedAt,autoMergeRequest \
+              --jq '
+                if .state == "MERGED" and .mergedAt != null then
+                  "merged"
+                elif .state == "OPEN" and .autoMergeRequest != null then
+                  "auto-merge-enabled"
+                else
+                  "unexpected"
+                end
+              '
+          )"
+
+          [[ "${merge_state}" != 'unexpected' ]] || {
+            echo 'Pull request exists, but auto-merge was not enabled' >&2
+            exit 1
+          }
+
+          {
+            echo "number=${pr_number}"
+            echo "url=${pr_url}"
+            echo "merge_state=${merge_state}"
+          } >> "${GITHUB_OUTPUT}"
 
       - name: Write refresh summary
         if: always()
@@ -104,13 +223,22 @@ jobs:
         env:
           CHANGED: ${{ steps.snapshot.outputs.changed || 'unknown' }}
           SNAPSHOT_SHA: ${{ steps.snapshot.outputs.sha || 'unavailable' }}
+          PR_NUMBER: ${{ steps.pull_request.outputs.number || 'none' }}
+          PR_URL: ${{ steps.pull_request.outputs.url || 'none' }}
+          MERGE_STATE: ${{ steps.pull_request.outputs.merge_state || 'not-requested' }}
         run: |
           {
             echo '## Project statistics'
             echo
             echo "- Snapshot changed: \`${CHANGED}\`"
             echo "- Snapshot commit: \`${SNAPSHOT_SHA}\`"
+            echo "- Pull request: \`${PR_NUMBER}\`"
+            echo "- Auto-merge: \`${MERGE_STATE}\`"
             echo "- Checked: \`$(date +'%Y-%m-%d %H:%M')\`"
+
+            if [[ "${PR_URL}" != 'none' ]]; then
+              echo "- Pull request URL: ${PR_URL}"
+            fi
 
             if jq -e . data/project_stats.json >/dev/null 2>&1; then
               echo "- Verified at: \`$(jq -r .verified_at data/project_stats.json)\`"
