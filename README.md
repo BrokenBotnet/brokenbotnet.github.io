@@ -18,6 +18,23 @@
 
 The site uses [Hugo](https://gohugo.io/) with a customized [risotto](https://github.com/joeroe/risotto) theme. GitHub Actions validates each build and deploys it to GitHub Pages.
 
+## Project statistics
+
+`data/project_stats.json` is the authoritative snapshot used by both GitHub
+Pages and Web2Onion. The scheduled `project-stats.yml` workflow refreshes the
+snapshot from its external sources, fails without changing it if any source is
+unavailable or inconsistent, commits only that file, and explicitly starts
+the normal validation workflow.
+
+Ordinary builds run `scripts/fetch-project-stats.mjs` without `--refresh`.
+That mode validates the committed snapshot and performs no network requests or
+writes. This keeps clearnet and onion builds reproducible from the same source
+commit. Only the dedicated refresh workflow may use:
+
+```sh
+node scripts/fetch-project-stats.mjs --refresh
+```
+
 ## License
 
 Original material in this repository is available under the [MIT License](LICENSE). Third-party themes, fonts, icons, and other components remain subject to their respective licenses.

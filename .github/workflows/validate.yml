@@ -1,16 +1,14 @@
-name: ✅
+name: ✅⌛
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "37 18 * * *"
   pull_request:
   push:
     branches: [main]
 
 concurrency:
-  group: ${{ github.event_name == 'schedule' && 'scheduled-maintenance' || format('validate-{0}', github.ref) }}
-  cancel-in-progress: ${{ github.event_name != 'schedule' }}
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -39,10 +37,10 @@ jobs:
       - name: Validate configuration
         run: hugo config > /dev/null
 
-      - name: Refresh project statistics
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: node scripts/fetch-project-stats.mjs
+      - name: Validate committed project statistics
+        run: |
+          node scripts/fetch-project-stats.mjs
+          node --test scripts/fetch-project-stats.test.mjs
 
       - name: Build production site
         run: hugo --gc --minify --panicOnWarning
