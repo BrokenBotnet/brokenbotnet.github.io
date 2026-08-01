@@ -86,6 +86,10 @@ jobs:
             public/.well-known/nostr.json
 
           grep -Fx \
+            'Contact: https://brokenbotnet.com/security/' \
+            public/.well-known/security.txt
+
+          grep -Fx \
             'Contact: mailto:r3bo0tbx1@brokenbotnet.com' \
             public/.well-known/security.txt
 
@@ -94,11 +98,19 @@ jobs:
             public/.well-known/security.txt
 
           grep -Fx \
+            'Encryption: https://brokenbotnet.com/0xB3BD6196E1CFBFB4.asc' \
+            public/.well-known/security.txt
+
+          grep -Fx \
             'Preferred-Languages: en' \
             public/.well-known/security.txt
 
           grep -Fx \
             'Canonical: https://brokenbotnet.com/.well-known/security.txt' \
+            public/.well-known/security.txt
+
+          grep -Fx \
+            'Policy: https://brokenbotnet.com/security/' \
             public/.well-known/security.txt
 
           node <<'NODE'

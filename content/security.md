@@ -1,6 +1,9 @@
-# 🛡️ Security and Vulnerability Disclosure Policy
-
-The canonical version of this policy is published at [brokenbotnet.com/security/](https://brokenbotnet.com/security/).
+---
+title: "Security and Vulnerability Disclosure"
+date: 2026-08-02T00:00:00+09:00
+lastmod: 2026-08-02T00:00:00+09:00
+description: "How to report a vulnerability affecting brokenbotnet.com, including scope, safe-harbor terms, response targets, and coordinated disclosure."
+---
 
 ## Contact
 
@@ -23,9 +26,9 @@ Please include:
 
 This policy covers:
 
-- The current `main` branch of this repository.
+- The current `main` branch of the [brokenbotnet.github.io repository](https://github.com/BrokenBotnet/brokenbotnet.github.io).
 - The website deployed at [brokenbotnet.com](https://brokenbotnet.com/).
-- Hugo templates, first-party CSS and JavaScript, site configuration, and GitHub Actions workflows maintained in this repository.
+- Hugo templates, first-party CSS and JavaScript, site configuration, and GitHub Actions workflows maintained in that repository.
 
 Older commits, forks, local modifications, and services or software operated by third parties are outside this policy. The following projects have separate repositories and should be reported through their own security or issue channels:
 
