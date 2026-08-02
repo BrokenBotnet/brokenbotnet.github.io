@@ -2,7 +2,7 @@
 title: "The Responsibilities of Running a Tor Exit"
 seo_title: "The Operational Responsibilities of Running a Tor Exit Relay"
 date: 2025-12-15
-lastmod: 2026-07-12
+lastmod: 2026-08-03
 slug: "running-tor-exit"
 aliases:
   - "/2026/05/30/responsibilities-running-tor-exit/"
@@ -152,13 +152,13 @@ Nyx shows the relay's aggregate bandwidth, uptime, consensus flags, fingerprint,
 
 ## Reputation reports need context
 
-Public reputation databases are useful operational signals, but they are not attribution systems. A captured AbuseIPDB result for an earlier ShinobiKenshin address, `172.234.92.148`, recorded 15 reports and a 30% confidence score. The same result recognized the address as a Tor Exit and explained that neither the owner nor the provider was directly behind the reported action.
+Public reputation databases are useful operational signals, but they are not attribution systems. A captured AbuseIPDB result for the ShinobiKenshin Tor Exit address, `172.234.92.148`, recorded 15 reports and a 30% confidence score. The same result recognized the address as a Tor Exit and explained that neither the owner nor the provider was directly behind the reported action.
 
 {{< post-figure src="images/posts/running-tor-exit/historical-exit-abuseipdb-report.png" alt="AbuseIPDB result for 172.234.92.148 showing fifteen reports, a thirty percent confidence score, and recognition that the address was a Tor Exit" >}}
 An Exit address can accumulate reports because many unrelated users share it. The report is evidence about the address's observed reputation at that time, not proof that the relay host or operator originated the traffic.
 {{< /post-figure >}}
 
-The result can also vary between addresses and databases. The [Spamhaus reputation check for `157.10.253.140`](https://check.spamhaus.org/results?query=157.10.253.140) reports no issues. Neither a clean result nor a set of reports is permanent. Listings change, databases measure different things, and an operator still needs to investigate host health, confirm that Tor remains the only public purpose of the address, and give providers accurate context when a complaint arrives.
+The result can also vary between databases. The [Spamhaus reputation check for `172.234.92.148`](https://check.spamhaus.org/results?query=172.234.92.148) reports no issues. Neither a clean result nor a set of reports is permanent. Listings change, databases measure different things, and an operator still needs to investigate host health, confirm that Tor remains the only public purpose of the address, and give providers accurate context when a complaint arrives.
 
 ## Expect lifecycle and reputation to take time
 

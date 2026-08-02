@@ -1,9 +1,11 @@
 {{- $destination := .Destination -}}
 {{- $external := or (strings.HasPrefix $destination "https://") (strings.HasPrefix $destination "http://") -}}
 {{- $isNoJS := strings.HasPrefix .Page.RelPermalink "/nojs/" -}}
+{{- $isStaticFile := and (strings.HasPrefix $destination "/") (os.FileExists (printf "static%s" $destination)) -}}
 {{- $isInternalPage := and
   (strings.HasPrefix $destination "/")
   (not (strings.HasPrefix $destination "//"))
+  (not $isStaticFile)
   (not (strings.HasPrefix $destination "/nojs/"))
   (not (strings.HasPrefix $destination "/images/"))
   (not (strings.HasPrefix $destination "/fonts/"))
