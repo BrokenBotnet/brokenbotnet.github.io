@@ -3,10 +3,10 @@ name: 📊🎉
 on:
   workflow_dispatch:
   schedule:
-    - cron: "37 18 * * *"
+    - cron: "37 3,9,15,21 * * *"
 
 concurrency:
-  group: project-statistics
+  group: ${{ github.event_name == 'schedule' && 'scheduled-maintenance' || 'project-statistics' }}
   cancel-in-progress: false
 
 permissions:
