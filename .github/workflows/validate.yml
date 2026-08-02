@@ -76,6 +76,8 @@ jobs:
           test -f public/images/social/whoami.jpg
           test -f public/images/social/writing.jpg
           test -f public/images/social/donate.jpg
+          test -f public/icons/canary.png
+          test -f public/canary.txt
           test -f public/.well-known/nostr.json
           test -f public/.well-known/security.txt
 
@@ -88,6 +90,14 @@ jobs:
           grep -Fx \
             'Contact: https://brokenbotnet.com/security/' \
             public/.well-known/security.txt
+
+          grep -Fx \
+            'https://brokenbotnet.com/canary.txt' \
+            public/canary.txt
+
+          grep -Fx \
+            '3372 7F53 77D2 96C3 20AF 704A B3BD 6196 E1CF BFB4' \
+            public/canary.txt
 
           grep -Fx \
             'Contact: mailto:r3bo0tbx1@brokenbotnet.com' \
@@ -479,6 +489,10 @@ jobs:
             assert(
               page.includes('/onion-mirror.txt')
             );
+
+            assert(
+              page.includes('/canary.txt')
+            );
           }
 
           const hasClass = (tag, className) =>
@@ -511,6 +525,33 @@ jobs:
             nojsOnionIcons.length,
             2,
             'Expected two Onion PNG icons on the No-JS homepage'
+          );
+
+          const homeCanaryIcons = tokenizeHtml(home).tags.filter(
+            tag =>
+              !tag.closing &&
+              tag.name === 'svg' &&
+              hasClass(tag, 'footer-link__canary-icon')
+          );
+
+          assert.equal(
+            homeCanaryIcons.length,
+            1,
+            'Expected one inline Canary SVG icon on the standard homepage'
+          );
+
+          const nojsCanaryIcons = tokenizeHtml(nojsHome).tags.filter(
+            tag =>
+              !tag.closing &&
+              tag.name === 'img' &&
+              hasClass(tag, 'footer-link__canary-icon') &&
+              attributeValue(tag, 'src')?.endsWith('/icons/canary.png')
+          );
+
+          assert.equal(
+            nojsCanaryIcons.length,
+            1,
+            'Expected one Canary PNG icon on the No-JS homepage'
           );
 
           assert.equal(

@@ -1,0 +1,50 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
+
+.:: BrokenBotnet Warrant Canary ::.
+
+Issued: 2 August 2026
+Valid-Until: 31 October 2026
+
+As of the issued date:
+
+* I continue to operate the BrokenBotnet blog, its endorsed onion mirrors, and my public Tor infrastructure.
+* I have not received a secret legal demand concerning these services that I am prohibited from disclosing.
+* I have not been compelled to log users, weaken these services, modify their operation, or disclose their private keys.
+* I am not aware of my OpenPGP key or onion-service keys being compromised or seized.
+
+Latest Monero mainnet block:
+
+Height: 3731043
+Hash:   08700bebe5e2bb7809c0e56b4d109fba8f5cb4917e25e2fa5e6339e259b2be38
+
+OpenPGP fingerprint:
+
+3372 7F53 77D2 96C3 20AF 704A B3BD 6196 E1CF BFB4
+
+Canonical URL:
+
+https://brokenbotnet.com/canary.txt
+http://brokenbotqk7v7y3xpvr6ik7rofivu2dsr5rpkx6xons45reksaykuad.onion/canary.txt
+http://brokenbotcukepazwp3zhgxhh5jdklnm4kyxqduqrk5gxmh3xcmt7oad.onion/canary.txt
+
+An expired or missing update is a reason to investigate, not proof that any particular event occurred.
+
+rE-Bo0t.bx1 (r3bo0tbx1)
+-----BEGIN PGP SIGNATURE-----
+
+iQJPBAEBCAA5FiEEM3J/U3fSlsMgr3BKs71hluHPv7QFAmpummAbFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwxAAoJELO9YZbhz7+0yC4P/0kMM9UnFISrxxItoGh5
+OykOr+Mcr5awoJ4MVFK8S8VRMoHfp/IaiWeCaa4rcXnJcb+MwZJGaxDmCH/rOLKs
+Uh/ZZ7uIAoSbvO3ESjtWezTQs0sW5dtiArN3dE1OnBwQzoDV7Wa3rKjLdVublntw
+0BGBdAPwtNWYAPJEfbJkLGQUWSo9PyKjfngGszCTlXOWdcWiDagRwKKFr6CSefP1
+SU10PdvYMVN7f36cV3u598m+w0WRaTdMyLNe28BjHQYPoqfbGHmu4JzBLh2PJtrS
+7cVr78+6JjnsH7lwq/oUJwOEDvjgWVP+IXY6GxM/nHWVp9NDo1vTFK+AUm+JxUxn
+0EuZCCnpdqNHmp0yCxztVvuQQM1fSlzgHrKdf6Jb/erAx6/lz+XlI4NxMA3MK52M
+5js6jzxham7D1vqHEDa1veeGLdbYH4dEdSHoRg2UyQMUDBnXuk7c/Xtmp2R1TeCe
+qQ3ldKKYPS6jYLm37RL2RtvJPsh7r78flYJJ8NLO44f6ffNZr0z+Y4h9VPz3Q3Ip
+aW2WmCCKvzFXIfVM50XPIddxo3m/T54zdP4l3jnwZGO4D/Q8RsUCCt/bvoLDWueq
+wX2g/+T+Wa7QXGbHiPXCFl7+fBpVriw8w2o8L+mMn1ixQ15v9erF1lytN5sXPUR7
+B2jrw1QB/LK17yZKSZHl8KrY
+=gCMs
+-----END PGP SIGNATURE-----

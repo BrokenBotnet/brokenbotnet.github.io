@@ -457,6 +457,13 @@ a:focus-visible {
   object-fit: contain;
 }
 
+.footer-link__canary-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
 .footer-link--onion:hover .footer-link__onion-icon,
 .footer-link--onion:focus-visible .footer-link__onion-icon {
   filter: drop-shadow(0 0 0.3rem rgba(197, 91, 227, 0.48));
@@ -465,6 +472,11 @@ a:focus-visible {
 .footer-link--rss:hover .footer-link__icon--rss,
 .footer-link--rss:focus-visible .footer-link__icon--rss {
   filter: drop-shadow(0 0 0.3rem rgba(238, 128, 47, 0.48));
+}
+
+.footer-link--canary:hover .footer-link__canary-icon,
+.footer-link--canary:focus-visible .footer-link__canary-icon {
+  filter: drop-shadow(0 0 0.3rem rgba(244, 201, 93, 0.48));
 }
 
 .footer-link__icon--verify {
