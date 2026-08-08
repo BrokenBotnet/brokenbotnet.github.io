@@ -143,22 +143,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const readingProgress = document.querySelector("[data-reading-progress]");
   if (readingProgress) {
     const fill = readingProgress.querySelector(".reading-progress__fill");
-    const progressAnimation = typeof fill?.animate === "function"
-      ? fill.animate(
-        [
-          { transform: "scaleX(0)" },
-          { transform: "scaleX(1)" }
-        ],
-        {
-          duration: 1000,
-          fill: "both"
-        }
-      )
-      : null;
-
-    progressAnimation?.pause();
-
     let progressUpdatePending = false;
+
     const updateReadingProgress = () => {
       const scrollable = Math.max(
         0,
@@ -168,11 +154,9 @@ document.addEventListener("DOMContentLoaded", () => {
         ? Math.min(1, Math.max(0, window.scrollY / scrollable))
         : 0;
 
-      readingProgress.hidden = progress < 0.012;
-      if (progressAnimation) {
-        progressAnimation.currentTime = progress * 1000;
-      } else if (fill) {
-        fill.style.transform = `scaleX(${progress})`;
+      readingProgress.hidden = progress <= 0;
+      if (fill) {
+        fill.style.width = `${progress * 100}%`;
       }
       progressUpdatePending = false;
     };
