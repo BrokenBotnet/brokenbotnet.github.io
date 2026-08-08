@@ -351,6 +351,12 @@ a:focus-visible {
   will-change: transform;
 }
 
+[data-reading-progress] .reading-progress__fill {
+  width: 0;
+  transform: none;
+  will-change: auto;
+}
+
 .page__footer {
   display: flex;
   flex-wrap: wrap;
