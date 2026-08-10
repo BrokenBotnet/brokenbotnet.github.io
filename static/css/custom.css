@@ -341,7 +341,8 @@ a:focus-visible {
   display: block;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, #f10afe 0%, #0ad3df 100%);
+  overflow: hidden;
+  background: transparent;
   border-radius: 0 999px 999px 0;
   box-shadow:
     0 0 0.55rem rgba(241, 10, 254, 0.38),
@@ -349,6 +350,33 @@ a:focus-visible {
   transform: scaleX(0);
   transform-origin: left center;
   will-change: transform;
+}
+
+.reading-progress__fill::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 400vw;
+  background: linear-gradient(
+    90deg,
+    #f10afe 0%,
+    #0ad3df 25%,
+    #f10afe 50%,
+    #0ad3df 75%,
+    #f10afe 100%
+  );
+  animation: reading-progress-tor-flow 4s linear infinite;
+  will-change: transform;
+}
+
+@keyframes reading-progress-tor-flow {
+  from {
+    transform: translate3d(-200vw, 0, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 [data-reading-progress] .reading-progress__fill {
@@ -3871,6 +3899,10 @@ html.lightbox-open {
 
   .back-to-top {
     transition: none;
+  }
+
+  .reading-progress__fill::before {
+    animation: none;
   }
 
   .relay-network {
