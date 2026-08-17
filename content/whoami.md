@@ -44,14 +44,14 @@ If OpenPGP is new to you, these introductions will help you get started:
 
 - [Pretty Good Privacy](https://en.wikipedia.org/wiki/Pretty_Good_Privacy)
 - [GNU Privacy Guard](https://en.wikipedia.org/wiki/GNU_Privacy_Guard)
-- [The GNU Privacy Handbook: Getting Started](https://www.gnupg.org/gph/en/manual/c14.html)
-- [PGP Basics: Managing Keys & Encrypting Text](https://inv.nadeko.net/playlist?list=PLOZKbRUo9H_pCTg8XdvkyGZ_lJbl1AA5X)
+- [The GNU Privacy Handbook: Getting Started](https://www.gnupg.org/gph/en/manual.html)
+- [PGP Basics: Managing Keys & Encrypting Text](https://invidious.nerdvpn.de/playlist?list=PLOZKbRUo9H_pCTg8XdvkyGZ_lJbl1AA5X)
 
 ## Credits and services
 
 Original logo artwork by ❤️ [Aliester Crowley](https://web.archive.org/web/20250329184316/https://aliestercrowley.com/).
 
-The playlist and channel links use Nadeko Invidious, which is also available through its [onion service](http://inv.nadekonw7plitnjuawu6ytjsl7jlglk2t6pyq6eftptmiv3dvqndwvyd.onion/).
+The playlist and channel links use NerdVPN Invidious, which is also available through its [onion service](http://nerdvpneaggggfdiurknszkbmhvjndks5z5k3g5yp4nhphflh3n3boad.onion/).
 
 ![Br🤖ken B🤖tnet logo](/images/banner.png)
 

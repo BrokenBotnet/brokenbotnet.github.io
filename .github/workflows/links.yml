@@ -49,6 +49,7 @@ jobs:
             --root-dir './public'
             --exclude '^mailto:'
             --exclude '^http://.*\.onion(?:/|$)'
+            --exclude '^https://invidious\.nerdvpn\.de(?:/|$)'
             --exclude '^https://web\.archive\.org/web/'
             --exclude '^https://brokenbotnet\.com(?:/|$)'
             --exclude '^https://check\.spamhaus\.org/results\?query=172\.234\.92\.148$'
