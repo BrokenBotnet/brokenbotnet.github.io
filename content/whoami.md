@@ -38,6 +38,8 @@ This site began as an information security blog covering privacy, offensive secu
 
 ## Get in touch
 
+Before reaching out, please take a moment to read [nohello.net](https://nohello.net/en/). I may not always reply, so please don't take a lack of response personally.
+
 Email me at [r3bo0tbx1@brokenbotnet.com](mailto:r3bo0tbx1@brokenbotnet.com) or find me on [Keybase](https://keybase.io/brokenbotnet). For sensitive email, please use my [OpenPGP key `0xB3BD6196E1CFBFB4`](/0xB3BD6196E1CFBFB4.asc). A [backup copy](https://gitlab.torproject.org/r3bo0tbx1.gpg) is also available.
 
 If OpenPGP is new to you, these introductions will help you get started:
