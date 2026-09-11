@@ -51,8 +51,6 @@ If OpenPGP is new to you, these introductions will help you get started:
 
 Original logo artwork by ❤️ [Aliester Crowley](https://web.archive.org/web/20250329184316/https://aliestercrowley.com/).
 
-The playlist and channel links use NerdVPN Invidious, which is also available through its [onion service](http://nerdvpneaggggfdiurknszkbmhvjndks5z5k3g5yp4nhphflh3n3boad.onion/).
-
 ![Br🤖ken B🤖tnet logo](/images/banner.png)
 
 `-----END WHOAMI-----`
