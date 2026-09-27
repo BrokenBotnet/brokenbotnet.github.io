@@ -1,0 +1,57 @@
+{{- $project := .project -}}
+{{- $stats := .stats -}}
+{{- $isNetwork := eq $project.id "shinobi-relays" -}}
+{{- $status := $project.status -}}
+{{- if eq $project.id "tor-guard-relay" -}}
+  {{- $status = printf "Stable · %s" $stats.tor_guard_relay.release -}}
+{{- end -}}
+<article class="project-card project-card--{{ $project.id }}" aria-labelledby="project-{{ $project.id }}">
+  <div class="project-card__visual">
+    {{ if $isNetwork }}
+      <p class="project-visual__label">Network footprint</p>
+      <div class="project-network">
+        <div class="project-network__orbits" aria-hidden="true">
+          <span class="project-network__orbit project-network__orbit--outer"></span>
+          <span class="project-network__orbit project-network__orbit--inner"></span>
+          <span class="project-network__axis project-network__axis--one"></span>
+          <span class="project-network__axis project-network__axis--two"></span>
+          <span class="project-network__axis project-network__axis--three"></span>
+          {{ range seq 6 }}<span class="project-network__node project-network__node--{{ . }}"></span>{{ end }}
+        </div>
+        <div class="project-network__count"><strong>{{ $stats.shinobi_relays.nodes }}</strong><span>operated nodes</span></div>
+      </div>
+      <p class="project-visual__caption">{{ $stats.shinobi_relays.public_relays }} public relays <span aria-hidden="true">/</span> {{ $stats.shinobi_relays.bridges }} bridges</p>
+      <p class="project-visual__note">Illustrative network · verified snapshot</p>
+    {{ else }}
+      <p class="project-visual__label">One image. Four relay modes.</p>
+      <div class="project-container" role="img" aria-label="Tor container supporting guard, middle, exit and obfs4 bridge modes">
+        <div class="project-container__package"><span class="project-container__mark" aria-hidden="true">[ TOR ]</span><span>onion-relay</span></div>
+        <div class="project-container__modes" aria-hidden="true"><span>Guard</span><span>Middle</span><span>Exit</span><span>obfs4</span></div>
+      </div>
+      <p class="project-visual__caption">AMD64 <span aria-hidden="true">/</span> ARM64</p>
+      <p class="project-visual__note">Hardened container · automated releases</p>
+    {{ end }}
+  </div>
+  <div class="project-card__body">
+    <header class="project-card__header">
+      <p class="project-card__kind">{{ $project.kind }}</p>
+      <h3 id="project-{{ $project.id }}">{{ $project.name }}</h3>
+      <span class="project-card__status">{{ $status }}</span>
+    </header>
+    <p class="project-card__description">{{ $project.description }}</p>
+    <dl class="project-card__metrics">
+      {{ if $isNetwork }}
+        <div><dt>Countries</dt><dd>{{ $stats.shinobi_relays.countries }}</dd></div>
+        <div><dt>Autonomous systems</dt><dd>{{ $stats.shinobi_relays.autonomous_systems }}</dd></div>
+      {{ else }}
+        <div><dt>Registry pulls</dt><dd>{{ $stats.tor_guard_relay.docker_pulls_formatted }}</dd></div>
+        <div><dt>Latest release</dt><dd class="project-card__version">{{ $stats.tor_guard_relay.release }}</dd></div>
+      {{ end }}
+    </dl>
+    <footer class="project-card__links">
+      {{ range $index, $link := $project.links }}
+        <a class="external-link{{ if eq $index 0 }} project-card__primary-link{{ end }}" href="{{ .url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ .label }} for {{ $project.name }} (opens in a new tab)">{{ if and (not $isNetwork) (eq .label "Repository") }}Explore Repository{{ else }}{{ .label }}{{ end }}</a>
+      {{ end }}
+    </footer>
+  </div>
+</article>

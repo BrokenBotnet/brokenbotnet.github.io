@@ -77,6 +77,9 @@
 <link rel="stylesheet" href="{{ $style.RelPermalink }}" integrity="{{ $style.Data.Integrity }}">
 
 {{- $pageStyleFiles := slice -}}
+{{- if .IsHome -}}
+  {{- $pageStyleFiles = $pageStyleFiles | append "static/css/pages/projects.css" -}}
+{{- end -}}
 {{- if eq .Layout "donate" -}}
   {{- $pageStyleFiles = $pageStyleFiles | append "static/css/pages/donate.css" -}}
 {{- end -}}
