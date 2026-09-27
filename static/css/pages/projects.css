@@ -1,4 +1,3 @@
-/* Homepage project features. Diagrams are static and work in the No-JS output. */
 .project-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -321,7 +320,6 @@
 .project-card__links a:focus-visible { outline: 2px solid var(--project-accent); outline-offset: 4px; }
 .project-stats-verified { color: var(--base04); }
 
-/* The main column narrows when the site sidebar appears at 52rem. */
 @media (max-width: 38rem), (min-width: 52rem) and (max-width: 65rem) {
   .project-card { grid-template-columns: minmax(0, 1fr); }
   .project-card__visual { padding: 1.5rem 1rem; border-right: 0; border-bottom: 1px solid var(--panel-border); }
