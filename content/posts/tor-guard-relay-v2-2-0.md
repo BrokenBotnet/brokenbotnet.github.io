@@ -1,0 +1,119 @@
+---
+title: "Tor Guard Relay v2.2.0: Safer Updates, Clearer Health, Encrypted Recovery"
+seo_title: "Tor Guard Relay v2.2.0: Security Updates and Encrypted Backups"
+date: 2026-10-09
+lastmod: 2026-10-09
+slug: "tor-guard-relay-v2-2-0"
+description: "Preparing Tor Guard Relay v2.2.0 with Tor 0.4.9.14, validated image promotion, current-run health and encrypted identity recovery."
+summary: "The next Tor Guard Relay update brings an urgent Tor security floor, clearer diagnostics, safer configuration changes and encrypted recovery that is rehearsed before activation."
+image: "images/posts/tor-guard-relay-v2-2-0/recovery-flow.png"
+image_alt: "Encrypted relay recovery from a stopped source through full verification and staged offline validation"
+image_width: 1200
+image_height: 628
+thumbnail: "images/posts/tor-guard-relay-v2-2-0/recovery-flow.png"
+thumbnail_anchor: "Center"
+tags: ["tor", "docker", "security", "backups", "operations", "open-source"]
+toc: true
+draft: false
+---
+
+I built [Tor Guard Relay](/2025/11/01/tor-relays-project/) to make running privacy infrastructure more approachable. This update focuses on the work that makes it dependable: knowing which source produced an image, understanding what a health result proves, and recovering the same identity after a failure.
+
+**Publication status:** v2.2.0 is prepared and tested locally. This article describes the candidate; it does not announce published registry images or a completed production rollout. The site's verified release statistic remains separate from this upcoming version.
+
+## Tor 0.4.9.14 needs prompt attention
+
+Tor released 0.4.9.14 on 7 October 2026. The [Tor Project's announcement](https://forum.torproject.org/t/security-release-0-4-9-14/22241) identifies high-severity issues affecting relays, clients, onion services and directory authorities, and recommends updating as soon as possible.
+
+The [tagged changelog](https://gitlab.torproject.org/tpo/core/tor/-/blob/tor-0.4.9.14/ChangeLog) describes fixes for a Conflux circuit assertion, MiddleOnly flag handling and expired family certificates. It also corrects circuit timeout accounting and connection cancellation behavior, alongside authority, onion-service and smaller maintenance fixes. These are upstream Tor changes; the container update's job is to carry them into a validated image.
+
+Both stable and edge builds now require **Tor 0.4.9.14 or newer**. Stable uses Alpine 3.24.2 with a pinned base digest. The Go builder and Lyrebird source revision are pinned, and the reviewed dependency graph is checked in, including Pion STUN 3.1.7.
+
+An image refresh only helps after the running container is recreated from it. Reloading torrc does not replace Tor.
+
+## A release should carry its evidence forward
+
+The release workflow now builds four candidates: stable and edge, each for AMD64 and ARM64. It loads and checks each candidate before publication, including behavior, actual component versions, vulnerability results and SBOMs.
+
+Promotion loads the validated image archives, checks their image identity, and assembles version and alias manifests from the pushed candidate digests. There is no second build between validation and promotion.
+
+Scheduled rebuilds still select the latest released tag. That preserves release identity, but it also means new source changes need a new reviewed tag before schedules can ship them. Registry retention produces a read-only inventory for manual review, so a failed candidate cannot remove the rollback set.
+
+## Health needs a current observation
+
+My [earlier health-check article](/2026/01/31/health-checks/) argued for a narrow contract. v2.2.0 adds process liveness to the Docker check and makes the other signals explicit in JSON.
+
+| Question | Evidence |
+| --- | --- |
+| Is Tor running? | One exact Tor process |
+| Can Tor validate the active config? | Quiet verification of the active torrc |
+| Has this run bootstrapped? | Current-run bootstrap notices |
+| Does this observation belong to this run? | PID, start time, log inode and byte offset |
+| Can users reach it publicly? | Separate network and consensus checks |
+
+Old successful bootstrap lines cannot make a restarted relay ready. A missing or rotated log is reported as missing or stale evidence.
+
+{{< post-figure src="images/posts/tor-guard-relay-v2-2-0/doctor-offline.png" alt="Actual synthetic offline doctor output showing liveness and config validity true, readiness false, and bootstrap_pending" class="post-figure--wide" >}}
+Captured from the local candidate with networking disabled. A valid running relay can still be waiting to bootstrap.
+{{< /post-figure >}}
+
+The same result is available as text:
+
+```sh
+docker exec tor-relay health
+docker exec tor-relay doctor --json
+```
+
+Doctor supplies a reason and next action. Bridge-line generation now checks local transport state and accepts an explicit public address; it no longer prescribes a fixed 24–48 hour wait. Local bridge credentials still do not prove external connectivity.
+
+## Configuration has an owner
+
+Mounted torrc files remain authoritative. Generated ENV configuration is validated before atomic replacement and regenerated at startup.
+
+The new config command can validate a candidate, show a directive-only diff with every value redacted, and apply it atomically to a generated target. Invalid candidates retain the active file. A value-only change will not appear in the redacted diff, so the candidate still needs private review.
+
+Reload validates the active file, signals the exact Tor process and confirms that the process survives. Tor decides which directives can reload. Lasting generated changes belong in deployment ENV; other changes may require recreation.
+
+Accounting and IPv6 ENV mappings cover common operator settings without making the generator a substitute for every advanced torrc option.
+
+## Encrypted recovery belongs beside deployment
+
+Copying keys alone leaves configuration, family material and transport state behind. The new host command captures the active torrc and supported includes, the complete DataDirectory and an encrypted integrity manifest.
+
+{{< post-figure src="images/posts/tor-guard-relay-v2-2-0/recovery-flow.png" alt="Four recovery stages: stop writers, stream encryption, authenticate every member, then stage and validate offline before deliberate activation" class="post-figure--wide" >}}
+The archive remains encrypted on disk. Plaintext appears only in a deliberately created restore staging directory.
+{{< /post-figure >}}
+
+With a recipient file prepared and its private recovery identity stored separately:
+
+```sh
+sh scripts/utilities/relay-backup.sh create \
+  --container tor-relay --stop \
+  --recipients "$HOME/.config/relay-backup/recipients.txt" \
+  --output-dir "$HOME/relay-backups"
+
+sh scripts/utilities/relay-backup.sh verify BACKUP.tar.gz.age \
+  --identity "$HOME/.config/relay-backup/identity.txt"
+```
+
+Creation streams tar through gzip into age. Verification authenticates the full stream and checks every member against the manifest. Restore requires a new directory, compares the fingerprint and validates configuration in a network-disabled helper. It never activates the copied identity automatically.
+
+External or offline Tor master keys need separate custody. Unsupported include layouts and links fail closed. Docker can detect another container writing shared storage, but operators must also stop any host writer.
+
+## What the local checks establish
+
+The candidate is tested with synthetic guard, exit and bridge identities and networking disabled. Acceptance checks startup, configuration, reload, restart freshness, transport output and shutdown. Recovery rehearsals check the archive and restored identity without joining the Tor network.
+
+Failure tests cover wrong decryption identities, truncated ciphertext, unsafe paths, duplicate members, links, mismatched hashes, interruption, producer failure, simulated disk exhaustion and restart failure. The docs and template checks catch local links, stale Alpine examples and malformed deployment templates.
+
+The full module scan retains an unfixed [Go OpenPGP advisory](https://pkg.go.dev/vuln/GO-2026-5932). Those deprecated packages are absent from Lyrebird's package dependency graph. That assessment accompanies the scan result; it does not become a claim that every dependency is vulnerability-free.
+
+These checks do not establish live bootstrap, consensus flags, production migration or remote registry promotion. Those need evidence from the actual release and deployment.
+
+## A clearer place to start
+
+The README now keeps a compact introduction, mode matrix, operator workflows and documentation map. Detailed procedures live in focused guides. Curated release notes lead with the security action and compatibility changes, while historical migration records explain older problems without presenting retired emergency commands as today's workflow.
+
+Before upgrading, record the current image digest and fingerprint, create and verify an encrypted backup, rehearse staging recovery, then recreate from the validated published image. Check identity continuity, current Tor version, fresh bootstrap and external reachability separately.
+
+The [repository](https://github.com/r3bo0tbx1/tor-guard-relay) contains the implementation and operator guides. Publication is the next maintainer step; deployment follows verification of the published images.

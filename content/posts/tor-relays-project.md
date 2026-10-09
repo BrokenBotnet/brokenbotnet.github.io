@@ -2,7 +2,7 @@
 title: "Returning the Favor: Building the Tor Relay Stack I Always Wanted"
 seo_title: "Why I Built Tor Guard Relay"
 date: 2025-11-01
-lastmod: 2026-07-23
+lastmod: 2026-10-09
 slug: "tor-relays-project"
 aliases:
   - "/2025/12/13/tor-relays-project/"
@@ -19,6 +19,8 @@ tags: ["tor", "relay", "privacy", "open-source", "docker", "self-hosting"]
 toc: true
 pinned: true
 ---
+
+> **Update, 9 October 2026:** The locally prepared [v2.2.0 candidate](/2026/10/09/tor-guard-relay-v2-2-0/) brings the Tor 0.4.9.14 security floor, clearer diagnostics and encrypted staged recovery. Published release statistics remain separate from this upcoming update.
 
 I knew Tor as a user long before I understood it as infrastructure.
 

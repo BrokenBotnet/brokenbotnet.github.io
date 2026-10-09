@@ -8,12 +8,12 @@ registry_url = "https://hub.docker.com/r/r3bo0tbx1/onion-relay"
 kind = "Open-Source Container"
 name = "Tor Guard Relay"
 icon = "container"
-status = "Stable · v2.0.0"
+status = "Stable · v2.1.0"
 description = "A hardened multi-mode Tor container for guards, middle relays, exits, and obfs4 bridges, with operator diagnostics and automated releases."
 
   [[projects.metrics]]
   label = "Registry"
-  value = "15K+ pulls"
+  value = "20,856 pulls"
 
   [[projects.metrics]]
   label = "Platforms"
