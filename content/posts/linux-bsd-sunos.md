@@ -2,7 +2,7 @@
 title: "Operating Tor Relays on Linux, BSD, and SunOS"
 seo_title: "Operating Tor Relays Across Linux, BSD, and SunOS"
 date: 2026-04-07
-lastmod: 2026-07-17
+lastmod: 2026-10-09
 slug: "linux-bsd-sunos"
 aliases:
   - "/2026/07/08/tor-relays-linux-bsd-sunos/"
@@ -17,6 +17,8 @@ tags: ["tor", "linux", "BSD", "SunOS", "operations", "self-hosting"]
 toc: true
 draft: false
 ---
+
+> **Update, 9 October 2026:** The locally prepared [Tor Guard Relay v2.2.0 update](/2026/10/09/v2.2.0/) adds encrypted container recovery and read-only fleet inventory on Linux or WSL with Docker Desktop. These host commands apply to Docker-managed relays; BSD, SunOS and host-managed services retain their native paths and runbooks.
 
 Tor's configuration is portable. Relay operations are not.
 

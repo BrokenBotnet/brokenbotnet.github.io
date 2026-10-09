@@ -20,7 +20,7 @@ toc: true
 pinned: true
 ---
 
-> **Update, 9 October 2026:** The locally prepared [v2.2.0 candidate](/2026/10/09/tor-guard-relay-v2-2-0/) brings the Tor 0.4.9.14 security floor, clearer diagnostics and encrypted staged recovery. Published release statistics remain separate from this upcoming update.
+> **Update, 9 October 2026:** The locally prepared [v2.2.0 candidate](/2026/10/09/v2.2.0/) brings the Tor 0.4.9.14 security floor, clearer diagnostics and encrypted staged recovery. Published release statistics remain separate from this upcoming update.
 
 I knew Tor as a user long before I understood it as infrastructure.
 
@@ -169,6 +169,8 @@ The image contains seven small tools:
 | `gen-family` | Happy Family key and `FamilyId` generation, plus inspection of existing family configuration. |
 
 Run them with `docker exec tor-relay <command>`. To create a named Happy Family key, use `docker exec tor-relay gen-family MyRelays`.
+
+The locally prepared [v2.2.0 update](/2026/10/09/v2.2.0/) adds `doctor` and `config`, current-run health evidence, and host-side encrypted recovery and fleet inventory. The v2.1.0 examples and deployed screenshots below document that earlier release; real v2.2.0 captures will follow deployment.
 
 In v2.1.0, `status` reports populated process uptime, a numeric error count, and the ORPort result Tor recorded through its own self-test:
 

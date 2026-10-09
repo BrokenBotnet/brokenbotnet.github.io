@@ -2,7 +2,7 @@
 title: "The Responsibilities of Running a Tor Exit"
 seo_title: "The Operational Responsibilities of Running a Tor Exit Relay"
 date: 2025-12-15
-lastmod: 2026-08-03
+lastmod: 2026-10-09
 slug: "running-tor-exit"
 aliases:
   - "/2026/05/30/responsibilities-running-tor-exit/"
@@ -17,6 +17,8 @@ tags: ["tor", "exit-relay", "operations", "abuse-handling", "privacy"]
 toc: true
 draft: false
 ---
+
+> **Update, 9 October 2026:** The locally prepared [v2.2.0 update](/2026/10/09/v2.2.0/) adds accounting/IPv6 ENV options, current-run diagnostics and encrypted staged recovery for container-managed exits. It does not change the observed policy or screenshots below, or the need for provider consent and independent reachability checks.
 
 A middle relay forwards encrypted Tor traffic between other relays. An Exit is different: it is the final hop from the Tor network to a destination on the public Internet.
 

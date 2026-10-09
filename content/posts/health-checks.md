@@ -18,7 +18,7 @@ toc: true
 draft: false
 ---
 
-> **Update, 9 October 2026:** The locally prepared [v2.2.0 candidate](/2026/10/09/tor-guard-relay-v2-2-0/) adds exact-process liveness to Docker health and separates current-run readiness, configuration validity and observation freshness in JSON. The original configuration-only contract below records the earlier implementation; public reachability remains a separate check.
+> **Update, 9 October 2026:** The locally prepared [v2.2.0 candidate](/2026/10/09/v2.2.0/) adds exact-process liveness to Docker health and separates current-run readiness, configuration validity and observation freshness in JSON. The original configuration-only contract below records the earlier implementation; public reachability remains a separate check.
 
 “Healthy” is one of the most overloaded words in container operations.
 
