@@ -2,7 +2,7 @@
 title: "Building Safer Container Health Checks for Tor Relays"
 seo_title: "Building Safer Docker Health Checks for Tor Relays"
 date: 2026-01-31
-lastmod: 2026-10-09
+lastmod: 2026-10-10
 slug: "health-checks"
 aliases:
   - "/2026/03/26/safer-container-health-checks/"
@@ -18,7 +18,7 @@ toc: true
 draft: false
 ---
 
-> **Update, 9 October 2026:** The locally prepared [v2.2.0 candidate](/2026/10/09/v2.2.0/) adds exact-process liveness to Docker health and separates current-run readiness, configuration validity and observation freshness in JSON. The original configuration-only contract below records the earlier implementation; public reachability remains a separate check.
+> **Update, 10 October 2026:** The released [v2.2.0 update](/2026/10/10/v2.2.0/#health-needs-a-current-observation) adds exact-process liveness and separates readiness, configuration validity and freshness in JSON. Real deployment screenshots show those signals. The original configuration-only contract below records the earlier implementation; public reachability remains a separate check.
 
 “Healthy” is one of the most overloaded words in container operations.
 

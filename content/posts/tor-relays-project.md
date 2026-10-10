@@ -2,7 +2,7 @@
 title: "Returning the Favor: Building the Tor Relay Stack I Always Wanted"
 seo_title: "Why I Built Tor Guard Relay"
 date: 2025-11-01
-lastmod: 2026-10-09
+lastmod: 2026-10-10
 slug: "tor-relays-project"
 aliases:
   - "/2025/12/13/tor-relays-project/"
@@ -20,7 +20,7 @@ toc: true
 pinned: true
 ---
 
-> **Update, 9 October 2026:** The locally prepared [v2.2.0 candidate](/2026/10/09/v2.2.0/) brings the Tor 0.4.9.14 security floor, clearer diagnostics and encrypted staged recovery. Published release statistics remain separate from this upcoming update.
+> **Update, 10 October 2026:** [Tor Guard Relay v2.2.0 is released](/2026/10/10/v2.2.0/), with Tor 0.4.9.14, current-run diagnostics and encrypted recovery. The release article now includes real exit-relay screenshots, successful archive verification and the rebuild/retention fixes that followed publication.
 
 I knew Tor as a user long before I understood it as infrastructure.
 
@@ -170,7 +170,7 @@ The image contains seven small tools:
 
 Run them with `docker exec tor-relay <command>`. To create a named Happy Family key, use `docker exec tor-relay gen-family MyRelays`.
 
-The locally prepared [v2.2.0 update](/2026/10/09/v2.2.0/) adds `doctor` and `config`, current-run health evidence, and host-side encrypted recovery and fleet inventory. The v2.1.0 examples and deployed screenshots below document that earlier release; real v2.2.0 captures will follow deployment.
+The released [v2.2.0 update](/2026/10/10/v2.2.0/) adds `doctor` and `config`, current-run health evidence, and host-side encrypted recovery and fleet inventory. Its article includes real v2.2.0 deployment and archive-verification captures. The v2.1.0 examples and screenshots below remain a historical record of that earlier release.
 
 In v2.1.0, `status` reports populated process uptime, a numeric error count, and the ORPort result Tor recorded through its own self-test:
 

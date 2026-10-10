@@ -2,7 +2,7 @@
 title: "Moving From MyFamily to Happy Families"
 seo_title: "Migrating Tor Relays From MyFamily to Happy Families"
 date: 2026-03-02
-lastmod: 2026-10-09
+lastmod: 2026-10-10
 slug: "happy-families"
 aliases:
   - "/2026/02/08/myfamily-to-happy-families/"
@@ -18,7 +18,7 @@ toc: true
 draft: false
 ---
 
-> **Update, 9 October 2026:** The locally prepared [v2.2.0 update](/2026/10/09/v2.2.0/) adds encrypted recovery of the complete container DataDirectory, including family keys, active torrc/includes and transport state. External or offline master keys still need separate custody. The Tor 0.4.9.14 security update also includes a family-certificate expiry fix.
+> **Update, 10 October 2026:** The released [v2.2.0 update](/2026/10/10/v2.2.0/#encrypted-recovery-belongs-beside-deployment) adds encrypted recovery of the complete container DataDirectory, including family keys, active torrc/includes and transport state. The article includes a real archive verification; external or offline master keys still need separate custody.
 
 Running one Tor relay does not require family metadata. Running several under one operator does.
 
@@ -88,7 +88,7 @@ chmod 600 "$family_transfer_dir/MyRelays.secret_family_key"
 
 The destination relay needs the key inside its own persistent Tor data volume. File ownership must match the Tor user in the container.
 
-That transfer copy is plaintext key material, not an encrypted backup. Remove the temporary copy after verified transfer. For recovery, use the complete encrypted create/verify/restore procedure in the [v2.2.0 article](/2026/10/09/v2.2.0/#encrypted-recovery-belongs-beside-deployment), and keep the archive's decryption identity separately. Do not restore another relay's full identity just to distribute a shared family key.
+That transfer copy is plaintext key material, not an encrypted backup. Remove the temporary copy after verified transfer. For recovery, use the complete encrypted create/verify/restore procedure in the [v2.2.0 article](/2026/10/10/v2.2.0/#encrypted-recovery-belongs-beside-deployment), and keep the archive's decryption identity separately. Do not restore another relay's full identity just to distribute a shared family key.
 
 `gen-family --show` displays the local key files and configured `FamilyId`. It is an inspection aid, not an independent cryptographic proof that a manually entered value was derived from the displayed secret key.
 
