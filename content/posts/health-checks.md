@@ -2,7 +2,7 @@
 title: "Building Safer Container Health Checks for Tor Relays"
 seo_title: "Building Safer Docker Health Checks for Tor Relays"
 date: 2026-01-31
-lastmod: 2026-07-13
+lastmod: 2026-10-10
 slug: "health-checks"
 aliases:
   - "/2026/03/26/safer-container-health-checks/"
@@ -18,6 +18,8 @@ toc: true
 draft: false
 ---
 
+> **Update, 10 October 2026:** The released [v2.2.0 update](/2026/10/10/v2.2.0/#health-needs-a-current-observation) adds exact-process liveness and separates readiness, configuration validity and freshness in JSON. Real deployment screenshots show those signals. The original configuration-only contract below records the earlier implementation; public reachability remains a separate check.
+
 “Healthy” is one of the most overloaded words in container operations.
 
 A container can be running while Tor has an invalid configuration. Tor can be running while bootstrap is stalled. A relay can be fully bootstrapped while its ORPort is unreachable from the Internet. A public relay can be reachable while missing from the consensus.
@@ -30,7 +32,7 @@ A useful health model separates local configuration checks from process, bootstr
 
 ## Start with a narrow contract
 
-The Docker health check in tor-guard-relay has one deliberately limited job: verify that the active Tor configuration exists, is readable, is non-empty, and passes `tor --verify-config`.
+The earlier Docker health check in tor-guard-relay had one deliberately limited job: verify that the active Tor configuration exists, is readable, is non-empty, and passes `tor --verify-config`.
 
 The image runs that check every five minutes with a fifteen-second timeout, a thirty-second start period, and three retries:
 
