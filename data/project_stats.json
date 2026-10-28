@@ -1,9 +1,9 @@
 {
-  "verified_at": "2026-10-27T20:55:19.897Z",
+  "verified_at": "2026-10-28T06:13:38.265Z",
   "tor_guard_relay": {
     "release": "v2.2.0",
-    "docker_pulls": 27714,
-    "docker_pulls_formatted": "27,714"
+    "docker_pulls": 27746,
+    "docker_pulls_formatted": "27,746"
   },
   "shinobi_relays": {
     "nodes": 24,
