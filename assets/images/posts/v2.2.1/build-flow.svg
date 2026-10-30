@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="680" viewBox="0 0 1440 680">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0l10 5-10 5" fill="none" stroke="#8ed8be" stroke-width="1.5"/></marker>
+  </defs>
+  <rect width="1440" height="680" rx="24" fill="#10191f"/>
+  <text x="55" y="68" fill="#d3bd81" font-family="Arial,sans-serif" font-size="25" letter-spacing="3">FROM UPSTREAM RELEASE TO A RUNNING RELAY</text>
+  <g fill="#17262c" stroke="#47615f" stroke-width="2">
+    <rect x="55" y="118" width="390" height="182" rx="16"/>
+    <rect x="525" y="118" width="390" height="182" rx="16"/>
+    <rect x="995" y="118" width="390" height="182" rx="16"/>
+    <rect x="995" y="392" width="390" height="182" rx="16"/>
+    <rect x="525" y="392" width="390" height="182" rx="16"/>
+    <rect x="55" y="392" width="390" height="182" rx="16"/>
+  </g>
+  <g stroke="#8ed8be" stroke-width="3" fill="none" marker-end="url(#arrow)">
+    <path d="M455 209H511"/><path d="M925 209H981"/><path d="M1190 310V378"/><path d="M985 483H929"/><path d="M515 483H459"/>
+  </g>
+  <g fill="#d3bd81" font-family="Arial,sans-serif" font-size="23" letter-spacing="2">
+    <text x="81" y="158">01 / SOURCE</text><text x="551" y="158">02 / AUTHENTICATE</text><text x="1021" y="158">03 / PACKAGE</text>
+    <text x="1021" y="432">04 / VALIDATE</text><text x="551" y="432">05 / PUBLISH</text><text x="81" y="432">06 / DEPLOY</text>
+  </g>
+  <g fill="#f1eee0" font-family="Arial,sans-serif" font-weight="700" font-size="31">
+    <text x="81" y="210">Signed Tor release</text><text x="551" y="210">Signature + SHA256</text><text x="1021" y="210">Source-built Tor APK</text>
+    <text x="1021" y="484">All four candidates</text><text x="551" y="484">Exact passed images</text><text x="81" y="484">Recreate deliberately</text>
+  </g>
+  <g fill="#a8b9c0" font-family="Arial,sans-serif" font-size="22">
+    <text x="81" y="255">Pinned archive, no floating branch</text><text x="551" y="255">Isolated keys · Fail closed</text><text x="1021" y="255">Matching base · Upstream tests</text>
+    <text x="1021" y="529">Stable / Edge × AMD64 / ARM64</text><text x="551" y="529">Retain scans, SBOMs and identities</text><text x="81" y="529">Keep keys · Verify running Tor</text>
+  </g>
+  <text x="55" y="635" fill="#8ed8be" font-family="Arial,sans-serif" font-size="22">A verified build is not a deployment. Preserve identity and verify fresh health after recreation.</text>
+</svg>

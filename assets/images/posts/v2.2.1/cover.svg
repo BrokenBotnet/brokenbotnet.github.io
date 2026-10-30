@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="background" x2="1" y2="1"><stop stop-color="#141c23"/><stop offset="1" stop-color="#080d12"/></linearGradient>
+    <radialGradient id="halo"><stop stop-color="#2c4942" stop-opacity=".55"/><stop offset="1" stop-color="#0c1116" stop-opacity="0"/></radialGradient>
+    <pattern id="grid" width="38" height="38" patternUnits="userSpaceOnUse"><path d="M38 0H0V38" fill="none" stroke="#84b9ad" stroke-opacity=".055"/></pattern>
+  </defs>
+  <rect width="1600" height="900" fill="url(#background)"/>
+  <rect width="1600" height="900" fill="url(#grid)"/>
+  <rect x="30" y="30" width="1540" height="840" rx="18" fill="none" stroke="#b6a06a" stroke-opacity=".34"/>
+  <path d="M30 130V48Q30 30 48 30H130M1470 870H1552Q1570 870 1570 852V770" fill="none" stroke="#c5a653" stroke-width="3"/>
+  <text x="86" y="112" fill="#d3bd81" font-family="Arial,sans-serif" font-size="25" letter-spacing="5">TOR GUARD RELAY</text>
+  <rect x="1250" y="72" width="270" height="45" rx="22" fill="#19372d" stroke="#6fc9a5" stroke-opacity=".5"/>
+  <text x="1385" y="102" text-anchor="middle" fill="#9fdfc1" font-family="Arial,sans-serif" font-size="17" letter-spacing="2">SECURITY UPDATE</text>
+  <ellipse cx="364" cy="485" rx="380" ry="345" fill="url(#halo)"/>
+  <image x="64" y="180" width="595" height="595" preserveAspectRatio="xMidYMid meet" xlink:href="../tor-relays-project/tor-guard-relay-logo.png"/>
+  <path d="M700 196V771" stroke="#c5a653" stroke-opacity=".25"/>
+  <text x="770" y="306" fill="#ede8ce" font-family="Arial,sans-serif" font-weight="700" font-size="122" letter-spacing="-5">v2.2.1</text>
+  <path d="M775 345H1490" stroke="#c5a653" stroke-opacity=".65"/>
+  <text x="770" y="441" fill="#f1eee0" font-family="Arial,sans-serif" font-weight="700" font-size="56">New DoS defenses.</text>
+  <text x="770" y="514" fill="#f1eee0" font-family="Arial,sans-serif" font-weight="700" font-size="56">Verified source builds.</text>
+  <text x="773" y="585" fill="#8ed8be" font-family="Arial,sans-serif" font-size="31">Tor 0.4.9.15</text>
+  <g fill="#a7b7bd" font-family="Arial,sans-serif" font-size="24">
+    <text x="773" y="679">Consensus-controlled directory defenses</text>
+    <text x="773" y="723">Stable + Edge · AMD64 + ARM64</text>
+    <text x="773" y="767">Keep the relay. Preserve the identity.</text>
+  </g>
+  <text x="362" y="824" text-anchor="middle" fill="#a7b7bd" font-family="Arial,sans-serif" font-size="17" letter-spacing="3">GUARD · MIDDLE · EXIT · BRIDGE</text>
+</svg>

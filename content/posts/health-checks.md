@@ -2,7 +2,7 @@
 title: "Building Safer Container Health Checks for Tor Relays"
 seo_title: "Building Safer Docker Health Checks for Tor Relays"
 date: 2026-01-31
-lastmod: 2026-10-10
+lastmod: 2026-10-30
 slug: "health-checks"
 aliases:
   - "/2026/03/26/safer-container-health-checks/"
@@ -18,7 +18,7 @@ toc: true
 draft: false
 ---
 
-> **Update, 10 October 2026:** The released [v2.2.0 update](/2026/10/10/v2.2.0/#health-needs-a-current-observation) adds exact-process liveness and separates readiness, configuration validity and freshness in JSON. Real deployment screenshots show those signals. The original configuration-only contract below records the earlier implementation; public reachability remains a separate check.
+{{< release-update page="posts/v2.2.1" label="Tor Guard Relay v2.2.1 is released" >}}with Tor 0.4.9.15 and bridge/exit diagnostics resolved from effective configuration, including includes. Exact-process liveness, current-run readiness, configuration validity and freshness remain separate signals; public reachability needs its own check.{{< /release-update >}}
 
 “Healthy” is one of the most overloaded words in container operations.
 
@@ -32,7 +32,7 @@ A useful health model separates local configuration checks from process, bootstr
 
 ## Start with a narrow contract
 
-The earlier Docker health check in tor-guard-relay had one deliberately limited job: verify that the active Tor configuration exists, is readable, is non-empty, and passes `tor --verify-config`.
+The Docker health check in tor-guard-relay verifies that the exact Tor process is alive and that its active configuration exists, is readable, is non-empty and passes `tor --verify-config`. Exact-process liveness was added in v2.2.0; the earlier implementation checked configuration alone.
 
 The image runs that check every five minutes with a fifteen-second timeout, a thirty-second start period, and three retries:
 
@@ -41,7 +41,7 @@ HEALTHCHECK --interval=5m --timeout=15s --start-period=30s --retries=3 \
   CMD /usr/local/bin/healthcheck.sh
 ```
 
-The script does not claim that the network sees a working relay. It answers a smaller question: can Tor still read and validate the configuration it is expected to use?
+The script checks local process liveness and configuration validity. It cannot establish whether the network sees a working relay; bootstrap, readiness and external reachability remain separate observations.
 
 That narrow contract makes the result understandable. It also means the result must not be described as proof of reachability or consensus health.
 
@@ -57,7 +57,7 @@ The safer model is:
 
 - The entrypoint exits when the Tor process exits.
 - Docker can apply the configured restart policy to that process failure.
-- The health check publishes configuration failure as container state.
+- The health check publishes process or configuration failure as container state.
 - Monitoring or an orchestrator decides what an unhealthy state should trigger.
 
 The system responsible for recovery should be explicit. Otherwise an alert exists without an owner.

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="448" height="448" viewBox="0 0 448 448">
+  <defs><radialGradient id="bg"><stop stop-color="#244638"/><stop offset="1" stop-color="#0c1116"/></radialGradient></defs>
+  <rect width="448" height="448" rx="24" fill="url(#bg)"/>
+  <rect x="11" y="11" width="426" height="426" rx="17" fill="none" stroke="#bfa461" stroke-width="2"/>
+  <image x="42" y="20" width="364" height="364" preserveAspectRatio="xMidYMid meet" xlink:href="../tor-relays-project/tor-guard-relay-logo.png"/>
+  <circle cx="367" cy="82" r="47" fill="#0d201a" stroke="#bfa461" stroke-width="3"/>
+  <path d="M367 51l24 10v21c0 19-15 30-24 35-9-5-24-16-24-35V61z" fill="none" stroke="#88d9b2" stroke-width="4"/>
+  <path d="M354 83l9 9 18-21" fill="none" stroke="#88d9b2" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M54 378H394" stroke="#bfa461" stroke-opacity=".7"/>
+  <text x="224" y="405" text-anchor="middle" fill="#d3cead" font-family="Arial,sans-serif" font-size="19" letter-spacing="2">VERIFIED SOURCE</text>
+</svg>

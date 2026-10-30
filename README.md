@@ -21,7 +21,7 @@ The site uses [Hugo](https://gohugo.io/) with a customized [risotto](https://git
 ## Project statistics
 
 `data/project_stats.json` is the authoritative snapshot used by both GitHub
-Pages and Web2Onion. The scheduled `project-stats.yml` workflow refreshes the
+Pages and Web2Onion. The scheduled `stats.yml` workflow refreshes the
 snapshot from its external sources, fails without changing it if any source is
 unavailable or inconsistent, commits only that file, and explicitly starts
 the normal validation workflow.
@@ -34,6 +34,10 @@ commit. Only the dedicated refresh workflow may use:
 ```sh
 node scripts/fetch-project-stats.mjs --refresh
 ```
+
+## Release articles
+
+The [v2.2.1 publication checklist](docs/v2.2.1-publication.md) covers release evidence, deployment captures and site checks. The article and related-page release notices appear in ordinary builds. Publish the site after the corresponding release is available.
 
 ## License
 
