@@ -4,7 +4,7 @@ description: "Independent security research, privacy infrastructure, and open-so
 ---
 
 <div class="hero__terminal">
-  <p class="hero__prompt" aria-label="Terminal prompt: r3bo0tbx1 at brokenbotnet, running status"><span class="prompt__bracket">[ </span><span class="prompt__user">r3bo0tbx1</span><span class="prompt__separator">@</span><span class="prompt__host">br🤖kenb🤖tnet</span><span class="prompt__path">:~$</span><span class="prompt__bracket"> ]</span> <span class="prompt__command hero__status-command">./status</span><span class="hero__status-cursor" aria-hidden="true">_</span></p>
+  <p class="hero__prompt" role="img" aria-label="Terminal prompt: r3bo0tbx1 at brokenbotnet, running status"><span class="prompt__bracket">[ </span><span class="prompt__user">r3bo0tbx1</span><span class="prompt__separator">@</span><span class="prompt__host">br🤖kenb🤖tnet</span><span class="prompt__path">:~$</span><span class="prompt__bracket"> ]</span> <span class="prompt__command hero__status-command">./status</span><span class="hero__status-cursor" aria-hidden="true">_</span></p>
   <p class="hero__status-result"><span aria-hidden="true">✓</span> Systems Operational</p>
 </div>
 

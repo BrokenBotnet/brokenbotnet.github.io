@@ -1,0 +1,6 @@
+{{- $release := .Site.GetPage (.Get "page") -}}
+{{- if and $release (not $release.Draft) -}}
+<blockquote class="release-update">
+  <p><strong>Update, {{ $release.Date.Format "2 January 2006" }}:</strong> <a href="{{ partial "page-url.html" (dict "page" $release "nojs" (strings.HasPrefix .Page.RelPermalink "/nojs/")) }}">{{ .Get "label" }}</a> {{ .Inner | markdownify }}</p>
+</blockquote>
+{{- end -}}

@@ -1828,6 +1828,27 @@ h6 {
   white-space: nowrap;
 }
 
+.content__body .tor-defenses-table {
+  table-layout: fixed;
+}
+
+.content__body .tor-defenses-table th:first-child {
+  width: 32%;
+}
+
+.content__body .tor-defenses-table th,
+.content__body .tor-defenses-table td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}
+
+@media (max-width: 30rem) {
+  .content__body .tor-defenses-table th:first-child {
+    width: 7rem;
+  }
+}
+
 .content__body :not(pre) > code,
 .content__body kbd,
 .content__body samp {
@@ -2783,6 +2804,13 @@ html.lightbox-open {
   padding-left: 2.25rem;
 }
 
+.toc nav li > a,
+.toc nav li > p > a {
+  display: block;
+  min-height: 1.75rem;
+  padding-block: 0.2rem;
+}
+
 .toc nav li {
   transition:
     opacity 160ms ease,
@@ -2802,7 +2830,7 @@ html.lightbox-open {
 
 .toc--enhanced nav li::before {
   position: absolute;
-  top: 0;
+  top: 0.2rem;
   left: 0;
   width: 2.05rem;
   content: attr(data-toc-number) ".";

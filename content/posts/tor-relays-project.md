@@ -2,7 +2,7 @@
 title: "Returning the Favor: Building the Tor Relay Stack I Always Wanted"
 seo_title: "Why I Built Tor Guard Relay"
 date: 2025-11-01
-lastmod: 2026-10-10
+lastmod: 2026-10-30
 slug: "tor-relays-project"
 aliases:
   - "/2025/12/13/tor-relays-project/"
@@ -20,7 +20,7 @@ toc: true
 pinned: true
 ---
 
-> **Update, 10 October 2026:** [Tor Guard Relay v2.2.0 is released](/2026/10/10/v2.2.0/), with Tor 0.4.9.14, current-run diagnostics and encrypted recovery. The release article now includes real exit-relay screenshots, successful archive verification and the rebuild/retention fixes that followed publication.
+{{< release-update page="posts/v2.2.1" label="Tor Guard Relay v2.2.1 is released" >}}with Tor 0.4.9.15 directory-request defenses and verified upstream source builds. The upgrade guide covers preserving relay identity, existing configuration and encrypted recovery.{{< /release-update >}}
 
 I knew Tor as a user long before I understood it as infrastructure.
 
@@ -74,10 +74,10 @@ Privacy and anonymity are not emergency tools to reach for only after trouble ar
 
 Project statistics last verified {{< project-stat key="verified-date" >}}:
 
-- the current stable release is {{< project-stat key="release" >}}
+- the last verified stable release is {{< project-stat key="release" >}}
 - one image supports guard, middle, exit, and obfs4 bridge modes
 - stable and edge builds are published for AMD64 and ARM64
-- seven BusyBox-compatible tools ship inside the image
+- nine BusyBox-compatible operator tools ship inside the image
 - Docker Hub records {{< project-stat key="docker-pulls" >}} pulls
 - the public inventory covers {{< project-stat key="nodes" >}} relays and bridges across {{< project-stat key="countries" >}} countries
 
@@ -127,7 +127,7 @@ That is an introduction, not a complete production checklist. The [deployment do
 
 The same stable release is available as `ghcr.io/r3bo0tbx1/onion-relay:latest`. Operators testing the edge variant can use `ghcr.io/r3bo0tbx1/onion-relay:edge`.
 
-The runtime image is Alpine-based and is roughly 20 MB compressed, depending on the architecture and release. Lyrebird is compiled in a separate Go builder stage, leaving the compiler and build dependencies out of the final image. Tor then runs as the unprivileged `tor` user under `tini`, with restrictive permissions on its data and key directories.
+The runtime image is Alpine-based. Since v2.2.1, Tor is built from the authenticated upstream release and packaged for the matching Alpine base; Lyrebird is compiled in a separate Go builder stage. Compilers and build dependencies stay out of the final image. Tor runs as the unprivileged `tor` user under `tini`, with restrictive permissions on its data and key directories. Compressed image size varies by architecture, variant and rebuild.
 
 ## What happens before Tor starts
 
@@ -146,7 +146,7 @@ The entrypoint also forwards termination signals, waits for Tor to stop, and cle
 
 ## What “self-healing” actually means
 
-The Docker health check verifies the active `torrc` every five minutes. A missing, unreadable, empty, or invalid configuration produces a failed check; three consecutive failures mark the container unhealthy.
+The Docker health check verifies the exact Tor process is alive and validates the active `torrc` every five minutes. A missing process or a missing, unreadable, empty or invalid configuration produces a failed check; three consecutive failures mark the container unhealthy.
 
 > An unhealthy container is not automatically restarted by Docker. The health check supplies evidence. The process lifecycle, monitoring, and deployment platform determine what happens next.[^docker-restart]
 
@@ -156,12 +156,14 @@ That is the project’s recovery model: fail fast during startup, publish useful
 
 ## Diagnostics made for operators
 
-The image contains seven small tools:
+The image contains nine small operator tools:
 
 | Command | What it means |
 | --- | --- |
 | `status` | Human-readable local summary of the process, bootstrap, ORPort self-test, identity, configuration, family state, errors, and warnings. |
 | `health` | Machine-readable JSON snapshot of local process state and log-derived relay state for monitoring and automation. |
+| `doctor` | Current-run diagnostics and suggested next steps; `--json` exposes the structured health assessment. |
+| `config` | Validate configuration, compare directive names with values redacted, or apply a validated candidate subject to configuration ownership. |
 | `refresh` | Validate the active `torrc`, reload it without replacing the Tor process, and verify that its PID and process uptime were preserved. |
 | `fingerprint` | Relay nickname, full fingerprint, and Tor Metrics lookup link. |
 | `bridge-line` | Generated obfs4 client bridge line and sharing guidance for bridge mode. |
@@ -170,7 +172,7 @@ The image contains seven small tools:
 
 Run them with `docker exec tor-relay <command>`. To create a named Happy Family key, use `docker exec tor-relay gen-family MyRelays`.
 
-The released [v2.2.0 update](/2026/10/10/v2.2.0/) adds `doctor` and `config`, current-run health evidence, and host-side encrypted recovery and fleet inventory. Its article includes real v2.2.0 deployment and archive-verification captures. The v2.1.0 examples and screenshots below remain a historical record of that earlier release.
+The [v2.2.0 update](/2026/10/10/v2.2.0/) introduced `doctor` and `config`, current-run health evidence, and host-side encrypted recovery and fleet inventory. Its article includes real v2.2.0 deployment and archive-verification captures. v2.2.1 retains those features and reads bridge/exit diagnostics from Tor's effective configuration, including includes. The v2.1.0 examples and screenshots below remain a historical record of that earlier release.
 
 In v2.1.0, `status` reports populated process uptime, a numeric error count, and the ORPort result Tor recorded through its own self-test:
 
@@ -204,7 +206,7 @@ The same facts are available to monitoring as valid JSON:
 
 The `reachable` value is Tor's log-derived ORPort self-test result, not a new external probe. The numeric `errors` value remains valid when the count is zero, and `uptime` is populated from the running process rather than left blank.
 
-The new `refresh` command provides a guarded reload for edits already present in the active `torrc`:
+The `refresh` command provides a guarded reload for edits already present in the active `torrc`:
 
 ```bash
 docker exec tor-relay refresh
@@ -236,13 +238,15 @@ The repository includes examples for Docker CLI, Compose, Cosmos Cloud, Portaine
 
 Before an image is published, the validation workflow:
 
-- checks Dockerfiles with Hadolint and runs ShellCheck as advisory shell analysis
-- builds a real test image and runs smoke tests
-- confirms Tor, the diagnostic tools, build metadata, and file ownership
-- enforces a minimum OpenSSL package version
-- scans the image and repository with Trivy
+- checks Dockerfiles with Hadolint and enforces ShellCheck warnings
+- validates source pins, documentation, deployment templates and regression tests
+- builds stable and edge candidates for AMD64 and ARM64 and runs behavioral acceptance checks
+- confirms the Tor version, diagnostic tools, source provenance, build metadata and file ownership
+- checks transport dependencies and scans candidates with the reviewed security policy
 
-Release jobs publish stable and edge manifests for AMD64 and ARM64. BuildKit attaches provenance and an SBOM, while the GitHub release contains downloadable CycloneDX and SPDX inventories for both variants. Stable images are rebuilt weekly with refreshed packages; edge is rebuilt more frequently. Scheduled and manual rebuilds resolve the latest released semantic-version tag and check out that source tag before building, so refreshed packages are applied to released source rather than an arbitrary state of `main`. Registry cleanup retains a bounded set of older versions instead of allowing tags and caches to grow forever.
+Release jobs promote the exact candidates that passed the complete matrix. BuildKit attaches provenance and an SBOM, while the GitHub release contains downloadable CycloneDX and SPDX inventories for both variants. Stable images are rebuilt weekly with refreshed packages; edge is rebuilt more frequently. Scheduled rebuilds and manual rebuilds with an empty `source_tag` use the captured `main` commit under the latest released version's image namespace. An explicit `source_tag` selects the original tagged source. The recorded source commit identifies what was built, and rebuilds never move the Git release tag.
+
+Registry maintenance protects current AMD64/ARM64 image graphs and reviewed deployment/rollback identities. Removing superseded images also requires the public notice window, fresh complete deployment protection and an unchanged cleanup plan. A successful inventory run alone does not establish that anything was deleted.
 
 Publishing an image is only one part of a release. The tests, provenance, upgrade path, and documented failure behavior are what make it possible to operate safely over time.
 

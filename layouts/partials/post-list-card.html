@@ -6,7 +6,7 @@
   <span class="post-list__meta">
     <time datetime="{{ $post.Date.Format "2006-01-02" }}">{{ $post.Date.Format "2006-01-02" }}</time>
     {{ if and $showPinned $post.Params.pinned }}
-    <span class="post-list__pin" aria-label="Pinned article" title="Pinned article"><i data-lucide="pin" aria-hidden="true"></i></span>
+    <span class="post-list__pin" role="img" aria-label="Pinned article" title="Pinned article"><i data-lucide="pin" aria-hidden="true"></i></span>
     {{ end }}
   </span>
   <span class="post-list__title">{{ $post.Title }}</span>
@@ -34,7 +34,7 @@
   {{ with $post.Description }}<p>{{ . }}</p>{{ end }}
   {{ if $showTags }}
     {{ with $post.Params.tags }}
-    <span class="post-list__tags" aria-label="Tags">
+    <span class="post-list__tags" role="group" aria-label="Tags">
       {{ range first 3 . }}<span>#{{ partial "tag-label.html" . }}</span>{{ end }}
     </span>
     {{ end }}
