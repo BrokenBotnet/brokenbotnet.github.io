@@ -3,8 +3,8 @@ Hash: SHA256
 
 .:: BrokenBotnet Warrant Canary ::.
 
-Issued: 2 August 2026
-Valid-Until: 31 October 2026
+Issued: 31 October 2026
+Valid-Until: 29 January 2027
 
 As of the issued date:
 
@@ -15,8 +15,8 @@ As of the issued date:
 
 Latest Monero mainnet block:
 
-Height: 3731043
-Hash:   08700bebe5e2bb7809c0e56b4d109fba8f5cb4917e25e2fa5e6339e259b2be38
+Height: 3795655
+Hash:   1464605831702addb6453abbd5e910bc3018c1f1e31f82232db13eea5174d0cd
 
 OpenPGP fingerprint:
 
@@ -33,18 +33,18 @@ An expired or missing update is a reason to investigate, not proof that any part
 rE-Bo0t.bx1 (r3bo0tbx1)
 -----BEGIN PGP SIGNATURE-----
 
-iQJPBAEBCAA5FiEEM3J/U3fSlsMgr3BKs71hluHPv7QFAmpummAbFIAAAAAABAAO
-bWFudTIsMi41KzEuMTIsMiwxAAoJELO9YZbhz7+0yC4P/0kMM9UnFISrxxItoGh5
-OykOr+Mcr5awoJ4MVFK8S8VRMoHfp/IaiWeCaa4rcXnJcb+MwZJGaxDmCH/rOLKs
-Uh/ZZ7uIAoSbvO3ESjtWezTQs0sW5dtiArN3dE1OnBwQzoDV7Wa3rKjLdVublntw
-0BGBdAPwtNWYAPJEfbJkLGQUWSo9PyKjfngGszCTlXOWdcWiDagRwKKFr6CSefP1
-SU10PdvYMVN7f36cV3u598m+w0WRaTdMyLNe28BjHQYPoqfbGHmu4JzBLh2PJtrS
-7cVr78+6JjnsH7lwq/oUJwOEDvjgWVP+IXY6GxM/nHWVp9NDo1vTFK+AUm+JxUxn
-0EuZCCnpdqNHmp0yCxztVvuQQM1fSlzgHrKdf6Jb/erAx6/lz+XlI4NxMA3MK52M
-5js6jzxham7D1vqHEDa1veeGLdbYH4dEdSHoRg2UyQMUDBnXuk7c/Xtmp2R1TeCe
-qQ3ldKKYPS6jYLm37RL2RtvJPsh7r78flYJJ8NLO44f6ffNZr0z+Y4h9VPz3Q3Ip
-aW2WmCCKvzFXIfVM50XPIddxo3m/T54zdP4l3jnwZGO4D/Q8RsUCCt/bvoLDWueq
-wX2g/+T+Wa7QXGbHiPXCFl7+fBpVriw8w2o8L+mMn1ixQ15v9erF1lytN5sXPUR7
-B2jrw1QB/LK17yZKSZHl8KrY
-=gCMs
+iQJPBAEBCAA5FiEEM3J/U3fSlsMgr3BKs71hluHPv7QFAmrlApYbFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwxAAoJELO9YZbhz7+0Ma0P/0ufAXVEhJm9s/7pUERu
+S1WE2S5qgENd376zECGhA2WDSR72C/HuKG3Rt+NTq1EKOlWbC833DidHbiyvLmUT
+Qm8JdAe0Kp0QhMXXSPy/zaQLnpTic0wkNsYECVC623iWRB+RRMv89J7//STQO4+2
+uKy5KGxlJoyEFZNQwt4EpZjxatjEQMddli8w8Hz5i811Op7ZNPjqVCu7E8v2DArm
+xL9arrJAa62QLBuKzCO8V1hicjSLK0YU6s8RKDTa+lcvau1qa/xbVlV/Vw3PvK0i
+oTfjff3iZVfTsuecImpPsXWyczlatgNb7UjT3t9oI0h7uzXqnoCBoFgOfnRIoCUK
+REp6sem7urcgDqmgOpkl8i5GC5w/2hmwGbpefb4sRLWtET52VrxPGSVkzwilYJS0
+3tvgwxMvEeIq/glVYgaSxOparqAd0DSG8xRECAI09YlGvbSyEYKx++DjB6ng4NiJ
+ADGNyLrXb0Lj1m0JhrhxvmJeF6nCbMqPAJcRJDOTrc2qKmd+m7swfnqVuInmfbUx
+OPNQguynZLY8ac2gGVQiY4qsTkEJ2WhrWITBl8SDbTxF5x8DlmZWDm+BC+0DFQDu
+S8NwnbQlc67VMrMczFaQ/xBTgsfXOZ1P/ExBiVy7qnw7FvVVeCEUG8WTcgjP6FsN
+s8cls1Cdfjc4wofimkhiGC5R
+=wVeT
 -----END PGP SIGNATURE-----
