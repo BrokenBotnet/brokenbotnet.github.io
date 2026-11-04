@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="{{ site.Language.Lang }}">
+<html lang="{{ site.Language.Lang }}" data-theme="{{ site.Params.theme.palette | default "brokenbotnet" }}" data-default-theme="{{ site.Params.theme.palette | default "brokenbotnet" }}">
   <head>
     {{ partial "head.html" . }}
   </head>
   <body id="top">
     {{- $isArticle := and .IsPage (eq .Section "posts") -}}
     {{ if $isArticle }}<div class="reading-progress" data-reading-progress hidden aria-hidden="true"><span class="reading-progress__fill"></span></div>{{ end }}
-    {{ if ne .Kind "404" }}<canvas class="relay-network" data-relay-network aria-hidden="true"></canvas>{{ end }}
+    {{ if ne .Kind "404" }}{{ partial "relay-background.html" . }}<canvas class="relay-network" data-relay-network aria-hidden="true"></canvas>{{ end }}
     <a class="skip-link" href="#main-content">Skip to content</a>
     {{- $nojsOutput := .OutputFormats.Get "NOJS" -}}
     <noscript>

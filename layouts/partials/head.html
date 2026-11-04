@@ -28,8 +28,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 {{ partial "onion.html" . }}
-<meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#181b20">
+{{- $defaultPalette := .Site.Params.theme.palette | default "brokenbotnet" -}}
+{{- $themes := where hugo.Data.themes "id" $defaultPalette -}}
+{{- if ne (len $themes) 1 -}}
+  {{- errorf "Unsupported theme palette %q" $defaultPalette -}}
+{{- end -}}
+{{- range $themes }}
+<meta name="color-scheme" content="{{ .scheme }}">
+<meta name="theme-color" content="{{ .color }}">
+{{- end }}
+{{- range hugo.Data.themes }}
+<meta name="site-theme" content="{{ .id }}" data-label="{{ .label }}" data-scheme="{{ .scheme }}" data-color="{{ .color }}">
+{{- end }}
 <meta name="description" content="{{ $description }}">
 <meta name="author" content="{{ .Site.Params.author }}">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -59,7 +69,7 @@
 {{- end -}}
 
 {{- $styleFiles := slice
-  (printf "static/css/palettes/%s.css" (.Site.Params.theme.palette | default "base16-dark"))
+  "static/css/palettes/brokenbotnet.css"
   "themes/risotto/static/css/colours.css"
   "themes/risotto/static/css/typography.css"
   "themes/risotto/static/css/layout.css"
@@ -68,6 +78,10 @@
   "themes/risotto/static/css/about.css"
   "themes/risotto/static/css/footer.css"
   "static/css/custom.css"
+  "static/css/palettes/gruvbox-dark.css"
+  "static/css/palettes/daylight.css"
+  "static/css/theme-refinements.css"
+  "static/css/theme-switcher.css"
 -}}
 {{- $styleSource := "body{background-color:var(--bg);color:var(--fg)}" -}}
 {{- range $styleFiles -}}
@@ -145,6 +159,7 @@
   {{- $coreScriptFiles := slice
     "static/js/lucide-subset.js"
     "static/js/site.js"
+    "static/js/theme.js"
   -}}
   {{- $coreScriptSource := "" -}}
   {{- range $coreScriptFiles -}}
@@ -169,7 +184,7 @@
   {{- end -}}
 
   {{- $nodeScript := resources.FromString "js/node-background.js" (os.ReadFile "static/js/node-background.js") | minify | fingerprint "sha384" -}}
-  {{- $nodeLoaderSource := printf `const phone=window.matchMedia("(max-width: 47.99rem), (max-height: 31rem) and (pointer: coarse)");let loaded=false;const load=()=>{if(!loaded&&!phone.matches){loaded=true;import(%q);phone.removeEventListener("change",load)}};load();if(!loaded)phone.addEventListener("change",load)` $nodeScript.RelPermalink -}}
+  {{- $nodeLoaderSource := replace (os.ReadFile "static/js/node-loader.js") "__NETWORK_MODULE__" $nodeScript.RelPermalink -}}
   {{- $nodeLoader := resources.FromString "js/node-loader.js" $nodeLoaderSource | minify | fingerprint "sha384" -}}
   <script type="module" src="{{ $nodeLoader.RelPermalink }}" integrity="{{ $nodeLoader.Data.Integrity }}"></script>
 {{- end -}}

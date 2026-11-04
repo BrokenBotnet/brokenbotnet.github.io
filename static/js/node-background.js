@@ -32,13 +32,14 @@
   const phoneViewport = window.matchMedia(
     "(max-width: 47.99rem), (max-height: 31rem) and (pointer: coarse)"
   );
-  if (phoneViewport.matches) {
-    canvas.hidden = true;
-    return;
-  }
 
   const context = canvas.getContext("2d", { alpha: true });
-  if (!context) return;
+  if (!context) {
+    document.documentElement.dataset.network = "unavailable";
+    return;
+  }
+  delete document.documentElement.dataset.network;
+  const networkEnabled = () => !phoneViewport.matches && document.documentElement.dataset.background !== "off";
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const saveData = Boolean(navigator.connection?.saveData);
@@ -48,6 +49,39 @@
     guard: { color: [98, 214, 181], radius: 2 },
     exit: { color: [255, 158, 100], radius: 1.9 }
   };
+  const originalRelayColors = Object.fromEntries(
+    Object.entries(relayTypes).map(([role, relay]) => [role, [...relay.color]])
+  );
+  const colorCanvas = document.createElement("canvas");
+  colorCanvas.width = colorCanvas.height = 1;
+  const colorContext = colorCanvas.getContext("2d", { willReadFrequently: true });
+  const profile = {};
+  const refreshRelayColors = () => {
+    const style = getComputedStyle(document.documentElement);
+    const numeric = (name, fallback, min, max) => {
+      const value = parseFloat(style.getPropertyValue(`--theme-network-${name}`));
+      return Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : fallback;
+    };
+    profile.alpha = numeric("alpha", 0.14, 0, 1);
+    profile.featuredAlpha = numeric("featured-alpha", 0.24, 0, 1);
+    profile.lineWidth = numeric("line-width", 0.66, 0.5, 2);
+    profile.nodeScale = numeric("node-scale", 1, 0.5, 2);
+    profile.inset = numeric("inset", 20, 0, 40);
+    profile.fade = numeric("fade", 105, 1, 150);
+    profile.floor = numeric("floor", 0.13, 0, 1);
+    profile.placementBias = numeric("placement-bias", 0, 0, 1);
+    Object.entries(relayTypes).forEach(([role, relay]) => {
+      const color = style.getPropertyValue(`--theme-network-${role}`).trim();
+      relay.color = [...originalRelayColors[role]];
+      if (!colorContext || !color || !CSS.supports("color", color)) return;
+      colorContext.clearRect(0, 0, 1, 1);
+      colorContext.fillStyle = color;
+      colorContext.fillRect(0, 0, 1, 1);
+      const channels = colorContext.getImageData(0, 0, 1, 1).data;
+      if (channels[3]) relay.color = [...channels].slice(0, 3);
+    });
+  };
+  refreshRelayColors();
   const rolePattern = [
     "middle", "guard", "middle", "bridge", "middle", "guard",
     "middle", "exit", "middle", "middle", "guard", "middle",
@@ -155,10 +189,13 @@
         Math.min(nearest, distanceBetween(candidate, node))
       ), Number.POSITIVE_INFINITY);
 
-      if (!bestCandidate || nearestDistance > bestCandidate.nearestDistance) {
-        bestCandidate = { ...candidate, nearestDistance };
+      const bias = index % 3 === 0 ? profile.placementBias : 0;
+      const spacing = Number.isFinite(nearestDistance) ? nearestDistance : minimumDistance;
+      const score = Math.min(spacing, minimumDistance * 2) + bias * visibilityAt(candidate.x, candidate.y) * 90;
+      if (!bestCandidate || (bias ? score > bestCandidate.score : nearestDistance > bestCandidate.nearestDistance)) {
+        bestCandidate = { ...candidate, nearestDistance, score };
       }
-      if (nearestDistance >= minimumDistance) break;
+      if (!bias && nearestDistance >= minimumDistance) break;
     }
 
     const position = bestCandidate || { x: width / 2, y: height / 2 };
@@ -186,10 +223,10 @@
         rect.top < height
       ))
       .map((rect) => ({
-        left: rect.left - 20,
-        right: rect.right + 20,
-        top: rect.top - 20,
-        bottom: rect.bottom + 20
+        left: rect.left - profile.inset,
+        right: rect.right + profile.inset,
+        top: rect.top - profile.inset,
+        bottom: rect.bottom + profile.inset
       }));
   };
 
@@ -203,7 +240,7 @@
       const deltaX = x < rect.left ? rect.left - x : x > rect.right ? x - rect.right : 0;
       const deltaY = y < rect.top ? rect.top - y : y > rect.bottom ? y - rect.bottom : 0;
       const distance = Math.hypot(deltaX, deltaY);
-      const protection = 0.13 + clamp(distance / 105, 0, 1) * 0.87;
+      const protection = profile.floor + clamp(distance / profile.fade, 0, 1) * (1 - profile.floor);
       visibility = Math.min(visibility, protection);
     });
 
@@ -425,10 +462,12 @@
   };
 
   const resizeCanvas = () => {
+    if (!networkEnabled()) return;
     const previousWidth = width;
     const previousHeight = height;
-    width = window.innerWidth;
-    height = window.innerHeight;
+    const bounds = canvas.getBoundingClientRect();
+    width = bounds.width || window.innerWidth;
+    height = bounds.height || window.innerHeight;
     pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
     canvas.width = Math.round(width * pixelRatio);
     canvas.height = Math.round(height * pixelRatio);
@@ -450,7 +489,7 @@
     const gradient = context.createLinearGradient(start.x, start.y, end.x, end.y);
     const baseAlpha = active
       ? 0.62 * (0.58 + visibility * 0.42)
-      : (featured ? 0.24 : 0.14) * visibility * (dimmed ? 0.23 : 1);
+      : (featured ? profile.featuredAlpha : profile.alpha) * visibility * (dimmed ? 0.23 : 1);
     const control = segmentControl(start, end, direction);
 
     gradient.addColorStop(0, rgba(start.relay.color, baseAlpha * 0.46));
@@ -474,7 +513,7 @@
     context.moveTo(start.x, start.y);
     context.quadraticCurveTo(control.x, control.y, end.x, end.y);
     context.strokeStyle = gradient;
-    context.lineWidth = active ? 1.02 : 0.66;
+    context.lineWidth = active ? 1.02 : profile.lineWidth;
     context.lineCap = "round";
     context.stroke();
     context.lineCap = "butt";
@@ -539,7 +578,7 @@
       const unrelatedScale = activeCircuit && !active && !hovered ? 0.32 : 1;
       context.beginPath();
       const activeGrowth = width >= 1024 ? 0.32 : 0.45;
-      context.arc(node.x, node.y, node.relay.radius + (active ? activeGrowth : 0), 0, Math.PI * 2);
+      context.arc(node.x, node.y, node.relay.radius * profile.nodeScale + (active ? activeGrowth : 0), 0, Math.PI * 2);
       context.fillStyle = rgba(
         node.relay.color,
         hovered ? 0.98 : active ? 0.9 : 0.78 * visibility * unrelatedScale
@@ -652,6 +691,7 @@
   };
 
   function draw() {
+    if (!networkEnabled()) return;
     context.clearRect(0, 0, width, height);
     drawConnections();
     drawSignals();
@@ -711,6 +751,8 @@
 
   const startAnimation = () => {
     stopAnimation();
+    canvas.hidden = !networkEnabled();
+    if (!networkEnabled()) return;
     if (reducedMotion.matches || saveData || document.hidden) {
       draw();
       return;
@@ -854,6 +896,22 @@
 
   document.addEventListener("visibilitychange", startAnimation);
   reducedMotion.addEventListener("change", startAnimation);
+  const syncNetwork = () => {
+    canvas.hidden = !networkEnabled();
+    if (networkEnabled()) {
+      resizeCanvas();
+      updateReadingMode();
+    }
+    startAnimation();
+  };
+  phoneViewport.addEventListener("change", syncNetwork);
+  document.addEventListener("brokenbotnet:background-change", syncNetwork);
+  document.addEventListener("brokenbotnet:theme-change", () => {
+    const previousBias = profile.placementBias;
+    refreshRelayColors();
+    if (profile.placementBias !== previousBias) nodes = [];
+    syncNetwork();
+  });
 
   resizeCanvas();
   updateReadingMode();

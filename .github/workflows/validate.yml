@@ -42,11 +42,17 @@ jobs:
           node scripts/fetch-project-stats.mjs
           node --test scripts/fetch-project-stats.test.mjs
 
+      - name: Validate appearance preferences and fallback behavior
+        run: node --test scripts/theme.test.mjs
+
       - name: Build production site
         run: hugo --gc --minify --panicOnWarning
 
       - name: Audit client-side injection surfaces
         run: node scripts/audit-client-security.mjs
+
+      - name: Audit script-free appearance controls
+        run: node scripts/audit-theme-output.mjs
 
       - name: Verify required output
         shell: bash

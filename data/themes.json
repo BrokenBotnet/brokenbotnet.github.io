@@ -1,0 +1,20 @@
+[
+  {
+    "id": "brokenbotnet",
+    "label": "BrokenBotnet",
+    "scheme": "dark",
+    "color": "#181b20"
+  },
+  {
+    "id": "gruvbox-dark",
+    "label": "Gruvbox Dark",
+    "scheme": "dark",
+    "color": "#282828"
+  },
+  {
+    "id": "daylight",
+    "label": "Daylight",
+    "scheme": "light",
+    "color": "#f5f7fb"
+  }
+]

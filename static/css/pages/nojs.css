@@ -500,7 +500,7 @@
 .nojs-lightbox__backdrop {
   position: absolute;
   inset: 0;
-  background: #020509;
+  background: var(--theme-deep, #020509);
   cursor: zoom-out;
 }
 
@@ -519,10 +519,10 @@
   width: 100%;
   max-height: calc(100vh - 8rem);
   overscroll-behavior: contain;
-  background: #06090d;
+  background: var(--theme-deep, #06090d);
   border: 1px solid var(--panel-border-strong);
   border-radius: 0.4rem;
-  box-shadow: 0 1.5rem 5rem rgba(0, 0, 0, 0.62);
+  box-shadow: 0 1.5rem 5rem rgba(0, 0, 0, calc(0.62 * var(--theme-shadow-scale, 1)));
   place-items: center;
   scrollbar-color: var(--base03) rgba(0, 0, 0, 0.18);
   scrollbar-width: thin;
@@ -555,7 +555,7 @@
 .nojs-lightbox__actions a {
   padding: 0.45rem 0.65rem;
   color: var(--base05);
-  background: rgba(12, 18, 25, 0.98);
+  background: rgba(var(--theme-rgb-panel, 12, 18, 25), 0.98);
   border: 1px solid var(--panel-border-strong);
   border-radius: 0.3rem;
   font: 600 0.72rem/1.25 var(--font-monospace);
@@ -579,7 +579,7 @@
   width: 2.75rem;
   height: 2.75rem;
   color: var(--base05);
-  background: rgba(12, 18, 25, 0.98);
+  background: rgba(var(--theme-rgb-panel, 12, 18, 25), 0.98);
   border: 1px solid var(--panel-border-strong);
   border-radius: 0.35rem;
   place-items: center;
@@ -681,7 +681,6 @@
   }
 }
 
-/* Preserve a footer-flow fallback when scroll-driven animations are unavailable. */
 @supports not (animation-timeline: scroll()) {
   .no-js .back-to-top--nojs-only,
   .no-js .back-to-top--scriptfree-404 {
