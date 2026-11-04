@@ -48,10 +48,10 @@
   padding: clamp(1rem, 2.5vw, 1.4rem);
   background:
     linear-gradient(145deg, color-mix(in srgb, var(--donation-accent) 8%, transparent), transparent 38%),
-    rgba(16, 21, 28, 0.74);
+    rgba(var(--theme-rgb-panel, 16, 21, 28), 0.74);
   border: 1px solid color-mix(in srgb, var(--donation-accent) 32%, var(--panel-border));
   border-radius: 0.45rem;
-  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, calc(0.2 * var(--theme-shadow-scale, 1)));
   flex-direction: column;
   overflow: hidden;
   isolation: isolate;
@@ -106,7 +106,7 @@
   flex: 0 0 auto;
   width: 2.35rem;
   height: 2.35rem;
-  background: color-mix(in srgb, var(--donation-accent) 8%, rgba(10, 14, 19, 0.82));
+  background: color-mix(in srgb, var(--donation-accent) 8%, rgba(var(--theme-rgb-deep, 10, 14, 19), 0.82));
   border: 1px solid color-mix(in srgb, var(--donation-accent) 30%, var(--panel-border));
   border-radius: 0.32rem;
   place-items: center;
@@ -128,7 +128,7 @@
 
 .donation-card__ticker {
   padding: 0.25rem 0.45rem;
-  color: var(--donation-accent);
+  color: var(--theme-donation-ink, var(--donation-accent));
   background: color-mix(in srgb, var(--donation-accent) 8%, transparent);
   border: 1px solid color-mix(in srgb, var(--donation-accent) 30%, transparent);
   border-radius: 0.28rem;
@@ -175,7 +175,7 @@
   display: block;
   padding: 0.48rem 0.6rem;
   color: var(--base05);
-  background: rgba(6, 9, 13, 0.68);
+  background: rgba(var(--theme-rgb-deep, 6, 9, 13), 0.68);
   border: 1px solid var(--panel-border);
   border-radius: 0.3rem;
   font-size: 0.7rem;
@@ -213,7 +213,7 @@
 .donation-card__actions button.is-copied,
 .donation-card__actions a:hover,
 .donation-card__actions a:focus-visible {
-  color: var(--base00) !important;
+  color: var(--theme-donation-ink, var(--base00)) !important;
   background: var(--donation-accent);
   border-color: var(--donation-accent);
   outline: none;
@@ -228,7 +228,7 @@
   margin-top: 1rem;
   padding: 0.9rem 1rem;
   color: var(--off-fg);
-  background: color-mix(in srgb, var(--base09) 5%, rgba(16, 21, 28, 0.74));
+  background: color-mix(in srgb, var(--base09) 5%, rgba(var(--theme-rgb-panel, 16, 21, 28), 0.74));
   border: 1px solid color-mix(in srgb, var(--base09) 24%, var(--panel-border));
   border-radius: 0.4rem;
 }
@@ -279,7 +279,7 @@
   color: var(--base05) !important;
   background:
     linear-gradient(145deg, color-mix(in srgb, var(--supporter-accent) 8%, transparent), transparent 48%),
-    rgba(16, 21, 28, 0.72);
+    rgba(var(--theme-rgb-panel, 16, 21, 28), 0.72);
   border: 1px solid color-mix(in srgb, var(--supporter-accent) 24%, var(--panel-border));
   border-radius: 0.45rem;
   flex-direction: column;

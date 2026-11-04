@@ -18,6 +18,50 @@
 
 The site uses [Hugo](https://gohugo.io/) with a customized [risotto](https://github.com/joeroe/risotto) theme. GitHub Actions validates each build and deploys it to GitHub Pages.
 
+## Color themes
+
+The footer's **Theme** control switches between **BrokenBotnet**,
+**Gruvbox Dark**, and **Daylight** without changing the site's layout, typography, or content.
+Standard pages remember the choice in browser storage when available. Each
+clearnet or onion origin keeps its own preference. **Background relays** can
+be disabled independently on desktop pages with relay support, and that
+preference is saved too. Mobile and script-free pages offer only theme choices.
+Resizing to mobile does not overwrite the saved desktop preference. Daylight uses a
+neutral white/slate palette with blue and teal accents; it is not Gruvbox Light.
+The configured default remains BrokenBotnet.
+
+No-JavaScript pages support the same choices through CSS in browsers with
+`:has()` support. That choice applies to the current page; persistence across
+navigation is not guaranteed. Without that CSS support, script-free pages
+retain the BrokenBotnet appearance. These rules also apply to the script-free
+404 page. A CSS-only choice cannot read preferences saved by JavaScript.
+No-JavaScript pages omit relay backgrounds and the background toggle. Their
+Palette icon uses a local PNG image, like the other script-free footer icons,
+so it does not depend on SVG support. Standard pages without JavaScript use this
+fallback too. Mobile layouts omit relay backgrounds. Desktop
+pages animate at up to 30 fps (10 fps while reading), and reduced-motion or
+Save-Data preferences keep the network still. An interrupted module load uses
+the static fallback, with at most two event-triggered retries. Theme changes do
+not recolor photographs, screenshots, currency logos, or QR codes.
+
+`static/icons/palette.png` is a 96×96 transparent PNG rendered from the
+[official Lucide Palette SVG](https://github.com/lucide-icons/lucide/blob/main/icons/palette.svg).
+Its warm gold outline and red, gold, blue, and teal paint dots match the standard
+SVG icon across all three themes. The existing [Lucide ISC license](static/icons/LICENSE-lucide.txt) applies.
+
+Set `params.theme.palette` in `hugo.toml` to `brokenbotnet`, `gruvbox-dark`, or `daylight`
+to choose the default. The Gruvbox colors are adapted from
+[morhetz/gruvbox](https://github.com/morhetz/gruvbox).
+
+Check appearance behavior with `node --test scripts/theme.test.mjs`, then build
+with `hugo --gc --minify --panicOnWarning` and run
+`node scripts/audit-client-security.mjs`.
+Run `node scripts/audit-theme-output.mjs` to verify that script-free outputs
+omit irrelevant controls and include the PNG icon assets.
+Preview the homepage, Writing, Whoami,
+Donate, an article with code, `/nojs/`, and `/404.html`; check keyboard focus,
+320/375/768/900/1100 px layouts, persistence, reduced motion, and print preview.
+
 ## Project statistics
 
 `data/project_stats.json` is the authoritative snapshot used by both GitHub
