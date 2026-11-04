@@ -1,5 +1,7 @@
 # Br🤖ken B🤖tnet
 
+Security research, privacy, open-source infrastructure, and the Tor network.
+
 [![Build](https://img.shields.io/github/actions/workflow/status/BrokenBotnet/brokenbotnet.github.io/validate.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=Build&labelColor=0a0a0a)](https://github.com/BrokenBotnet/brokenbotnet.github.io/actions/workflows/validate.yml)
 [![Deploy](https://img.shields.io/github/actions/workflow/status/BrokenBotnet/brokenbotnet.github.io/deploy.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=Deploy&labelColor=0a0a0a)](https://github.com/BrokenBotnet/brokenbotnet.github.io/actions/workflows/deploy.yml)
 [![Links](https://img.shields.io/github/actions/workflow/status/BrokenBotnet/brokenbotnet.github.io/links.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=Links&labelColor=0a0a0a)](https://github.com/BrokenBotnet/brokenbotnet.github.io/actions/workflows/links.yml)
@@ -7,82 +9,52 @@
 [![License](https://img.shields.io/badge/License-MIT-f1c40f?style=for-the-badge&logo=opensourceinitiative&logoColor=white&labelColor=0a0a0a)](LICENSE)
 [![Donate](https://img.shields.io/badge/Donate-Support%20the%20Project-ea4aaa?style=for-the-badge&logo=githubsponsors&logoColor=white&labelColor=0a0a0a)](https://brokenbotnet.com/donate/)
 
-[brokenbotnet.com](https://brokenbotnet.com/) documents my work in security research, privacy, open-source infrastructure, and the Tor network.
+Built with [Hugo Extended](https://gohugo.io/) and a customized [risotto](https://github.com/joeroe/risotto) theme. Published on GitHub Pages and mirrored over Tor with Web2Onion.
 
-## Projects
+## Local preview
 
-- [Tor Guard Relay](https://github.com/r3bo0tbx1/tor-guard-relay), a hardened container and operational toolkit for running Tor relays and bridges.
-- [Shinobi Relays](https://relays.brokenbotnet.com/), a public dashboard for the Tor infrastructure I operate.
+Install Hugo Extended, then run from the repository root:
 
-## Built with
+```sh
+git submodule update --init --recursive
+hugo server --baseURL http://127.0.0.1:1313/ --environment production --disableFastRender --disableLiveReload
+```
 
-The site uses [Hugo](https://gohugo.io/) with a customized [risotto](https://github.com/joeroe/risotto) theme. GitHub Actions validates each build and deploys it to GitHub Pages.
+Open [localhost:1313](http://127.0.0.1:1313/), or visit `/nojs/` for the version without JavaScript. Live reload is disabled so it won't inject scripts into No-JS pages; refresh manually after edits.
 
-## Color themes
+## Themes
 
-The footer's **Theme** control switches between **BrokenBotnet**,
-**Gruvbox Dark**, and **Daylight** without changing the site's layout, typography, or content.
-Standard pages remember the choice in browser storage when available. Each
-clearnet or onion origin keeps its own preference. **Background relays** can
-be disabled independently on desktop pages with relay support, and that
-preference is saved too. Mobile and script-free pages offer only theme choices.
-Resizing to mobile does not overwrite the saved desktop preference. Daylight uses a
-neutral white/slate palette with blue and teal accents; it is not Gruvbox Light.
-The configured default remains BrokenBotnet.
+Choose **BrokenBotnet**, **Gruvbox Dark**, or **Daylight** from the footer. To change the site's default, set `params.theme.palette` in `hugo.toml` to `brokenbotnet`, `gruvbox-dark`, or `daylight`.
 
-No-JavaScript pages support the same choices through CSS in browsers with
-`:has()` support. That choice applies to the current page; persistence across
-navigation is not guaranteed. Without that CSS support, script-free pages
-retain the BrokenBotnet appearance. These rules also apply to the script-free
-404 page. A CSS-only choice cannot read preferences saved by JavaScript.
-No-JavaScript pages omit relay backgrounds and the background toggle. Their
-Palette icon uses a local PNG image, like the other script-free footer icons,
-so it does not depend on SVG support. Standard pages without JavaScript use this
-fallback too. Mobile layouts omit relay backgrounds. Desktop
-pages animate at up to 30 fps (10 fps while reading), and reduced-motion or
-Save-Data preferences keep the network still. An interrupted module load uses
-the static fallback, with at most two event-triggered retries. Theme changes do
-not recolor photographs, screenshots, currency logos, or QR codes.
+Theme choices are saved separately for each domain when browser storage is available. On No-JS pages, choices apply to the current page and require CSS `:has()` support. The relay background toggle is available on supported desktop pages.
 
-`static/icons/palette.png` is a 96×96 transparent PNG rendered from the
-[official Lucide Palette SVG](https://github.com/lucide-icons/lucide/blob/main/icons/palette.svg).
-Its warm gold outline and red, gold, blue, and teal paint dots match the standard
-SVG icon across all three themes. The existing [Lucide ISC license](static/icons/LICENSE-lucide.txt) applies.
+## Validation
 
-Set `params.theme.palette` in `hugo.toml` to `brokenbotnet`, `gruvbox-dark`, or `daylight`
-to choose the default. The Gruvbox colors are adapted from
-[morhetz/gruvbox](https://github.com/morhetz/gruvbox).
+Run with Node.js and Hugo Extended installed:
 
-Check appearance behavior with `node --test scripts/theme.test.mjs`, then build
-with `hugo --gc --minify --panicOnWarning` and run
-`node scripts/audit-client-security.mjs`.
-Run `node scripts/audit-theme-output.mjs` to verify that script-free outputs
-omit irrelevant controls and include the PNG icon assets.
-Preview the homepage, Writing, Whoami,
-Donate, an article with code, `/nojs/`, and `/404.html`; check keyboard focus,
-320/375/768/900/1100 px layouts, persistence, reduced motion, and print preview.
+```sh
+node --test scripts/theme.test.mjs
+hugo --gc --minify --panicOnWarning
+node scripts/audit-client-security.mjs
+node scripts/audit-theme-output.mjs
+git diff --check
+```
+
+Before publishing, check a few pages on desktop and mobile, including an article, `/nojs/`, and `/404.html`. Try the theme selector with a keyboard. GitHub Actions also runs HTML, SEO, Lighthouse, and link checks.
 
 ## Project statistics
 
-`data/project_stats.json` is the authoritative snapshot used by both GitHub
-Pages and Web2Onion. The scheduled `stats.yml` workflow refreshes the
-snapshot from its external sources, fails without changing it if any source is
-unavailable or inconsistent, commits only that file, and explicitly starts
-the normal validation workflow.
+GitHub Pages and Web2Onion use the same committed [`data/project_stats.json`](data/project_stats.json). The [statistics workflow](.github/workflows/stats.yml) handles refreshes; local previews use the existing data.
 
-Ordinary builds run `scripts/fetch-project-stats.mjs` without `--refresh`.
-That mode validates the committed snapshot and performs no network requests or
-writes. This keeps clearnet and onion builds reproducible from the same source
-commit. Only the dedicated refresh workflow may use:
+CI validates the snapshot without fetching or writing data. Leave `--refresh` to the dedicated workflow.
 
-```sh
-node scripts/fetch-project-stats.mjs --refresh
-```
+## Projects
 
-## Release articles
+- [Tor Guard Relay](https://github.com/r3bo0tbx1/tor-guard-relay) - a hardened container and operational toolkit for Tor relays and bridges.
+- [Shinobi Relays](https://relays.brokenbotnet.com/) - a public dashboard for the Tor infrastructure I operate.
 
-The [v2.2.1 publication checklist](docs/v2.2.1-publication.md) covers release evidence, deployment captures and site checks. The article and related-page release notices appear in ordinary builds. Publish the site after the corresponding release is available.
+## Credits and license
 
-## License
+Gruvbox colors are adapted from [morhetz/gruvbox](https://github.com/morhetz/gruvbox). Icons include work from [Lucide](https://lucide.dev/), [Lucide Lab](https://github.com/lucide-icons/lucide-lab), and [Simple Icons](https://simpleicons.org/). Their [Lucide](static/icons/LICENSE-lucide.txt) and [Simple Icons](static/icons/LICENSE-simple-icons.md) license notices are included.
 
-Original material in this repository is available under the [MIT License](LICENSE). Third-party themes, fonts, icons, and other components remain subject to their respective licenses.
+Original material is available under the MIT License. Third-party components retain their own licenses.
