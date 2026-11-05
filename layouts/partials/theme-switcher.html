@@ -1,7 +1,7 @@
 {{- $default := site.Params.theme.palette | default "brokenbotnet" -}}
 {{- $scriptFree := or (strings.HasPrefix .RelPermalink "/nojs/") (eq .Kind "404") -}}
 <details class="theme-switcher" data-theme-switcher>
-  <summary><span class="theme-switcher__label">
+  <summary aria-label="Change color theme"><span class="theme-switcher__label">
     <img class="theme-switcher__icon theme-switcher__icon--raster" src="{{ "icons/palette.png" | relURL }}" width="23" height="23" alt="" aria-hidden="true">
     {{ if not $scriptFree }}
     <svg class="theme-switcher__icon lucide lucide-palette" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -12,7 +12,6 @@
       <circle class="theme-switcher__paint--green" cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
     </svg>
     {{ end }}
-    <span>Theme<span data-theme-current></span></span>
   </span></summary>
   <div class="theme-switcher__choices" role="group" aria-label="Appearance">
     {{ range hugo.Data.themes }}

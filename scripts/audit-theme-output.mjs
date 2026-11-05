@@ -14,6 +14,12 @@ for (const file of (await walk(root)).filter((file) => file.endsWith(".html"))) 
   const hasClass = (tag, name) => (attributeValue(tag, "class") || "").split(/\s+/).includes(name);
   if (!tags.some((tag) => !tag.closing && hasClass(tag, "theme-switcher"))) continue;
   pages++;
+  const switchers = tags.filter((tag) => !tag.closing && hasClass(tag, "theme-switcher"));
+  assert.equal(switchers.length, 1, `${file}: duplicate appearance controls`);
+  const headerStart = tags.findIndex((tag) => !tag.closing && hasClass(tag, "page__header"));
+  const headerEnd = tags.findIndex((tag, index) => index > headerStart && tag.closing && tag.name === "header");
+  const switcherIndex = tags.indexOf(switchers[0]);
+  assert(headerStart < switcherIndex && switcherIndex < headerEnd, `${file}: appearance control is not in the header`);
   assert(tags.some((tag) => tag.name === "img" && hasClass(tag, "theme-switcher__icon--raster") &&
     attributeValue(tag, "src") === "/icons/palette.png"), `${file}: missing local PNG image fallback`);
   const relative = path.relative(root, file).split(path.sep).join("/");

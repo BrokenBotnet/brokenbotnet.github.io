@@ -65,11 +65,11 @@
     profile.alpha = numeric("alpha", 0.14, 0, 1);
     profile.featuredAlpha = numeric("featured-alpha", 0.24, 0, 1);
     profile.lineWidth = numeric("line-width", 0.66, 0.5, 2);
-    profile.nodeScale = numeric("node-scale", 1, 0.5, 2);
-    profile.inset = numeric("inset", 20, 0, 40);
-    profile.fade = numeric("fade", 105, 1, 150);
-    profile.floor = numeric("floor", 0.13, 0, 1);
-    profile.placementBias = numeric("placement-bias", 0, 0, 1);
+    profile.nodeScale = 1.2;
+    profile.inset = 5;
+    profile.fade = 24;
+    profile.floor = 0.1;
+    profile.placementBias = 0.65;
     Object.entries(relayTypes).forEach(([role, relay]) => {
       const color = style.getPropertyValue(`--theme-network-${role}`).trim();
       relay.color = [...originalRelayColors[role]];
@@ -907,10 +907,8 @@
   phoneViewport.addEventListener("change", syncNetwork);
   document.addEventListener("brokenbotnet:background-change", syncNetwork);
   document.addEventListener("brokenbotnet:theme-change", () => {
-    const previousBias = profile.placementBias;
     refreshRelayColors();
-    if (profile.placementBias !== previousBias) nodes = [];
-    syncNetwork();
+    draw();
   });
 
   resizeCanvas();
