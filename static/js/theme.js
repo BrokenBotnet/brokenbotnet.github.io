@@ -11,7 +11,7 @@
     const theme = themes.get(selected);
     root.dataset.theme = selected;
     pickers.forEach((picker) => {
-      picker.querySelector("[data-theme-current]").textContent = `: ${theme.label}`;
+      picker.querySelector("summary").setAttribute("aria-label", `Change color theme. Current theme: ${theme.label}`);
       picker.querySelectorAll("input[name='color-theme']").forEach((input) => {
         input.checked = input.value === selected;
       });

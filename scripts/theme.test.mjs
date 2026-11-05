@@ -22,7 +22,7 @@ function fixture({ stored = {}, blocked = false, defaultTheme = "brokenbotnet", 
   const inputs = registry.map(({ id }) => new Input("color-theme", id));
   const background = new Input("background-relays", "on");
   const label = {};
-  const summary = { focus() { this.focused = true; } };
+  const summary = { focus() { this.focused = true; }, setAttribute(name, value) { this[name] = value; } };
   const picker = {
     open: true,
     addEventListener: (name, fn) => register(`picker:${name}`, fn),
@@ -64,7 +64,7 @@ test("stored Daylight and disabled relays are applied before the page renders", 
   assert.equal(f.color.content, "#f5f7fb");
   assert.equal(f.root.dataset.background, "off");
   assert.equal(f.background.checked, false);
-  assert.equal(f.label.textContent, ": Daylight");
+  assert.equal(f.summary["aria-label"], "Change color theme. Current theme: Daylight");
 });
 
 test("unknown saved themes and cleared storage use the configured default", () => {
@@ -200,4 +200,67 @@ test("renderer pauses for background-off, phone, hidden and reduced-motion state
   assert.equal(pendingFrame, 0);
   document.hidden = false; fire("visibilitychange");
   assert.equal(pendingFrame, 1);
+});
+
+test("all themes preserve relay counts, positions, sizes and fading on load and switch", () => {
+  const render = (initialTheme, width, height) => {
+    const events = new Map();
+    const on = (name, fn) => events.set(name, [...(events.get(name) || []), fn]);
+    const root = { dataset: { theme: initialTheme }, scrollHeight: 2400, addEventListener: on };
+    const palettes = new Map(registry.map(({ id }) => [id, readFileSync(
+      new URL(`../static/css/palettes/${id}.css`, import.meta.url), "utf8"
+    )]));
+    let circles = [];
+    let currentArc;
+    const gradient = { addColorStop() {} };
+    const drawing = new Proxy({
+      clearRect() { circles = []; },
+      arc(x, y, radius) { currentArc = { x, y, radius }; },
+      fill() { if (currentArc.radius >= 1.5) circles.push({ ...currentArc, ink: this.fillStyle }); },
+      createLinearGradient: () => gradient,
+      createRadialGradient: () => gradient,
+    }, { get: (target, key) => target[key] ?? (() => {}) });
+    const colorDrawing = { clearRect() {}, fillRect() {}, getImageData() {
+      return { data: root.dataset.theme === "brokenbotnet" ? [98, 214, 181, 255] : [184, 187, 38, 255] };
+    } };
+    const canvas = { classList: { toggle() {}, remove() {} }, getContext: () => drawing,
+      getBoundingClientRect: () => ({ width, height }) };
+    const panel = { getBoundingClientRect: () => ({ left: 120, right: width - 120,
+      top: 160, bottom: 2200, width: width - 240, height: 2040 }) };
+    const document = { documentElement: root, hidden: false, addEventListener: on,
+      querySelector: (selector) => selector === "[data-relay-network]" ? canvas : null,
+      querySelectorAll: () => [panel], createElement: () => ({ getContext: () => colorDrawing }) };
+    const window = { innerWidth: width, innerHeight: height, scrollY: 0, devicePixelRatio: 1,
+      matchMedia: (query) => ({ matches: query.includes("reduced-motion"), addEventListener() {} }),
+      addEventListener: on, sessionStorage: { getItem: () => "theme-parity-regression" },
+      requestAnimationFrame: () => 1, cancelAnimationFrame() {} };
+    const context = vm.createContext({ document, window, navigator: {},
+      getComputedStyle: () => ({ getPropertyValue: (name) =>
+        palettes.get(root.dataset.theme).match(new RegExp(`${name}:\\s*([^;]+)`))?.[1] || "" }),
+      CSS: { supports: () => true } });
+    vm.runInContext(source("node-background"), context);
+    return {
+      snapshot: () => circles.map(({ ink, x, y, radius }) => ({
+        x: Number(x.toFixed(6)), y: Number(y.toFixed(6)), radius,
+        alpha: Number(Number(ink.match(/, ([\d.]+)\)$/)[1]).toFixed(6))
+      })),
+      colors: () => circles.map(({ ink }) => ink),
+      select(id) { root.dataset.theme = id; events.get("brokenbotnet:theme-change").forEach((fn) => fn()); }
+    };
+  };
+  for (const [width, height] of [[1280, 800], [1920, 1080]]) {
+    const baseline = render("brokenbotnet", width, height);
+    const expected = baseline.snapshot();
+    assert.equal(expected.length, Math.min(132, Math.max(72, Math.round(width * height / 12500))));
+    const originalColors = baseline.colors();
+    for (const { id } of registry) {
+      assert.deepEqual(render(id, width, height).snapshot(), expected, `${id}: initial layout`);
+      baseline.select(id);
+      assert.deepEqual(baseline.snapshot(), expected, `${id}: switched layout`);
+    }
+    baseline.select("gruvbox-dark");
+    assert.notDeepEqual(baseline.colors(), originalColors, "theme colors must still change");
+    baseline.select("brokenbotnet");
+    assert.deepEqual(baseline.snapshot(), expected, "switching back must preserve layout");
+  }
 });
